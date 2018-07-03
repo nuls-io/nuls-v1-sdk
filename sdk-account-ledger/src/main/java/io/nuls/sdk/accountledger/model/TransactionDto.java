@@ -31,10 +31,6 @@ import io.nuls.sdk.core.utils.StringUtils;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @desription:
- * @author: PierreLuo
- */
 public class TransactionDto {
 
     /**

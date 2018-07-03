@@ -60,6 +60,7 @@ public interface AccountLedgerService {
      *
      * @param inputs inputs
      * @param outputs outputs
+     * @param remark remark
      * @return Result
      */
     Result createTransaction(List<InputDto> inputs, List<OutputDto> outputs, String remark);

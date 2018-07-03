@@ -104,8 +104,8 @@ public class ECKey {
 
     /**
      * 根据私匙和公匙创建
-     * @param priv
-     * @param pub
+     * @param priv priv
+     * @param pub pub
      */
     private ECKey(BigInteger priv, ECPoint pub) {
         if (priv != null) {
@@ -120,8 +120,8 @@ public class ECKey {
 
     /**
      * 根据私匙创建密码器
-     * @param privKey
-     * @return
+     * @param privKey privKey
+     * @return ECKey
      */
     public static ECKey fromPrivate(BigInteger privKey) {
         return fromPrivate(privKey, true);

@@ -15,6 +15,33 @@
         <module>sdk-account-ledger</module>
     </modules>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <tag>0.9.11</tag>
+        <url>https://github.com/nuls-io/nuls-sdk</url>
+        <connection>https://github.com/nuls-io/nuls-sdk.git</connection>
+        <developerConnection>https://nuls.io/</developerConnection>
+    </scm>
+    <developers>
+        <developer>
+            <name>ViViZhou</name>
+            <email>vivi@nuls.io</email>
+            <organization>viviZhou</organization>
+        </developer>
+    </developers>
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,7 +49,6 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-
 
     <build>
         <plugins>

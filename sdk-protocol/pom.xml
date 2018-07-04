@@ -19,5 +19,10 @@
             <artifactId>sdk-core</artifactId>
             <version>0.9.13</version>
         </dependency>
+        <dependency>
+            <groupId>io.nuls.sdk</groupId>
+            <artifactId>sdk-account-ledger</artifactId>
+            <version>0.9.13</version>
+        </dependency>
     </dependencies>
 </project>

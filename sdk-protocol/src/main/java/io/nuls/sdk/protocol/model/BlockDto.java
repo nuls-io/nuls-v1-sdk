@@ -26,6 +26,7 @@
 package io.nuls.sdk.protocol.model;
 
 
+import io.nuls.sdk.accountledger.model.TransactionDto;
 import io.nuls.sdk.core.utils.StringUtils;
 
 import java.util.List;

@@ -7,7 +7,7 @@
     <groupId>io.nuls.sdk</groupId>
     <artifactId>nuls-sdk</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.11</version>
+    <version>0.9.12</version>
     <modules>
         <module>sdk-core</module>
         <module>sdk-account</module>
@@ -25,14 +25,13 @@
         <license>
             <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
         </license>
     </licenses>
     <scm>
-        <tag>0.9.11</tag>
+        <tag>0.9.12</tag>
         <url>https://github.com/nuls-io/nuls-sdk</url>
         <connection>https://github.com/nuls-io/nuls-sdk.git</connection>
-        <developerConnection>https://nuls.io/</developerConnection>
+        <developerConnection>https://nuls.io</developerConnection>
     </scm>
     <developers>
         <developer>
@@ -44,13 +43,13 @@
     <distributionManagement>
         <snapshotRepository>
             <!-- 这个id需要在setting.xml中设置  -->
-            <id>sonatype-nexus-snapshots</id>
+            <id>ossrh</id>
             <name>OSS Snapshots Repository</name>
             <!-- 这里的url就是Issue中回复的snapshots 的repo地址-->
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
-            <id>sonatype-nexus-staging</id>
+            <id>ossrh</id>
             <name>OSS Staging Repository</name>
             <!-- 这里的url就是Issue中回复的staging 的repo地址-->
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>

@@ -1,6 +1,15 @@
 package io.nuls.sdk.test;
 
+import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.Output;
+import io.nuls.sdk.core.SDKBootstrap;
+import io.nuls.sdk.core.model.Result;
+import io.nuls.sdk.tool.NulsSDKTool;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class SDKTest {
 
@@ -164,12 +173,46 @@ public class SDKTest {
         assertTrue(result5.isSuccess());
         assertTrue(result6.isSuccess());
         assertTrue(result7.isSuccess());
-    }*/
+    }
 
     @Test
     public void testTransaction() {
-//        List<Input>
-//        NulsSDKTool.createTransaction()
-    }
+
+        SDKBootstrap.init("192.168.1.103", "8001");
+
+        List<Input> inputs = new ArrayList<>();
+        Input input = new Input();
+        input.setFromHash("00203c83ce29f93c06c3829a3dc6e94bfb4b39884f430cf26f6e44e1ece1baeae8c1");
+        input.setFromIndex(1);
+        input.setAddress("6HgaqsowQbVM8AXbHbssSAAHddeypwcc");
+        input.setValue(668691048222846L);
+        inputs.add(input);
+
+        List<Output> outputs = new ArrayList<>();
+        Output output = new Output();
+        output.setAddress("6Hgc3neGrs8oygfLvREjYSyTitpNqbWS");
+        output.setIndex(0);
+        output.setLockTime(0);
+        output.setValue(10000000L);
+        outputs.add(output);
+
+        output = new Output();
+        output.setAddress("6HgaqsowQbVM8AXbHbssSAAHddeypwcc");
+        output.setIndex(0);
+        output.setLockTime(0);
+        output.setValue(668691048222846L - 10000000L - 10000000L);
+        outputs.add(output);
+
+        Result result = NulsSDKTool.createTransaction(inputs, outputs, "abcd");
+        Map<String, Object> map = (Map<String, Object>) result.getData();
+        String txHex = (String) map.get("value");
+
+        result = NulsSDKTool.signTransaction(txHex, "407d5cd9b5d62ab633c52dfb45542622b06c05004a0314c312390a32b5d06234", "6HgaqsowQbVM8AXbHbssSAAHddeypwcc", null);
+        map = (Map<String, Object>) result.getData();
+        String sign = (String) map.get("value");
+
+        result = NulsSDKTool.broadcastTransaction(sign);
+        System.out.println(result.isSuccess());
+    }*/
 
 }

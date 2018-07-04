@@ -3,6 +3,7 @@ package io.nuls.sdk.core;
 import io.nuls.sdk.core.contast.RpcConstant;
 import io.nuls.sdk.core.utils.RestFulUtils;
 import io.nuls.sdk.core.utils.StringUtils;
+import io.nuls.sdk.core.utils.TransactionTool;
 
 /**
  * @author: Charlie
@@ -24,5 +25,6 @@ public class SDKBootstrap {
         } else {
             RestFulUtils.getInstance().setServerUri("http://" + ip + ":" + port + RpcConstant.PREFIX);
         }
+        TransactionTool.init();
     }
 }

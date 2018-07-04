@@ -62,22 +62,22 @@ public class AccountTool {
                 throw new NulsException(AccountErrorCode.PARAMETER_ERROR, e);
             }
         }
-        Address address = new Address(SDKConstant.DEFAULT_CHAIN_ID,SDKConstant.DEFAULT_ADDRESS_TYPE, SerializeUtils.sha256hash160(key.getPubKey()));
+        Address address = new Address(SDKConstant.DEFAULT_CHAIN_ID, SDKConstant.DEFAULT_ADDRESS_TYPE, SerializeUtils.sha256hash160(key.getPubKey()));
         Account account = new Account();
         account.setEncryptedPriKey(new byte[0]);
         account.setAddress(address);
         account.setPubKey(key.getPubKey());
         account.setEcKey(key);
         account.setPriKey(key.getPrivKeyBytes());
-        account.setCreateTime(System.currentTimeMillis());
+        account.setCreateTime(TimeService.currentTimeMillis());
         return account;
     }
 
     public static Account createAccount() throws NulsException {
         return createAccount(null);
     }
-//
-//    /**
+
+    //    /**
 //     * Generate the corresponding account management private key or transaction private key according to the seed private key and password
 //     */
     public static BigInteger genPrivKey(byte[] encryptedPriKey, byte[] pw) {
@@ -94,5 +94,4 @@ public class AccountTool {
         //get prikey
         return new BigInteger(1, Sha256Hash.hash(pwPriBytes));
     }
-
 }

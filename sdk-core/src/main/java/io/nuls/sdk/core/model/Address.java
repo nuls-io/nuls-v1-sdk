@@ -168,5 +168,4 @@ public class Address {
     public String getBase58() {
         return AddressTool.getStringAddressByBytes(this.addressBytes);
     }
-
 }

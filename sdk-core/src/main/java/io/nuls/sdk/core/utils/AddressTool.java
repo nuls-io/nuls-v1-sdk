@@ -117,7 +117,7 @@ public class AddressTool {
     }
 
     public static String getStringAddressByBytes(byte[] addressBytes) {
-        byte[] bytes = Arrays.concatenate(addressBytes, new byte[]{getXor(addressBytes)});
+        byte[] bytes = ArraysTool.concatenate(addressBytes, new byte[]{getXor(addressBytes)});
         return Base58.encode(bytes);
     }
 

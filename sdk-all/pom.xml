@@ -11,24 +11,24 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.nuls.sdk</groupId>
     <artifactId>sdk-all</artifactId>
-    <version>0.9.13</version>
+    <version>0.9.14</version>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>io.nuls.sdk</groupId>
             <artifactId>sdk-account</artifactId>
-            <version>0.9.13</version>
+            <version>0.9.14</version>
         </dependency>
         <dependency>
             <groupId>io.nuls.sdk</groupId>
             <artifactId>sdk-ledger</artifactId>
-            <version>0.9.13</version>
+            <version>0.9.14</version>
         </dependency>
         <dependency>
             <groupId>io.nuls.sdk</groupId>
             <artifactId>sdk-protocol</artifactId>
-            <version>0.9.13</version>
+            <version>0.9.14</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

@@ -30,6 +30,7 @@ import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.Base58;
 import io.nuls.sdk.core.exception.NulsRuntimeException;
 import io.nuls.sdk.core.utils.AddressTool;
+import io.nuls.sdk.core.utils.ArraysTool;
 import io.nuls.sdk.core.utils.Log;
 import io.nuls.sdk.core.utils.SerializeUtils;
 
@@ -39,7 +40,6 @@ import java.util.Arrays;
  * @author: Chralie
  */
 public class Address {
-
 
     /**
      * hash length
@@ -66,10 +66,9 @@ public class Address {
      */
     protected byte[] hash160;
 
-
     protected byte[] addressBytes;
-//
-//    /**
+
+    //    /**
 //     * @param address
 //     */
     public Address(String address) {
@@ -97,12 +96,13 @@ public class Address {
         return hash160;
     }
 
+
     public short getChainId() {
         return chainId;
     }
 
     public static Address fromHashs(String address) throws Exception {
-        byte[] bytes = Base58.decode(address);
+        byte[] bytes = AddressTool.getAddress(address);
         return fromHashs(bytes);
     }
 
@@ -135,7 +135,7 @@ public class Address {
         }
         if (obj instanceof Address) {
             Address other = (Address) obj;
-            return Arrays.equals(this.addressBytes, other.getAddressBytes());
+            return ArraysTool.arrayEquals(this.addressBytes, other.getAddressBytes());
         }
         return false;
     }
@@ -160,12 +160,12 @@ public class Address {
         return ADDRESS_LENGTH;
     }
 
-    public String getBase58() {
+    @Override
+    public String toString() {
         return AddressTool.getStringAddressByBytes(this.addressBytes);
     }
 
-    @Override
-    public String toString() {
+    public String getBase58() {
         return AddressTool.getStringAddressByBytes(this.addressBytes);
     }
 

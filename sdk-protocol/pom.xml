@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.nuls.sdk</groupId>
-    <artifactId>sdk-ledger</artifactId>
+    <artifactId>sdk-protocol</artifactId>
     <version>0.9.13</version>
     <packaging>jar</packaging>
 
@@ -20,6 +20,4 @@
             <version>0.9.13</version>
         </dependency>
     </dependencies>
-
-
 </project>

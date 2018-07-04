@@ -26,6 +26,16 @@ import java.util.Map;
  */
 public class AccountServiceImpl implements AccountService {
 
+    private static final AccountService INSTANCE = new AccountServiceImpl();
+
+    private AccountServiceImpl() {
+
+    }
+
+    public static AccountService getInstance() {
+        return INSTANCE;
+    }
+
     private RestFulUtils restFul = RestFulUtils.getInstance();
 
     @Override

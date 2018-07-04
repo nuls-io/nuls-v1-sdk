@@ -33,6 +33,16 @@ import java.util.Map;
  */
 public class AccountLedgerServiceImpl implements AccountLedgerService {
 
+    private static final AccountLedgerService INSTANCE = new AccountLedgerServiceImpl();
+
+    private AccountLedgerServiceImpl() {
+
+    }
+
+    public static AccountLedgerService getInstance() {
+        return INSTANCE;
+    }
+
     private RestFulUtils restFul = RestFulUtils.getInstance();
 
     @Override

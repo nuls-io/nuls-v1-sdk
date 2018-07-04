@@ -7,12 +7,14 @@
     <groupId>io.nuls.sdk</groupId>
     <artifactId>nuls-sdk</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.12</version>
+    <version>0.9.13</version>
     <modules>
         <module>sdk-core</module>
         <module>sdk-account</module>
         <module>sdk-ledger</module>
         <module>sdk-account-ledger</module>
+        <module>sdk-protocol</module>
+        <module>sdk-all</module>
     </modules>
 
     <parent>
@@ -28,7 +30,7 @@
         </license>
     </licenses>
     <scm>
-        <tag>0.9.12</tag>
+        <tag>0.9.13</tag>
         <url>https://github.com/nuls-io/nuls-sdk</url>
         <connection>https://github.com/nuls-io/nuls-sdk.git</connection>
         <developerConnection>https://nuls.io</developerConnection>

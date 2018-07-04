@@ -30,6 +30,9 @@ import io.nuls.sdk.core.utils.StringUtils;
 
 import java.util.Map;
 
+/**
+ * @author :vivizhou
+ */
 public class OutputDto {
 
     /**

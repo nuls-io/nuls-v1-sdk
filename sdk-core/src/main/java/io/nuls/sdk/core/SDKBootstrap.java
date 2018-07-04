@@ -10,15 +10,15 @@ import io.nuls.sdk.core.utils.StringUtils;
 public class SDKBootstrap {
 
     public static void main(String[] args) {
-        sdkStart();
-        sdkStart("127.0.0.1", "8001");
+       // init();
+        init("127.0.0.1", "8001");
     }
 
-    public static void sdkStart() {
-        sdkStart(null, null);
+    public static void init() {
+        init(null, null);
     }
 
-    public static void sdkStart(String ip, String port) {
+    public static void init(String ip, String port) {
         if (StringUtils.isBlank(ip) || StringUtils.isBlank(port)) {
             RestFulUtils.getInstance().setServerUri("http://" + RpcConstant.DEFAULT_IP + ":" + RpcConstant.DEFAULT_PORT + RpcConstant.PREFIX);
         } else {

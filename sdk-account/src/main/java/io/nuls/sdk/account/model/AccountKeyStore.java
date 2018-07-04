@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * @author: Charlie
  */
-public class AccountKeyStoreDto {
+public class AccountKeyStore {
 
     /**
      * 账户地址
@@ -54,11 +54,11 @@ public class AccountKeyStoreDto {
      */
     private String prikey;
 
-    public AccountKeyStoreDto() {
+    public AccountKeyStore() {
 
     }
 
-    public AccountKeyStoreDto(Map<String, Object> map) {
+    public AccountKeyStore(Map<String, Object> map) {
         this.address = (String)map.get("address");
         this.encryptedPrivateKey = null == map.get("encryptedPrivateKey") ? null : (String)map.get("encryptedPrivateKey");
         this.alias = null == map.get("alias") ? null : (String)map.get("alias");

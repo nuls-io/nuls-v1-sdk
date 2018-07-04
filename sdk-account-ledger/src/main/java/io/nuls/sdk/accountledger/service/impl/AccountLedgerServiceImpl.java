@@ -14,7 +14,7 @@ import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Coin;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
-import io.nuls.sdk.core.model.dto.BalanceDto;
+import io.nuls.sdk.core.model.dto.BalanceInfo;
 import io.nuls.sdk.core.script.P2PKHScriptSig;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.util.Arrays;
@@ -131,7 +131,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         map.put("balance", ((Map) map.get("balance")).get("value"));
         map.put("usable", ((Map) map.get("usable")).get("value"));
         map.put("locked", ((Map) map.get("locked")).get("value"));
-        BalanceDto balanceDto = new BalanceDto(map);
+        BalanceInfo balanceDto = new BalanceInfo(map);
         return result.setData(balanceDto);
     }
 

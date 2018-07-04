@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * @author: Charlie
  */
-public class AccountDto {
+public class AccountInfo {
 
     private String address;
 
@@ -55,10 +55,10 @@ public class AccountDto {
 
     private String encryptedPriKey;
 
-    public AccountDto() {
+    public AccountInfo() {
     }
 
-    public AccountDto(Map<String, Object> map) {
+    public AccountInfo(Map<String, Object> map) {
         this.address = (String) map.get("address");
         this.alias = (String) map.get("alias");
         this.pubKey = (String) map.get("pubKey");
@@ -67,7 +67,7 @@ public class AccountDto {
         this.encrypted = (boolean) map.get("encrypted");
     }
 
-    public AccountDto(Account account){
+    public AccountInfo(Account account){
         this.address = account.getAddress().toString();
         this.alias = account.getAlias();
         this.pubKey =  Hex.encode(account.getPubKey());

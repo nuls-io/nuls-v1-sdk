@@ -26,18 +26,18 @@
 package io.nuls.sdk.account.model;
 
 
-import io.nuls.sdk.core.model.dto.BalanceDto;
+import io.nuls.sdk.core.model.dto.BalanceInfo;
 
 import java.util.Map;
 
-public class AssetDto extends BalanceDto {
+public class Asset extends BalanceInfo {
 
     /**
      * 资产名称
      */
     private String asset;
 
-    public AssetDto(String asset, Map<String, Object> map) {
+    public Asset(String asset, Map<String, Object> map) {
         super(map);
         this.asset = asset;
     }

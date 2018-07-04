@@ -1,8 +1,8 @@
 package io.nuls.sdk.account.service.impl;
 
 import io.nuls.sdk.account.contast.AccountConstant;
-import io.nuls.sdk.account.model.AccountDto;
-import io.nuls.sdk.account.model.AccountKeyStoreDto;
+import io.nuls.sdk.account.model.AccountInfo;
+import io.nuls.sdk.account.model.AccountKeyStore;
 import io.nuls.sdk.account.service.AccountService;
 import io.nuls.sdk.core.contast.AccountErrorCode;
 import io.nuls.sdk.core.crypto.AESEncrypt;
@@ -12,7 +12,7 @@ import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Account;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
-import io.nuls.sdk.core.model.dto.BalanceDto;
+import io.nuls.sdk.core.model.dto.BalanceInfo;
 import io.nuls.sdk.core.utils.*;
 
 import java.io.*;
@@ -92,19 +92,19 @@ public class AccountServiceImpl implements AccountService {
         if (StringUtils.isNotBlank(password) && !StringUtils.validPassword(password)) {
             return Result.getFailed(AccountErrorCode.PASSWORD_IS_WRONG, "Length between 8 and 20, the combination of characters and numbers");
         }
-        List<AccountDto> accounts = new ArrayList<>();
+        List<AccountInfo> accounts = new ArrayList<>();
         try {
             for (int i = 0; i < count; i++) {
                 Account account = AccountTool.createAccount();
                 if (StringUtils.isNotBlank(password)) {
                     account.encrypt(password);
                 }
-                accounts.add(new AccountDto(account));
+                accounts.add(new AccountInfo(account));
             }
         } catch (NulsException e) {
             return Result.getFailed();
         }
-        Map<String, List<AccountDto>> map = new HashMap<>();
+        Map<String, List<AccountInfo>> map = new HashMap<>();
         map.put("list", accounts);
         return Result.getSuccess().setData(map);
     }
@@ -123,7 +123,7 @@ public class AccountServiceImpl implements AccountService {
         if (result.isFailed()) {
             return result;
         }
-        AccountKeyStoreDto accountKeyStoreDto = new AccountKeyStoreDto((Map<String, Object>) result.getData());
+        AccountKeyStore accountKeyStoreDto = new AccountKeyStore((Map<String, Object>) result.getData());
         if (StringUtils.isBlank(path)) {
             path = System.getProperty("user.dir");
         }
@@ -139,7 +139,7 @@ public class AccountServiceImpl implements AccountService {
      * 导出文件
      * Export file
      */
-    private Result backUpFile(String path, AccountKeyStoreDto accountKeyStoreDto) {
+    private Result backUpFile(String path, AccountKeyStore accountKeyStoreDto) {
         File backupFile = new File(path);
         //if not directory , create directory
         if (!backupFile.isDirectory()) {
@@ -210,7 +210,7 @@ public class AccountServiceImpl implements AccountService {
         if (result.isFailed()) {
             return result;
         }
-        AccountDto accountDto = new AccountDto((Map<String, Object>) result.getData());
+        AccountInfo accountDto = new AccountInfo((Map<String, Object>) result.getData());
         return result.setData(accountDto);
     }
 
@@ -282,7 +282,7 @@ public class AccountServiceImpl implements AccountService {
         map.put("balance", ((Map) map.get("balance")).get("value"));
         map.put("usable", ((Map) map.get("usable")).get("value"));
         map.put("locked", ((Map) map.get("locked")).get("value"));
-        BalanceDto balanceDto = new BalanceDto(map);
+        BalanceInfo balanceDto = new BalanceInfo(map);
         return result.setData(balanceDto);
     }
 
@@ -327,7 +327,7 @@ public class AccountServiceImpl implements AccountService {
         if (rs.isFailed()) {
             return rs;
         }
-        AccountKeyStoreDto accountKeyStoreDto = (AccountKeyStoreDto) rs.getData();
+        AccountKeyStore accountKeyStoreDto = (AccountKeyStore) rs.getData();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("accountKeyStoreDto", accountKeyStoreDto);
         parameters.put("password", password);
@@ -356,7 +356,7 @@ public class AccountServiceImpl implements AccountService {
                     ks.append(str);
                 }
             }
-            AccountKeyStoreDto accountKeyStoreDto = JSONUtils.json2pojo(ks.toString(), AccountKeyStoreDto.class);
+            AccountKeyStore accountKeyStoreDto = JSONUtils.json2pojo(ks.toString(), AccountKeyStore.class);
             return Result.getSuccess().setData(accountKeyStoreDto);
         } catch (FileNotFoundException e) {
             return Result.getFailed(AccountErrorCode.ACCOUNTKEYSTORE_FILE_NOT_EXIST);
@@ -547,7 +547,7 @@ public class AccountServiceImpl implements AccountService {
         if (rs.isFailed()) {
             return rs;
         }
-        AccountKeyStoreDto accountKeyStoreDto = (AccountKeyStoreDto) rs.getData();
+        AccountKeyStore accountKeyStoreDto = (AccountKeyStore) rs.getData();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("accountKeyStoreDto", accountKeyStoreDto);
         parameters.put("password", password);

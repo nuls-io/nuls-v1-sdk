@@ -49,7 +49,7 @@ public interface AccountLedgerService {
      * Get account balance
      *
      * @param address address
-     * @return If the operation is successful, 'success' is true, and data is BalanceDto
+     * @return If the operation is successful, 'success' is true, and data is BalanceInfo
      * If the operation fails, "success" is false and the result has error information
      */
     Result getBalance(String address);

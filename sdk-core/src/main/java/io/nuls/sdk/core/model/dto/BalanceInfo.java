@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * @author: Charlie
  */
-public class BalanceDto {
+public class BalanceInfo {
 
     /**
      * 余额
@@ -49,7 +49,7 @@ public class BalanceDto {
      */
     private long locked;
 
-    public BalanceDto(Map<String, Object> map) {
+    public BalanceInfo(Map<String, Object> map) {
         this.balance = Na.parseNa(map.get("balance"));
         this.usable = Na.parseNa(map.get("usable"));
         this.locked = Na.parseNa(map.get("locked"));

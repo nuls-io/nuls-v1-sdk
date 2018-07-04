@@ -152,7 +152,7 @@ public interface AccountService {
      * Get the account information
      *
      * @param address The address of account
-     * @return If the operation is successful, success is true and data is AccountDto;
+     * @return If the operation is successful, success is true and data is AccountInfo;
      * If the operation fails, success is false and the result has error information
      */
     Result getAccount(String address);
@@ -207,7 +207,7 @@ public interface AccountService {
     /**
      * Get the total balance of all accounts in the wallet
      *
-     * @return If the operation is successful, success is true and data is BalanceDto;
+     * @return If the operation is successful, success is true and data is BalanceInfo;
      * If the operation fails, success is false and the result has error information
      */
     Result getWalletTotalBalance();

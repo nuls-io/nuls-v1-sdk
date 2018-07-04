@@ -1,7 +1,7 @@
 package io.nuls.sdk.accountledger.service;
 
-import io.nuls.sdk.accountledger.model.InputDto;
-import io.nuls.sdk.accountledger.model.OutputDto;
+import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.model.Result;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public interface AccountLedgerService {
      * Get transaction details based on transaction hash
      *
      * @param hash Transaction hash
-     * @return If the operation is successful, 'success' is true, and data is TransactionDto;
+     * @return If the operation is successful, 'success' is true, and data is Transaction;
      * If the operation fails, "success" is false and the result has error information
      */
     Result getTxByHash(String hash);
@@ -63,7 +63,7 @@ public interface AccountLedgerService {
      * @param remark remark
      * @return Result
      */
-    Result createTransaction(List<InputDto> inputs, List<OutputDto> outputs, String remark);
+    Result createTransaction(List<Input> inputs, List<Output> outputs, String remark);
 
     /**
      * 签名交易

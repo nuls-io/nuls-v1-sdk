@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * @author :vivizhou
  */
-public class TransactionDto {
+public class Transaction {
 
     /**
      * 交易的hash值
@@ -94,14 +94,14 @@ public class TransactionDto {
     /**
      * 输入
      */
-    private List<InputDto> inputs;
+    private List<Input> inputs;
 
     /**
      * 输出
      */
-    private List<OutputDto> outputs;
+    private List<Output> outputs;
 
-    public TransactionDto(Map<String, Object> map) {
+    public Transaction(Map<String, Object> map) {
         this.hash = (String) map.get("hash");
         this.type = (Integer) map.get("type");
         this.time = StringUtils.parseLong(map.get("time"));
@@ -113,8 +113,8 @@ public class TransactionDto {
         this.status = (Integer) map.get("status");
         this.remark = (String) map.get("remark");
         this.scriptSig = (String) map.get("scriptSig");
-        this.inputs = (List<InputDto>)map.get("inputs");
-        this.outputs = (List<OutputDto>)map.get("outputs");
+        this.inputs = (List<Input>)map.get("inputs");
+        this.outputs = (List<Output>)map.get("outputs");
     }
 
     public String getHash() {
@@ -165,19 +165,19 @@ public class TransactionDto {
         this.value = value;
     }
 
-    public List<InputDto> getInputs() {
+    public List<Input> getInputs() {
         return inputs;
     }
 
-    public void setInputs(List<InputDto> inputs) {
+    public void setInputs(List<Input> inputs) {
         this.inputs = inputs;
     }
 
-    public List<OutputDto> getOutputs() {
+    public List<Output> getOutputs() {
         return outputs;
     }
 
-    public void setOutputs(List<OutputDto> outputs) {
+    public void setOutputs(List<Output> outputs) {
         this.outputs = outputs;
     }
 

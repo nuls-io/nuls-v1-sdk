@@ -2,8 +2,8 @@ package io.nuls.sdk.tool;
 
 import io.nuls.sdk.account.service.AccountService;
 import io.nuls.sdk.account.service.impl.AccountServiceImpl;
-import io.nuls.sdk.accountledger.model.InputDto;
-import io.nuls.sdk.accountledger.model.OutputDto;
+import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.accountledger.service.AccountLedgerService;
 import io.nuls.sdk.accountledger.service.impl.AccountLedgerServiceImpl;
 import io.nuls.sdk.core.model.Result;
@@ -187,7 +187,7 @@ public class NulsSDKTool {
         return accountLedgerService.getBalance(address);
     }
 
-    public static Result createTransaction(List<InputDto> inputs, List<OutputDto> outputs, String remark) {
+    public static Result createTransaction(List<Input> inputs, List<Output> outputs, String remark) {
         return accountLedgerService.createTransaction(inputs, outputs, remark);
     }
 

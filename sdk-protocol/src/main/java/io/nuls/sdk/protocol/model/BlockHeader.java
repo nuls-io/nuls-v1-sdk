@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * @author: Niels Wang
  */
-public class BlockHeaderDto {
+public class BlockHeader {
 
     /**
      * 区块的hash值
@@ -103,7 +103,7 @@ public class BlockHeaderDto {
      */
     private int size;
 
-    public BlockHeaderDto(Map<String, Object> map) {
+    public BlockHeader(Map<String, Object> map) {
         this.hash = (String) map.get("hash");
         this.preHash = (String) map.get("preHash");
         this.merkleHash = (String) map.get("merkleHash");

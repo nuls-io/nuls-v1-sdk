@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * @author :vivizhou
  */
-public class OutputDto {
+public class Output {
 
     /**
      * 交易hash
@@ -65,11 +65,11 @@ public class OutputDto {
      */
     private int status;
 
-    public OutputDto() {
+    public Output() {
 
     }
 
-    public OutputDto(Map<String, Object> map) {
+    public Output(Map<String, Object> map) {
         this.txHash = (String) map.get("txHash");
         this.index = (Integer) map.get("index");
         this.address = (String) map.get("address");

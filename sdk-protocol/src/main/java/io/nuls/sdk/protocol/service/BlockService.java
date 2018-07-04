@@ -56,7 +56,7 @@ public interface BlockService {
      * Get the block accoding to block height
      * @param height The block height
      * @return
-     * If the operation is successful, 'success' is true, and data is BlockDto;
+     * If the operation is successful, 'success' is true, and data is Block;
      * If the operation fails, "success" is false and the result has error information
      */
     Result getBlock(int height);
@@ -65,7 +65,7 @@ public interface BlockService {
      * Get the block accoding to block hash
      * @param hash The block hash
      * @return
-     * If the operation is successful, 'success' is true, and data is BlockDto;
+     * If the operation is successful, 'success' is true, and data is Block;
      * If the operation fails, "success" is false and the result has error information
      */
     Result getBlock(String hash);

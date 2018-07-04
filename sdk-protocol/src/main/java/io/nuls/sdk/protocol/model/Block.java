@@ -26,7 +26,7 @@
 package io.nuls.sdk.protocol.model;
 
 
-import io.nuls.sdk.accountledger.model.TransactionDto;
+import io.nuls.sdk.accountledger.model.Transaction;
 import io.nuls.sdk.core.utils.StringUtils;
 
 import java.util.List;
@@ -35,7 +35,7 @@ import java.util.Map;
 /**
  * @author: Niels Wang
  */
-public class BlockDto {
+public class Block {
 
     /**
      * 区块的hash值
@@ -108,9 +108,9 @@ public class BlockDto {
     /**
      * transactionsJSON
      */
-    private List<TransactionDto> txList;
+    private List<Transaction> txList;
 
-    public BlockDto(Map<String, Object> map) {
+    public Block(Map<String, Object> map) {
         this.hash = (String) map.get("hash");
         this.preHash = (String) map.get("preHash");
         this.merkleHash = (String) map.get("merkleHash");
@@ -127,7 +127,7 @@ public class BlockDto {
         this.reward = StringUtils.parseLong(map.get("reward"));
         this.fee = StringUtils.parseLong(map.get("fee"));
         this.size = (int) map.get("consensusMemberCount");
-        this.txList = (List<TransactionDto>)map.get("txList");
+        this.txList = (List<Transaction>)map.get("txList");
     }
 
     public String getHash() {
@@ -258,11 +258,11 @@ public class BlockDto {
         this.size = size;
     }
 
-    public List<TransactionDto> getTxList() {
+    public List<Transaction> getTxList() {
         return txList;
     }
 
-    public void setTxList(List<TransactionDto> txList) {
+    public void setTxList(List<Transaction> txList) {
         this.txList = txList;
     }
 }

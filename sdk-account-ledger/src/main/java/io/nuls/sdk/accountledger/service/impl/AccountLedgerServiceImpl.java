@@ -1,8 +1,8 @@
 package io.nuls.sdk.accountledger.service.impl;
 
-import io.nuls.sdk.accountledger.model.InputDto;
-import io.nuls.sdk.accountledger.model.OutputDto;
-import io.nuls.sdk.accountledger.model.TransactionDto;
+import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.Output;
+import io.nuls.sdk.accountledger.model.Transaction;
 import io.nuls.sdk.accountledger.service.AccountLedgerService;
 import io.nuls.sdk.core.contast.AccountErrorCode;
 import io.nuls.sdk.core.contast.SDKConstant;
@@ -14,7 +14,6 @@ import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Coin;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
-import io.nuls.sdk.core.model.Transaction;
 import io.nuls.sdk.core.model.dto.BalanceDto;
 import io.nuls.sdk.core.script.P2PKHScriptSig;
 import io.nuls.sdk.core.utils.*;
@@ -58,22 +57,22 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         Map<String, Object> map = (Map) result.getData();
         //重新组装input
         List<Map<String, Object>> inputMaps = (List<Map<String, Object>>) map.get("inputs");
-        List<InputDto> inputs = new ArrayList<>();
+        List<Input> inputs = new ArrayList<>();
         for (Map<String, Object> inputMap : inputMaps) {
-            InputDto inputDto = new InputDto(inputMap);
+            Input inputDto = new Input(inputMap);
             inputs.add(inputDto);
         }
         map.put("inputs", inputs);
 
         //重新组装output
         List<Map<String, Object>> outputMaps = (List<Map<String, Object>>) map.get("outputs");
-        List<OutputDto> outputs = new ArrayList<>();
+        List<Output> outputs = new ArrayList<>();
         for (Map<String, Object> outputMap : outputMaps) {
-            OutputDto outputDto = new OutputDto(outputMap);
+            Output outputDto = new Output(outputMap);
             outputs.add(outputDto);
         }
         map.put("outputs", outputs);
-        TransactionDto transactionDto = new TransactionDto(map);
+        Transaction transactionDto = new Transaction(map);
         result.setData(transactionDto);
         return result;
     }
@@ -145,7 +144,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     }
 
     @Override
-    public Result createTransaction(List<InputDto> inputs, List<OutputDto> outputs, String remark) {
+    public Result createTransaction(List<Input> inputs, List<Output> outputs, String remark) {
         if (inputs == null || inputs.isEmpty()) {
             return Result.getFailed("inputs error");
         }
@@ -163,7 +162,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
 
         List<Coin> outputList = new ArrayList<>();
         for (int i = 0; i < outputs.size(); i++) {
-            OutputDto outputDto = outputs.get(i);
+            Output outputDto = outputs.get(i);
             Coin to = new Coin();
             try {
                 to.setOwner(AddressTool.getAddress(outputDto.getAddress()));
@@ -187,7 +186,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         List<Coin> inputsList = new ArrayList<>();
 
         for (int i = 0; i < inputs.size(); i++) {
-            InputDto inputDto = inputs.get(i);
+            Input inputDto = inputs.get(i);
             byte[] key = Arrays.concatenate(Hex.decode(inputDto.getFromHash()), new VarInt(inputDto.getFromIndex()).encode());
             Coin coin = new Coin();
             coin.setOwner(key);
@@ -196,7 +195,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             inputsList.add(coin);
         }
 
-        Transaction tx = TransactionTool.createTransferTx(inputsList, outputList, remarkBytes);
+        io.nuls.sdk.core.model.Transaction tx = TransactionTool.createTransferTx(inputsList, outputList, remarkBytes);
         //计算交易手续费最小值
         int size = tx.size() + P2PKHScriptSig.DEFAULT_SERIALIZE_LENGTH;
         Na minFee = TransactionFeeCalculator.getTransferFee(size);
@@ -264,7 +263,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
 
         try {
             byte[] data = Hex.decode(txHex);
-            Transaction tx = TransactionTool.getInstance(new NulsByteBuffer(data));
+            io.nuls.sdk.core.model.Transaction tx = TransactionTool.getInstance(new NulsByteBuffer(data));
             tx = TransactionTool.signTransaction(tx, key);
 
             txHex = Hex.encode(tx.serialize());

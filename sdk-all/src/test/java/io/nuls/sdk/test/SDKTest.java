@@ -1,17 +1,6 @@
 package io.nuls.sdk.test;
 
-import io.nuls.sdk.core.SDKBootstrap;
-import io.nuls.sdk.core.model.Result;
-import io.nuls.sdk.core.utils.JSONUtils;
-import io.nuls.sdk.protocol.model.BlockHeaderDto;
-import io.nuls.sdk.tool.NulsSDKTool;
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.*;
 
 public class SDKTest {
 
@@ -159,7 +148,7 @@ public class SDKTest {
     @Test
     public void blockAccount() {
         Result result1 = NulsSDKTool.getBlockHeader(10);
-        String hash = ((BlockHeaderDto)result1.getData()).getHash();
+        String hash = ((BlockHeader)result1.getData()).getHash();
 
         Result result2 = NulsSDKTool.getBlockHeader(hash);
         Result result3 = NulsSDKTool.getBlock(10);
@@ -176,5 +165,11 @@ public class SDKTest {
         assertTrue(result6.isSuccess());
         assertTrue(result7.isSuccess());
     }*/
+
+    @Test
+    public void testTransaction() {
+//        List<Input>
+//        NulsSDKTool.createTransaction()
+    }
 
 }

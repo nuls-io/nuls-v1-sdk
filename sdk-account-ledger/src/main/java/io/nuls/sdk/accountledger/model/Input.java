@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * @author :vivizhou
  */
-public class InputDto {
+public class Input {
 
     /**
      * 来源output的txHash
@@ -56,11 +56,11 @@ public class InputDto {
 
     private long lockTime;
 
-    public InputDto() {
+    public Input() {
 
     }
 
-    public InputDto(Map<String, Object> map) {
+    public Input(Map<String, Object> map) {
         this.fromHash = (String) map.get("fromHash");
         this.fromIndex = (Integer) map.get("fromIndex");
         this.address = (String) map.get("address");

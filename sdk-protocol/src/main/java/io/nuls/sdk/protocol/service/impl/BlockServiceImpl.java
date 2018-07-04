@@ -1,8 +1,8 @@
 package io.nuls.sdk.protocol.service.impl;
 
-import io.nuls.sdk.accountledger.model.InputDto;
-import io.nuls.sdk.accountledger.model.OutputDto;
-import io.nuls.sdk.accountledger.model.TransactionDto;
+import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.Output;
+import io.nuls.sdk.accountledger.model.Transaction;
 import io.nuls.sdk.core.contast.KernelErrorCode;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.core.utils.RestFulUtils;
@@ -56,7 +56,7 @@ public class BlockServiceImpl implements BlockService {
             return result;
         }
         Map<String, Object> map = (Map) result.getData();
-        BlockHeaderDto blockHeaderDto = new BlockHeaderDto(map);
+        BlockHeader blockHeaderDto = new BlockHeader(map);
         return result.setData(blockHeaderDto);
     }
 
@@ -70,7 +70,7 @@ public class BlockServiceImpl implements BlockService {
             return result;
         }
         Map<String, Object> map = (Map) result.getData();
-        BlockHeaderDto blockHeaderDto = new BlockHeaderDto(map);
+        BlockHeader blockHeaderDto = new BlockHeader(map);
         return result.setData(blockHeaderDto);
     }
 
@@ -84,7 +84,7 @@ public class BlockServiceImpl implements BlockService {
             return result;
         }
         Map<String, Object> map = (Map) result.getData();
-        BlockHeaderDto blockHeaderDto = new BlockHeaderDto(map);
+        BlockHeader blockHeaderDto = new BlockHeader(map);
         return result.setData(blockHeaderDto);
     }
 
@@ -114,31 +114,31 @@ public class BlockServiceImpl implements BlockService {
         return result.setData(assembleBlockDto(map));
     }
 
-    private BlockDto assembleBlockDto(Map<String, Object> map) {
+    private Block assembleBlockDto(Map<String, Object> map) {
         List<Map<String, Object>> txMapList = (List<Map<String, Object>>) map.get("txList");
-        List<TransactionDto> txList = new ArrayList<>();
+        List<Transaction> txList = new ArrayList<>();
         for (Map<String, Object> txMap : txMapList) {
             //重新组装input
             List<Map<String, Object>> inputMaps = (List<Map<String, Object>>) txMap.get("inputs");
-            List<InputDto> inputs = new ArrayList<>();
+            List<Input> inputs = new ArrayList<>();
             for (Map<String, Object> inputMap : inputMaps) {
-                InputDto inputDto = new InputDto(inputMap);
+                Input inputDto = new Input(inputMap);
                 inputs.add(inputDto);
             }
             txMap.put("inputs", inputs);
             //重新组装output
             List<Map<String, Object>> outputMaps = (List<Map<String, Object>>) txMap.get("outputs");
-            List<OutputDto> outputs = new ArrayList<>();
+            List<Output> outputs = new ArrayList<>();
             for (Map<String, Object> outputMap : outputMaps) {
-                OutputDto outputDto = new OutputDto(outputMap);
+                Output outputDto = new Output(outputMap);
                 outputs.add(outputDto);
             }
             txMap.put("outputs", outputs);
-            TransactionDto transactionDto = new TransactionDto(txMap);
+            Transaction transactionDto = new Transaction(txMap);
             txList.add(transactionDto);
         }
         map.put("txList", txList);
-        return new BlockDto(map);
+        return new Block(map);
     }
 
 }

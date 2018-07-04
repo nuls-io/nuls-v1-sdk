@@ -219,11 +219,11 @@ public class NulsSDKTool {
         return blockService.getBlockHeader(hash);
     }
 
-    Result getBlock(int height) {
+    public static  Result getBlock(int height) {
         return blockService.getBlock(height);
     }
 
-    Result getBlock(String hash) {
+    public static Result getBlock(String hash) {
         return blockService.getBlock(hash);
     }
 

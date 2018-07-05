@@ -1,5 +1,7 @@
 package io.nuls.sdk.core.contast;
 
+import io.nuls.sdk.core.model.Na;
+
 /**
  * @author: Charlie
  */
@@ -25,4 +27,13 @@ public interface SDKConstant {
      * 48 bit integer data length.
      */
     int INT48_VALUE_LENGTH = 6;
+
+    Na SUM_OF_DEPOSIT_OF_AGENT_LOWER_LIMIT = Na.parseNuls(200000);
+    Na SUM_OF_DEPOSIT_OF_AGENT_UPPER_LIMIT = Na.parseNuls(500000);
+
+    Na AGENT_DEPOSIT_LOWER_LIMIT = Na.parseNuls(20000);
+    Na AGENT_DEPOSIT_UPPER_LIMIT = Na.parseNuls(200000);
+    Na ENTRUSTER_DEPOSIT_LOWER_LIMIT = Na.parseNuls(2000);
+
+    long CONSENSUS_LOCK_TIME = -1;
 }

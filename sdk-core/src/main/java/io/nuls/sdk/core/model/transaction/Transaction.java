@@ -22,11 +22,12 @@
  * SOFTWARE.
  *
  */
-package io.nuls.sdk.core.model;
+package io.nuls.sdk.core.model.transaction;
 
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.UnsafeByteArrayOutputStream;
 import io.nuls.sdk.core.exception.NulsException;
+import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.script.P2PKHScriptSig;
 import io.nuls.sdk.core.utils.*;
 

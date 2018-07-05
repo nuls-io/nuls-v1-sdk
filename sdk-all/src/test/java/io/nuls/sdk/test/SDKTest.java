@@ -29,6 +29,8 @@ public class SDKTest {
         addressPwd = (String)((List)((Map)result2.getData()).get("list")).get(0);
     }
 
+
+
     @Test
     public void testAccount() {
         Result result1 = NulsSDKTool.createAccount();
@@ -215,4 +217,10 @@ public class SDKTest {
         System.out.println(result.isSuccess());
     }*/
 
+    @Test
+    public void testBlock() {
+        SDKBootstrap.init();
+        Result result = NulsSDKTool.getBlock(4829);
+        System.out.println(result.isSuccess());
+    }
 }

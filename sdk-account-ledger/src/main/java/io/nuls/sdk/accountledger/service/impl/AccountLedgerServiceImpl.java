@@ -195,21 +195,11 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             inputsList.add(coin);
         }
 
-        io.nuls.sdk.core.model.Transaction tx = TransactionTool.createTransferTx(inputsList, outputList, remarkBytes);
-        //计算交易手续费最小值
-        int size = tx.size() + P2PKHScriptSig.DEFAULT_SERIALIZE_LENGTH;
-        Na minFee = TransactionFeeCalculator.getTransferFee(size);
-        //计算inputs和outputs的差额 ，求手续费
-        Na fee = Na.ZERO;
-        for (Coin coin : tx.getCoinData().getFrom()) {
-            fee = fee.add(coin.getNa());
-        }
-        for (Coin coin : tx.getCoinData().getTo()) {
-            fee = fee.subtract(coin.getNa());
-        }
-        if (fee.isLessThan(minFee)) {
+        io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createTransferTx(inputsList, outputList, remarkBytes);
+        if (!TransactionTool.isFeeEnough(tx)) {
             return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
         }
+
         try {
             String txHex = Hex.encode(tx.serialize());
             Map<String, String> map = new HashMap<>();
@@ -263,7 +253,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
 
         try {
             byte[] data = Hex.decode(txHex);
-            io.nuls.sdk.core.model.Transaction tx = TransactionTool.getInstance(new NulsByteBuffer(data));
+            io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.getInstance(new NulsByteBuffer(data));
             tx = TransactionTool.signTransaction(tx, key);
 
             txHex = Hex.encode(tx.serialize());

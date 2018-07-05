@@ -70,12 +70,19 @@ public class Output {
     }
 
     public Output(Map<String, Object> map) {
-        this.txHash = (String) map.get("txHash");
-        this.index = (Integer) map.get("index");
+        if (map.get("txHash") != null) {
+            this.txHash = (String) map.get("txHash");
+        }
+        if (map.get("index") != null) {
+            this.index = (Integer) map.get("index");
+        }
         this.address = (String) map.get("address");
         this.value = StringUtils.parseLong(map.get("value"));
         this.lockTime = StringUtils.parseLong(map.get("lockTime"));
-        this.status = (Integer) map.get("status");
+        if (map.get("status") != null) {
+            this.status = (Integer) map.get("status");
+        }
+
     }
 
     public String getTxHash() {

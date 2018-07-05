@@ -26,17 +26,61 @@
 package io.nuls.sdk.core.model;
 
 import io.nuls.sdk.core.exception.NulsException;
+import io.nuls.sdk.core.utils.NulsByteBuffer;
+import io.nuls.sdk.core.utils.NulsOutputStreamBuffer;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author: Niels Wang
  */
-public interface NulsData {
+public class StopAgent extends TransactionLogicData {
 
-    int size();
+    private byte[] address;
 
-    byte[] serialize() throws IOException;
+    private NulsDigestData createTxHash;
+    /**
+     * serialize important field
+     */
+    @Override
+    protected void serializeToStream(NulsOutputStreamBuffer stream) throws IOException {
+        stream.writeNulsData(this.createTxHash);
 
-    void parse(byte[] bytes,int cursor) throws NulsException;
+    }
+
+    @Override
+    public void parse(NulsByteBuffer byteBuffer) throws NulsException {
+        this.createTxHash = byteBuffer.readHash();
+    }
+
+    @Override
+    public int size() {
+        return this.createTxHash.size();
+    }
+    @Override
+    public Set<byte[]> getAddresses() {
+        Set<byte[]> addressSet = new HashSet<>();
+        if(null!=address){
+            addressSet.add(this.address);
+        }
+        return addressSet;
+    }
+
+    public byte[] getAddress() {
+        return address;
+    }
+
+    public void setAddress(byte[] address) {
+        this.address = address;
+    }
+
+    public NulsDigestData getCreateTxHash() {
+        return createTxHash;
+    }
+
+    public void setCreateTxHash(NulsDigestData createTxHash) {
+        this.createTxHash = createTxHash;
+    }
 }

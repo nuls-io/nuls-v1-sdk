@@ -118,6 +118,7 @@ public class BlockServiceImpl implements BlockService {
         List<Map<String, Object>> txMapList = (List<Map<String, Object>>) map.get("txList");
         List<Transaction> txList = new ArrayList<>();
         for (Map<String, Object> txMap : txMapList) {
+            String txHash = (String) map.get("hash");
             //重新组装input
             List<Map<String, Object>> inputMaps = (List<Map<String, Object>>) txMap.get("inputs");
             List<Input> inputs = new ArrayList<>();
@@ -129,10 +130,13 @@ public class BlockServiceImpl implements BlockService {
             //重新组装output
             List<Map<String, Object>> outputMaps = (List<Map<String, Object>>) txMap.get("outputs");
             List<Output> outputs = new ArrayList<>();
-            for (Map<String, Object> outputMap : outputMaps) {
-                Output outputDto = new Output(outputMap);
+            for (int i = 0; i < outputMaps.size(); i++) {
+                Output outputDto = new Output(outputMaps.get(i));
+                outputDto.setTxHash(txHash);
+                outputDto.setIndex(i);
                 outputs.add(outputDto);
             }
+
             txMap.put("outputs", outputs);
             Transaction transactionDto = new Transaction(txMap);
             txList.add(transactionDto);

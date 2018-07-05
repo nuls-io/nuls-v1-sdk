@@ -22,11 +22,14 @@
  * SOFTWARE.
  *
  */
-package io.nuls.sdk.core.model;
+package io.nuls.sdk.core.model.transaction;
 
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.contast.TransactionConstant;
 import io.nuls.sdk.core.exception.NulsException;
+import io.nuls.sdk.core.model.Coin;
+import io.nuls.sdk.core.model.TransactionLogicData;
+import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
 
 import java.util.Arrays;

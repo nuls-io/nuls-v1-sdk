@@ -31,6 +31,7 @@ import io.nuls.sdk.core.exception.NulsRuntimeException;
 import io.nuls.sdk.core.model.BaseNulsData;
 import io.nuls.sdk.core.model.NulsDigestData;
 import io.nuls.sdk.core.model.NulsSignData;
+import io.nuls.sdk.core.model.transaction.Transaction;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -50,7 +51,7 @@ public class NulsByteBuffer {
 
     public NulsByteBuffer(byte[] bytes, int cursor) {
         if (null == bytes || bytes.length == 0 || cursor < 0) {
-            throw new NulsRuntimeException(KernelErrorCode.FAILED, "create byte buffer faild!");
+            throw new NulsRuntimeException(KernelErrorCode.PARAMETER_ERROR);
         }
         this.payload = bytes;
         this.cursor = cursor;
@@ -223,10 +224,7 @@ public class NulsByteBuffer {
                 return null;
             }
         }
-        byte[] bytes = new byte[length];
-        System.arraycopy(payload, cursor, bytes, 0, length);
-        nulsData.parse(bytes);
-        cursor += nulsData.size();
+        nulsData.parse(this);
         return nulsData;
     }
 
@@ -242,10 +240,27 @@ public class NulsByteBuffer {
                 ((payload[cursor + 4] & 0xffL) << 32) |
                 ((payload[cursor + 5] & 0xffL) << 40);
         //todo
-        if(value==281474976710655L){
+        cursor += 6;
+        if (value == 281474976710655L) {
             return -1L;
         }
-        cursor += 6;
         return value;
+    }
+
+//    public Transaction readTransaction() throws NulsException {
+//        try {
+//            return TransactionManager.getInstance(this);
+//        } catch (Exception e) {
+//            Log.error(e);
+//            throw new NulsException(e);
+//        }
+//    }
+
+    public int getCursor() {
+        return cursor;
+    }
+
+    public void setCursor(int cursor) {
+        this.cursor = cursor;
     }
 }

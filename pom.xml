@@ -15,6 +15,7 @@
         <module>sdk-account-ledger</module>
         <module>sdk-protocol</module>
         <module>sdk-all</module>
+        <module>sdk-consensus</module>
     </modules>
 
     <parent>

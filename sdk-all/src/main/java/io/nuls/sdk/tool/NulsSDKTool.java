@@ -1,5 +1,6 @@
 package io.nuls.sdk.tool;
 
+import com.sun.org.apache.regexp.internal.RE;
 import io.nuls.sdk.account.service.AccountService;
 import io.nuls.sdk.account.service.impl.AccountServiceImpl;
 import io.nuls.sdk.accountledger.model.Input;
@@ -242,4 +243,11 @@ public class NulsSDKTool {
         return consensusService.createDepositTransaction(depositInfo, inputs, fee);
     }
 
+    public static Result createCancelDepositTransaction(Output output) {
+        return consensusService.createCancelDepositTransaction(output);
+    }
+
+    public static Result createStopAgentTransaction(Output output) {
+        return consensusService.createStopAgentTransaction(output);
+    }
 }

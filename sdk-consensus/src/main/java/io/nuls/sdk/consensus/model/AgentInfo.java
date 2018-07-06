@@ -12,8 +12,6 @@ public class AgentInfo {
 
     private double commissionRate;
 
-    private String password;
-
     public String getAgentAddress() {
         return agentAddress;
     }
@@ -44,14 +42,6 @@ public class AgentInfo {
 
     public void setCommissionRate(double commissionRate) {
         this.commissionRate = commissionRate;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getRewardAddress() {

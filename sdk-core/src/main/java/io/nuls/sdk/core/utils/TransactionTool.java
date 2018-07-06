@@ -8,6 +8,7 @@ import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.exception.NulsRuntimeException;
 import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.model.transaction.CreateAgentTransaction;
+import io.nuls.sdk.core.model.transaction.DepositTransaction;
 import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.model.transaction.TransferTransaction;
 import io.nuls.sdk.core.script.P2PKHScriptSig;
@@ -22,7 +23,9 @@ public class TransactionTool {
     private static final Map<Integer, Class<? extends Transaction>> TYPE_TX_MAP = new HashMap<>();
 
     public static void init() {
+//        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_COINBASE, TransferTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_TRANSFER, TransferTransaction.class);
+        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_REGISTER_AGENT, CreateAgentTransaction.class);
     }
 
     public static Transaction createTransferTx(List<Coin> inputs, List<Coin> outputs, byte[] remark) {
@@ -47,6 +50,17 @@ public class TransactionTool {
         return tx;
     }
 
+    public static Transaction createDepositTx(List<Coin> inputs, List<Coin> outputs, Deposit deposit) {
+        DepositTransaction tx = new DepositTransaction();
+        CoinData coinData = new CoinData();
+        coinData.setFrom(inputs);
+        coinData.setTo(outputs);
+        tx.setCoinData(coinData);
+        tx.setTime(TimeService.currentTimeMillis());
+        tx.setTxData(deposit);
+        return tx;
+    }
+
     public static Transaction signTransaction(Transaction tx, ECKey ecKey) throws IOException {
         tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
         P2PKHScriptSig sig = new P2PKHScriptSig();
@@ -64,9 +78,9 @@ public class TransactionTool {
         return nulsSignData;
     }
 
-    public static boolean isFeeEnough(Transaction tx) {
+    public static boolean isFeeEnough(Transaction tx, int type) {
         int size = tx.size() + P2PKHScriptSig.DEFAULT_SERIALIZE_LENGTH;
-        Na minFee = TransactionFeeCalculator.getTransferFee(size);
+        Na minFee = TransactionFeeCalculator.getTransferFee(size, type);
         //计算inputs和outputs的差额 ，求手续费
         Na fee = Na.ZERO;
         for (Coin coin : tx.getCoinData().getFrom()) {

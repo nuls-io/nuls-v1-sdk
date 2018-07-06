@@ -40,7 +40,6 @@ import java.util.Set;
  */
 public class Deposit extends TransactionLogicData {
 
-
     private Na deposit;
 
     private NulsDigestData agentHash;

@@ -196,7 +196,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         }
 
         io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createTransferTx(inputsList, outputList, remarkBytes);
-        if (!TransactionTool.isFeeEnough(tx)) {
+        if (!TransactionTool.isFeeEnough(tx, 1)) {
             return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
         }
 

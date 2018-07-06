@@ -39,21 +39,29 @@ public class TransactionFeeCalculator {
 
     public static final int KB = 1024;
 
-//    /**
+    //    /**
 //     * 根据交易大小计算需要交纳的手续费
 //     * According to the transaction size calculate the handling fee.
 //     *
 //     * @param size 交易大小/size of the transaction
 //     */
-    public static final Na getTransferFee(int size) {
-        Na fee = MIN_PRECE_PRE_1024_BYTES.multiply(size / KB);
-        if (size % KB > 0) {
-            fee = fee.add(MIN_PRECE_PRE_1024_BYTES);
+    public static final Na getTransferFee(int size, int type) {
+        Na fee = null;
+        if (type == 1) {
+            fee = MIN_PRECE_PRE_1024_BYTES.multiply(size / KB);
+            if (size % KB > 0) {
+                fee = fee.add(MIN_PRECE_PRE_1024_BYTES);
+            }
+        } else {
+            fee = OTHER_PRECE_PRE_1024_BYTES.multiply(size / KB);
+            if (size % KB > 0) {
+                fee = fee.add(OTHER_PRECE_PRE_1024_BYTES);
+            }
         }
         return fee;
     }
 
-//    /**
+    //    /**
 //     * 根据交易大小计算需要交纳的手续费
 //     * According to the transaction size calculate the handling fee.
 //     *
@@ -67,7 +75,7 @@ public class TransactionFeeCalculator {
         return fee;
     }
 
-//    /**
+    //    /**
 //     * 根据交易大小计算需要交纳的手续费
 //     * According to the transaction size calculate the handling fee.
 //     *

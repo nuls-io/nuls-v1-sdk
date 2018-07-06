@@ -2,7 +2,9 @@ package io.nuls.sdk.test;
 
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
+import io.nuls.sdk.consensus.model.AgentInfo;
 import io.nuls.sdk.core.SDKBootstrap;
+import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.tool.NulsSDKTool;
 import org.junit.Test;
@@ -177,50 +179,115 @@ public class SDKTest {
         assertTrue(result7.isSuccess());
     }
 
-    @Test
-    public void testTransaction() {
 
-        SDKBootstrap.init("192.168.1.103", "8001");
+
+    @Test
+    public void testBlock() {
+        SDKBootstrap.init();
+        Result result = NulsSDKTool.getBlock(4829);
+        System.out.println(result.isSuccess());
+    }*/
+
+    @Test
+    public void testAgentTransaction() {
+        SDKBootstrap.init();
 
         List<Input> inputs = new ArrayList<>();
         Input input = new Input();
-        input.setFromHash("00203c83ce29f93c06c3829a3dc6e94bfb4b39884f430cf26f6e44e1ece1baeae8c1");
+        input.setFromHash("0020b0a75a26caad17b4ea6cec7f059ac0e426d71696a6096f75bb2e9f30c11c60d6");
         input.setFromIndex(1);
-        input.setAddress("6HgaqsowQbVM8AXbHbssSAAHddeypwcc");
-        input.setValue(668691048222846L);
+        input.setAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
+        input.setValue(999998760000000L);
+        inputs.add(input);
+
+
+        AgentInfo info = new AgentInfo();
+        info.setAgentAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
+        info.setPackingAddress("NsdwUo8XU52DtB9Zqjo2YkuLBW8VhGaQ");
+        info.setDeposit(200000 * 100000000L);
+        info.setCommissionRate(10.0);
+
+
+        Result result = NulsSDKTool.createAgentTransaction(info, inputs, Na.valueOf(5 * 100000L));
+        Map<String, Object> map = (Map<String, Object>) result.getData();
+        String txHex = (String) map.get("value");
+
+        result = NulsSDKTool.signTransaction(txHex, "008e2b5c10370a46f72552b3b69c4d56bfd000e584134d1159157c811f53366307", "Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ", null);
+        map = (Map<String, Object>) result.getData();
+        String sign = (String) map.get("value");
+
+        result = NulsSDKTool.broadcastTransaction(sign);
+        System.out.println(result.isSuccess());
+    }
+
+
+    @Test
+    public void testDepositTransaction() {
+        SDKBootstrap.init();
+
+        List<Input> inputs = new ArrayList<>();
+        Input input = new Input();
+        input.setFromHash("0020b0a75a26caad17b4ea6cec7f059ac0e426d71696a6096f75bb2e9f30c11c60d6");
+        input.setFromIndex(1);
+        input.setAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
+        input.setValue(999998760000000L);
+        inputs.add(input);
+
+        AgentInfo info = new AgentInfo();
+        info.setAgentAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
+        info.setPackingAddress("NsdwUo8XU52DtB9Zqjo2YkuLBW8VhGaQ");
+        info.setDeposit(200000 * 100000000L);
+        info.setCommissionRate(10.0);
+
+        Result result = NulsSDKTool.createAgentTransaction(info, inputs, Na.valueOf(5 * 100000L));
+        Map<String, Object> map = (Map<String, Object>) result.getData();
+        String txHex = (String) map.get("value");
+
+        result = NulsSDKTool.signTransaction(txHex, "008e2b5c10370a46f72552b3b69c4d56bfd000e584134d1159157c811f53366307", "Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ", null);
+        map = (Map<String, Object>) result.getData();
+        String sign = (String) map.get("value");
+
+        result = NulsSDKTool.broadcastTransaction(sign);
+        System.out.println(result.isSuccess());
+    }
+
+    @Test
+    public void testTransaction() {
+
+        SDKBootstrap.init();
+
+        List<Input> inputs = new ArrayList<>();
+        Input input = new Input();
+        input.setFromHash("00202731a61925edaa12cff9646105f5edf56daeb72a3d0d19381d8f94794d485f38");
+        input.setFromIndex(1);
+        input.setAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
+        input.setValue(1000000000000000L);
         inputs.add(input);
 
         List<Output> outputs = new ArrayList<>();
         Output output = new Output();
-        output.setAddress("6Hgc3neGrs8oygfLvREjYSyTitpNqbWS");
+        output.setAddress("NsdwUo8XU52DtB9Zqjo2YkuLBW8VhGaQ");
         output.setIndex(0);
         output.setLockTime(0);
-        output.setValue(10000000L);
+        output.setValue(1230000000L);
         outputs.add(output);
 
         output = new Output();
-        output.setAddress("6HgaqsowQbVM8AXbHbssSAAHddeypwcc");
+        output.setAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
         output.setIndex(0);
         output.setLockTime(0);
-        output.setValue(668691048222846L - 10000000L - 10000000L);
+        output.setValue(1000000000000000L - 1230000000L - 10000000L);
         outputs.add(output);
 
         Result result = NulsSDKTool.createTransaction(inputs, outputs, "abcd");
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
 
-        result = NulsSDKTool.signTransaction(txHex, "407d5cd9b5d62ab633c52dfb45542622b06c05004a0314c312390a32b5d06234", "6HgaqsowQbVM8AXbHbssSAAHddeypwcc", null);
+        result = NulsSDKTool.signTransaction(txHex, "008e2b5c10370a46f72552b3b69c4d56bfd000e584134d1159157c811f53366307", "Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ", null);
         map = (Map<String, Object>) result.getData();
         String sign = (String) map.get("value");
 
         result = NulsSDKTool.broadcastTransaction(sign);
-        System.out.println(result.isSuccess());
-    }*/
-
-    @Test
-    public void testBlock() {
-        SDKBootstrap.init();
-        Result result = NulsSDKTool.getBlock(4829);
         System.out.println(result.isSuccess());
     }
 }

@@ -3,7 +3,9 @@ package io.nuls.sdk.test;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.consensus.model.AgentInfo;
+import io.nuls.sdk.consensus.model.DepositInfo;
 import io.nuls.sdk.core.SDKBootstrap;
+import io.nuls.sdk.core.model.Deposit;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.tool.NulsSDKTool;
@@ -233,13 +235,12 @@ public class SDKTest {
         input.setValue(999998760000000L);
         inputs.add(input);
 
-        AgentInfo info = new AgentInfo();
-        info.setAgentAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
-        info.setPackingAddress("NsdwUo8XU52DtB9Zqjo2YkuLBW8VhGaQ");
-        info.setDeposit(200000 * 100000000L);
-        info.setCommissionRate(10.0);
+        DepositInfo info = new DepositInfo();
+        info.setAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
+        info.setDeposit(300000 * 100000000L);
+        info.setAgentHash("0020a467827d5f06feb3e78b4603eb03677711219cb5232d145b3e9d4ab48a3eb366");
 
-        Result result = NulsSDKTool.createAgentTransaction(info, inputs, Na.valueOf(5 * 100000L));
+        Result result = NulsSDKTool.createDepositTransaction(info, inputs, Na.valueOf(1000000L));
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
 

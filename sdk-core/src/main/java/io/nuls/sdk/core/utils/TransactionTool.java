@@ -7,10 +7,7 @@ import io.nuls.sdk.core.contast.TransactionErrorCode;
 import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.exception.NulsRuntimeException;
 import io.nuls.sdk.core.model.*;
-import io.nuls.sdk.core.model.transaction.CreateAgentTransaction;
-import io.nuls.sdk.core.model.transaction.DepositTransaction;
-import io.nuls.sdk.core.model.transaction.Transaction;
-import io.nuls.sdk.core.model.transaction.TransferTransaction;
+import io.nuls.sdk.core.model.transaction.*;
 import io.nuls.sdk.core.script.P2PKHScriptSig;
 
 import java.io.IOException;
@@ -58,6 +55,29 @@ public class TransactionTool {
         tx.setCoinData(coinData);
         tx.setTime(TimeService.currentTimeMillis());
         tx.setTxData(deposit);
+        return tx;
+    }
+
+    public static Transaction createCancelDepositTx(List<Coin> inputs, List<Coin> outputs, CancelDeposit cancelDeposit) {
+        CancelDepositTransaction tx = new CancelDepositTransaction();
+        CoinData coinData = new CoinData();
+        coinData.setFrom(inputs);
+        coinData.setTo(outputs);
+        tx.setCoinData(coinData);
+        tx.setTime(TimeService.currentTimeMillis());
+        tx.setTxData(cancelDeposit);
+        return tx;
+    }
+
+
+    public static Transaction createStopAgentTx(List<Coin> inputs, List<Coin> outputs, StopAgent stopAgent) {
+        StopAgentTransaction tx = new StopAgentTransaction();
+        CoinData coinData = new CoinData();
+        coinData.setFrom(inputs);
+        coinData.setTo(outputs);
+        tx.setCoinData(coinData);
+        tx.setTime(TimeService.currentTimeMillis());
+        tx.setTxData(stopAgent);
         return tx;
     }
 

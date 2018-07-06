@@ -7,6 +7,7 @@ import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.accountledger.service.AccountLedgerService;
 import io.nuls.sdk.accountledger.service.impl.AccountLedgerServiceImpl;
 import io.nuls.sdk.consensus.model.AgentInfo;
+import io.nuls.sdk.consensus.model.DepositInfo;
 import io.nuls.sdk.consensus.service.ConsensusService;
 import io.nuls.sdk.consensus.service.impl.ConsensusServiceImpl;
 import io.nuls.sdk.core.model.Na;
@@ -225,7 +226,7 @@ public class NulsSDKTool {
         return blockService.getBlockHeader(hash);
     }
 
-    public static  Result getBlock(int height) {
+    public static Result getBlock(int height) {
         return blockService.getBlock(height);
     }
 
@@ -234,7 +235,11 @@ public class NulsSDKTool {
     }
 
     public static Result createAgentTransaction(AgentInfo agentInfo, List<Input> inputs, Na fee) {
-        return consensusService.createAgentTransaction(agentInfo, inputs);
+        return consensusService.createAgentTransaction(agentInfo, inputs, fee);
+    }
+
+    public static Result createDepositTransaction(DepositInfo depositInfo, List<Input> inputs, Na fee) {
+        return consensusService.createDepositTransaction(depositInfo, inputs, fee);
     }
 
 }

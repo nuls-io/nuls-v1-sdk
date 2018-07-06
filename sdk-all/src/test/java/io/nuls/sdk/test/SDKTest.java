@@ -5,6 +5,7 @@ import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.consensus.model.AgentInfo;
 import io.nuls.sdk.consensus.model.DepositInfo;
 import io.nuls.sdk.core.SDKBootstrap;
+import io.nuls.sdk.core.model.Account;
 import io.nuls.sdk.core.model.Deposit;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
@@ -17,9 +18,22 @@ import java.util.Map;
 
 public class SDKTest {
 
+
+    @Test
+    public void testAccount() {
+        SDKBootstrap.init();
+        Result result1 = NulsSDKTool.createOfflineAccount();
+        Account account = (Account) result1.getData();
+        System.out.println(account.getAddress().getBase58());
+    }
 /*
     private static String address = null;
     private static String addressPwd = null;
+
+NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM
+630c2e83e40dc5683774cc31e1a291b46b409f01f9685e92055a367e81ae48c0
+
+Nsdz8mKKFMehRDVRZFyXNuuenugUYM7M
 
 
     @BeforeClass
@@ -188,7 +202,13 @@ public class SDKTest {
         SDKBootstrap.init();
         Result result = NulsSDKTool.getBlock(4829);
         System.out.println(result.isSuccess());
-    }*/
+    }
+
+    NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM
+630c2e83e40dc5683774cc31e1a291b46b409f01f9685e92055a367e81ae48c0
+
+0020b3455590664eea19ff78963a815077da0c3f7e4eebba2632ed479cdecae36233
+
 
     @Test
     public void testAgentTransaction() {
@@ -196,25 +216,25 @@ public class SDKTest {
 
         List<Input> inputs = new ArrayList<>();
         Input input = new Input();
-        input.setFromHash("0020b0a75a26caad17b4ea6cec7f059ac0e426d71696a6096f75bb2e9f30c11c60d6");
-        input.setFromIndex(1);
-        input.setAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
-        input.setValue(999998760000000L);
+        input.setFromHash("002072d5df7545bfa20c26222b0f9a498c23dd91e9ba94027a2c8be47c5e8243373e");
+        input.setFromIndex(0);
+        input.setAddress("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM");
+        input.setValue(2035999999500000L);
         inputs.add(input);
 
 
         AgentInfo info = new AgentInfo();
-        info.setAgentAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
-        info.setPackingAddress("NsdwUo8XU52DtB9Zqjo2YkuLBW8VhGaQ");
+        info.setAgentAddress("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM");
+        info.setPackingAddress("NsduaufRwHptedaJZwfAodWAb9XVFESx");
         info.setDeposit(200000 * 100000000L);
         info.setCommissionRate(10.0);
 
-
-        Result result = NulsSDKTool.createAgentTransaction(info, inputs, Na.valueOf(5 * 100000L));
+        Na fee = Na.valueOf(1000000L);
+        Result result = NulsSDKTool.createAgentTransaction(info, inputs, fee);
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
 
-        result = NulsSDKTool.signTransaction(txHex, "008e2b5c10370a46f72552b3b69c4d56bfd000e584134d1159157c811f53366307", "Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ", null);
+        result = NulsSDKTool.signTransaction(txHex, "630c2e83e40dc5683774cc31e1a291b46b409f01f9685e92055a367e81ae48c0", "NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM", null);
         map = (Map<String, Object>) result.getData();
         String sign = (String) map.get("value");
 
@@ -229,27 +249,51 @@ public class SDKTest {
 
         List<Input> inputs = new ArrayList<>();
         Input input = new Input();
-        input.setFromHash("0020b0a75a26caad17b4ea6cec7f059ac0e426d71696a6096f75bb2e9f30c11c60d6");
+        input.setFromHash("0020b3455590664eea19ff78963a815077da0c3f7e4eebba2632ed479cdecae36233");
         input.setFromIndex(1);
-        input.setAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
-        input.setValue(999998760000000L);
+        input.setAddress("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM");
+        input.setValue(2015999998500000L);
         inputs.add(input);
 
         DepositInfo info = new DepositInfo();
-        info.setAddress("Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ");
+        info.setAddress("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM");
         info.setDeposit(300000 * 100000000L);
-        info.setAgentHash("0020a467827d5f06feb3e78b4603eb03677711219cb5232d145b3e9d4ab48a3eb366");
+        info.setAgentHash("0020b3455590664eea19ff78963a815077da0c3f7e4eebba2632ed479cdecae36233");
 
-        Result result = NulsSDKTool.createDepositTransaction(info, inputs, Na.valueOf(1000000L));
+        Na fee = Na.valueOf(1000000L);
+        Result result = NulsSDKTool.createDepositTransaction(info, inputs, fee);
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
 
-        result = NulsSDKTool.signTransaction(txHex, "008e2b5c10370a46f72552b3b69c4d56bfd000e584134d1159157c811f53366307", "Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ", null);
+        result = NulsSDKTool.signTransaction(txHex, "630c2e83e40dc5683774cc31e1a291b46b409f01f9685e92055a367e81ae48c0", "NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM", null);
         map = (Map<String, Object>) result.getData();
         String sign = (String) map.get("value");
 
         result = NulsSDKTool.broadcastTransaction(sign);
-        System.out.println(result.isSuccess());
+        System.out.println(result.getData());
+    }
+
+    @Test
+    public void testCancelDeposit() {
+        SDKBootstrap.init();
+
+        Output output = new Output();
+        output.setTxHash("0020e55e66c644904358a45b9ed7a6b91c674edc8508e29ea40c35f13fdc672a563b");
+        output.setIndex(0);
+        output.setValue(30000000000000L);
+        output.setLockTime(-1);
+        output.setAddress("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM");
+        Result result = NulsSDKTool.createCancelDepositTransaction(output);
+
+        Map<String, Object> map = (Map<String, Object>) result.getData();
+        String txHex = (String) map.get("value");
+
+        result = NulsSDKTool.signTransaction(txHex, "630c2e83e40dc5683774cc31e1a291b46b409f01f9685e92055a367e81ae48c0", "NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM", null);
+        map = (Map<String, Object>) result.getData();
+        String sign = (String) map.get("value");
+
+        result = NulsSDKTool.broadcastTransaction(sign);
+        System.out.println(result.getData());
     }
 
     @Test
@@ -291,4 +335,5 @@ public class SDKTest {
         result = NulsSDKTool.broadcastTransaction(sign);
         System.out.println(result.isSuccess());
     }
+        */
 }

@@ -147,7 +147,7 @@ public class ConsensusServiceImpl implements ConsensusService {
         List<Coin> inputsList = new ArrayList<>();
         from.setOwner(key);
         from.setNa(Na.valueOf(output.getValue()));
-        output.setLockTime(-1);
+        from.setLockTime(-1);
         inputsList.add(from);
 
         //手续费
@@ -188,7 +188,7 @@ public class ConsensusServiceImpl implements ConsensusService {
         List<Coin> inputsList = new ArrayList<>();
         from.setOwner(key);
         from.setNa(Na.valueOf(output.getValue()));
-        output.setLockTime(-1);
+        from.setLockTime(-1);
         inputsList.add(from);
 
         //手续费

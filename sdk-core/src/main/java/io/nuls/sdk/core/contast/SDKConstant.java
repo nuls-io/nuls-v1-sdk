@@ -14,7 +14,7 @@ public interface SDKConstant {
      * The default chain id (nuls main chain), the chain id affects the generation of the address,
      * and the current address begins with "Ns".16402.
      */
-    short DEFAULT_CHAIN_ID = 8964;
+    short DEFAULT_CHAIN_ID = 1;
     byte DEFAULT_ADDRESS_TYPE = 1;
     /**
      * 空值占位符

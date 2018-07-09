@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class SDKTest {
 
-
+/*
     @Test
     public void testAccount() {
         SDKBootstrap.init();
@@ -26,7 +26,7 @@ public class SDKTest {
         Account account = (Account) result1.getData();
         System.out.println(account.getAddress().getBase58());
     }
-/*
+
     private static String address = null;
     private static String addressPwd = null;
 
@@ -278,12 +278,35 @@ Nsdz8mKKFMehRDVRZFyXNuuenugUYM7M
         SDKBootstrap.init();
 
         Output output = new Output();
-        output.setTxHash("0020e55e66c644904358a45b9ed7a6b91c674edc8508e29ea40c35f13fdc672a563b");
+        output.setTxHash("0020b3455590664eea19ff78963a815077da0c3f7e4eebba2632ed479cdecae36233");
         output.setIndex(0);
-        output.setValue(30000000000000L);
+        output.setValue(20000000000000L);
         output.setLockTime(-1);
         output.setAddress("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM");
         Result result = NulsSDKTool.createCancelDepositTransaction(output);
+
+        Map<String, Object> map = (Map<String, Object>) result.getData();
+        String txHex = (String) map.get("value");
+
+        result = NulsSDKTool.signTransaction(txHex, "630c2e83e40dc5683774cc31e1a291b46b409f01f9685e92055a367e81ae48c0", "NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM", null);
+        map = (Map<String, Object>) result.getData();
+        String sign = (String) map.get("value");
+
+        result = NulsSDKTool.broadcastTransaction(sign);
+        System.out.println(result.getData());
+    }
+
+    @Test
+    public void testStopAgent() {
+        SDKBootstrap.init();
+
+        Output output = new Output();
+        output.setTxHash("0020b3455590664eea19ff78963a815077da0c3f7e4eebba2632ed479cdecae36233");
+        output.setIndex(0);
+        output.setValue(20000000000000L);
+        output.setLockTime(-1);
+        output.setAddress("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM");
+        Result result = NulsSDKTool.createStopAgentTransaction(output);
 
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
@@ -335,5 +358,5 @@ Nsdz8mKKFMehRDVRZFyXNuuenugUYM7M
         result = NulsSDKTool.broadcastTransaction(sign);
         System.out.println(result.isSuccess());
     }
-        */
+    */
 }

@@ -30,6 +30,8 @@ public class ConsensusServiceImpl implements ConsensusService {
 
     private static ConsensusServiceImpl instance = new ConsensusServiceImpl();
 
+    private RestFulUtils restFul = RestFulUtils.getInstance();
+
     private ConsensusServiceImpl() {
 
     }
@@ -173,7 +175,7 @@ public class ConsensusServiceImpl implements ConsensusService {
     public Result createStopAgentTransaction(Output output) {
         NulsDigestData hash = null;
         try {
-          hash = NulsDigestData.fromDigestHex(output.getTxHash());
+            hash = NulsDigestData.fromDigestHex(output.getTxHash());
         } catch (NulsException e) {
             return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "agentTxHash error");
         }
@@ -208,6 +210,33 @@ public class ConsensusServiceImpl implements ConsensusService {
             Log.error(e);
             return Result.getFailed(e.getMessage());
         }
+    }
+
+    @Override
+    public Result getDeposits(String address, int pageNumber, int pageSize) {
+        if (!AddressTool.validAddress(address)) {
+            return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
+        }
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("pageNumber", pageNumber);
+        parameters.put("pageSize", pageSize);
+        Result result = restFul.get("/consensus/deposit/address/" + address, parameters);
+        if (result.isSuccess()) {
+            Map<String, Object> data = (Map<String, Object>) result.getData();
+            List<Map<String, Object>> list = (List<Map<String, Object>>) data.get("list");
+            List<DepositInfo> depositInfos = new ArrayList<>();
+            for (Map<String, Object> map : list) {
+                DepositInfo info = new DepositInfo();
+                info.setDeposit((Long) map.get("deposit"));
+                info.setAgentHash((String) map.get("agentHash"));
+                info.setAddress((String) map.get("address"));
+                info.setAgentAddress((String) map.get("agentAddress"));
+                info.setBlockHeight(Long.parseLong(map.get("blockHeight").toString()));
+                depositInfos.add(info);
+            }
+            result.setData(depositInfos);
+        }
+        return result;
     }
 
 

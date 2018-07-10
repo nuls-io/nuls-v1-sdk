@@ -151,6 +151,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         if (outputs == null || outputs.isEmpty()) {
             return Result.getFailed("outputs error");
         }
+
         byte[] remarkBytes = null;
         if (!StringUtils.isBlank(remark)) {
             try {
@@ -165,6 +166,9 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             Output outputDto = outputs.get(i);
             Coin to = new Coin();
             try {
+                if (!AddressTool.validAddress(outputDto.getAddress())) {
+                    return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
+                }
                 to.setOwner(AddressTool.getAddress(outputDto.getAddress()));
             } catch (Exception e) {
                 return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
@@ -184,9 +188,20 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         }
 
         List<Coin> inputsList = new ArrayList<>();
+        String address = null;
 
         for (int i = 0; i < inputs.size(); i++) {
             Input inputDto = inputs.get(i);
+            if (inputDto.getAddress() == null) {
+                return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
+            }
+            if (i == 0) {
+                address = inputDto.getAddress();
+            } else {
+                if (address.equals(inputDto.getAddress())) {
+                    return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
+                }
+            }
             byte[] key = Arrays.concatenate(Hex.decode(inputDto.getFromHash()), new VarInt(inputDto.getFromIndex()).encode());
             Coin coin = new Coin();
             coin.setOwner(key);

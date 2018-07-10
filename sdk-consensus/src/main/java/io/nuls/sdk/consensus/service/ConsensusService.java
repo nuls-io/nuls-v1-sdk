@@ -20,4 +20,6 @@ public interface ConsensusService {
     Result createCancelDepositTransaction(Output output);
 
     Result createStopAgentTransaction(Output output);
+
+    Result getDeposits(String address, int pageNumber, int pageSize);
 }

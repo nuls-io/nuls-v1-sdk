@@ -358,5 +358,14 @@ Nsdz8mKKFMehRDVRZFyXNuuenugUYM7M
         result = NulsSDKTool.broadcastTransaction(sign);
         System.out.println(result.isSuccess());
     }
+
+        @Test
+    public void testDeposit() {
+        SDKBootstrap.init("192.168.1.163", "6001");
+        String address = "NsdyD94pXWpxZudbtJ4zpkBHhh8XmBQA";
+        Result result = NulsSDKTool.getDeposits(address, 1, 10);
+
+        System.out.println(result.isSuccess());
+    }
     */
 }

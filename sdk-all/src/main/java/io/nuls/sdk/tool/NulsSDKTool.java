@@ -250,4 +250,8 @@ public class NulsSDKTool {
     public static Result createStopAgentTransaction(Output output) {
         return consensusService.createStopAgentTransaction(output);
     }
+
+    public static Result getDeposits(String address, int pageNumber ,int pageSize) {
+        return consensusService.getDeposits(address, pageNumber, pageSize);
+    }
 }

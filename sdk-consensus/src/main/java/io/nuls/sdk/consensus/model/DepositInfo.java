@@ -8,6 +8,12 @@ public class DepositInfo {
 
     private long deposit;
 
+    private String txHash;
+
+    private long blockHeight;
+
+    private String agentAddress;
+
     public String getAddress() {
         return address;
     }
@@ -30,5 +36,29 @@ public class DepositInfo {
 
     public void setDeposit(long deposit) {
         this.deposit = deposit;
+    }
+
+    public String getTxHash() {
+        return txHash;
+    }
+
+    public void setTxHash(String txHash) {
+        this.txHash = txHash;
+    }
+
+    public long getBlockHeight() {
+        return blockHeight;
+    }
+
+    public void setBlockHeight(long blockHeight) {
+        this.blockHeight = blockHeight;
+    }
+
+    public String getAgentAddress() {
+        return agentAddress;
+    }
+
+    public void setAgentAddress(String agentAddress) {
+        this.agentAddress = agentAddress;
     }
 }

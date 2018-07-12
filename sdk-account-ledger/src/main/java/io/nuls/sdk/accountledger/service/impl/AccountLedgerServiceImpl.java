@@ -198,7 +198,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             if (i == 0) {
                 address = inputDto.getAddress();
             } else {
-                if (address.equals(inputDto.getAddress())) {
+                if (!address.equals(inputDto.getAddress())) {
                     return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
                 }
             }

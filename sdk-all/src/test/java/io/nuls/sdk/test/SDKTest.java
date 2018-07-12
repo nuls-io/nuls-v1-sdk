@@ -19,14 +19,6 @@ import java.util.Map;
 public class SDKTest {
 
 /*
-    @Test
-    public void testAccount() {
-        SDKBootstrap.init();
-        Result result1 = NulsSDKTool.createOfflineAccount();
-        Account account = (Account) result1.getData();
-        System.out.println(account.getAddress().getBase58());
-    }
-
     private static String address = null;
     private static String addressPwd = null;
 

@@ -41,7 +41,7 @@ import java.math.BigInteger;
  */
 public class AccountTool {
 
-    public static final int CREATE_MAX_SIZE = 100;
+    public static final int CREATE_MAX_SIZE = 10000;
 
     public static Address newAddress(ECKey key) throws NulsException {
         return newAddress(key.getPubKey());

@@ -56,7 +56,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Result createAccount(int count, String password) {
         if (count <= 0 || count > AccountTool.CREATE_MAX_SIZE) {
-            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "between 0 and 100 can be created at once");
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "between 0 and 10000 can be created at once");
         }
         if (StringUtils.isNotBlank(password) && !StringUtils.validPassword(password)) {
             return Result.getFailed(AccountErrorCode.PASSWORD_IS_WRONG, "Length between 8 and 20, the combination of characters and numbers");
@@ -87,7 +87,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Result createOfflineAccount(int count, String password) {
         if (count <= 0 || count > AccountTool.CREATE_MAX_SIZE) {
-            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "between 0 and 100 can be created at once");
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "between 0 and 10000 can be created at once");
         }
         if (StringUtils.isNotBlank(password) && !StringUtils.validPassword(password)) {
             return Result.getFailed(AccountErrorCode.PASSWORD_IS_WRONG, "Length between 8 and 20, the combination of characters and numbers");

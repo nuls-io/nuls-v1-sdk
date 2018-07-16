@@ -232,6 +232,7 @@ public class ConsensusServiceImpl implements ConsensusService {
                 info.setAddress((String) map.get("address"));
                 info.setAgentAddress((String) map.get("agentAddress"));
                 info.setBlockHeight(Long.parseLong(map.get("blockHeight").toString()));
+                info.setTxHash((String) map.get("txHash"));
                 depositInfos.add(info);
             }
             data.put("list", depositInfos);

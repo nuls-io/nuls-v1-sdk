@@ -207,8 +207,8 @@ public class NulsSDKTool {
         return accountLedgerService.broadcastTransaction(txHex);
     }
 
-    public static Result getNewestBlockHight() {
-        return blockService.getNewestBlockHight();
+    public static Result getNewestBlockHeight() {
+        return blockService.getNewestBlockHeight();
     }
 
     public static Result getNewestBlockHash() {

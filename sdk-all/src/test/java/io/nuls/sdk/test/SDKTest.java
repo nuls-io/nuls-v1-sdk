@@ -7,6 +7,9 @@ import org.junit.Test;
 
 public class SDKTest {
 
+
+/*
+
     @Test
     public void testDeposit() {
         SDKBootstrap.init();
@@ -16,8 +19,6 @@ public class SDKTest {
 
 
     }
-
-/*
     private static String address = null;
     private static String addressPwd = null;
 

@@ -32,7 +32,7 @@ public class BlockServiceImpl implements BlockService {
     private RestFulUtils restFul = RestFulUtils.getInstance();
 
     @Override
-    public Result getNewestBlockHight() {
+    public Result getNewestBlockHeight() {
         Result result = restFul.get("/block/newest/height", null);
         if (result.isFailed()) {
             return result;

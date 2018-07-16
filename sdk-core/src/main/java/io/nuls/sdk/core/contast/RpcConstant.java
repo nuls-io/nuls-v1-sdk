@@ -31,7 +31,7 @@ package io.nuls.sdk.core.contast;
 public interface RpcConstant {
 
     String PACKAGES = "io.nuls.rpc.resource.impl";
-    int DEFAULT_PORT = 8001;
+    int DEFAULT_PORT = 6001;
     String DEFAULT_IP = "127.0.0.1";
     String PREFIX = "/api";
 

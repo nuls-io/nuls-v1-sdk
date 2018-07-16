@@ -1,22 +1,21 @@
 package io.nuls.sdk.test;
 
-import io.nuls.sdk.accountledger.model.Input;
-import io.nuls.sdk.accountledger.model.Output;
-import io.nuls.sdk.consensus.model.AgentInfo;
-import io.nuls.sdk.consensus.model.DepositInfo;
 import io.nuls.sdk.core.SDKBootstrap;
-import io.nuls.sdk.core.model.Account;
-import io.nuls.sdk.core.model.Deposit;
-import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.tool.NulsSDKTool;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 public class SDKTest {
+
+    @Test
+    public void testDeposit() {
+        SDKBootstrap.init();
+
+        Result result = NulsSDKTool.getDeposits("Nse5oPtPjgbyHujSxXu2YbWRmmf3ksCo", 1, 10);
+        result.getData();
+
+
+    }
 
 /*
     private static String address = null;

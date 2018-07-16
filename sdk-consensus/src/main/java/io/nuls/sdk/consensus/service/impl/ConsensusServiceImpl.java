@@ -234,7 +234,7 @@ public class ConsensusServiceImpl implements ConsensusService {
                 info.setBlockHeight(Long.parseLong(map.get("blockHeight").toString()));
                 depositInfos.add(info);
             }
-            result.setData(depositInfos);
+            data.put("list", depositInfos);
         }
         return result;
     }

@@ -15,7 +15,7 @@ public interface BlockService {
      * If the operation is successful, 'success' is true, and data is Long type;
      * If the operation fails, "success" is false and the result has error information
      */
-    Result getNewestBlockHight();
+    Result getNewestBlockHeight();
 
     /**
      *Get the Newest block Hash

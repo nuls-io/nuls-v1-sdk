@@ -10,11 +10,6 @@ import io.nuls.sdk.core.utils.TransactionTool;
  */
 public class SDKBootstrap {
 
-    public static void main(String[] args) {
-       // init();
-        init("127.0.0.1", "8001");
-    }
-
     public static void init() {
         init(null, null);
     }

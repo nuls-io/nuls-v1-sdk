@@ -8,20 +8,11 @@ import org.junit.Test;
 public class SDKTest {
 
 
-
 /*
 
 
 
-    @Test
-    public void testDeposit() {
-        SDKBootstrap.init();
 
-        Result result = NulsSDKTool.getDeposits("Nse5oPtPjgbyHujSxXu2YbWRmmf3ksCo", 1, 10);
-        result.getData();
-
-
-    }
     private static String address = null;
     private static String addressPwd = null;
 
@@ -363,4 +354,12 @@ Nsdz8mKKFMehRDVRZFyXNuuenugUYM7M
         System.out.println(result.isSuccess());
     }
     */
+
+    @Test
+    public void testBroadcast() {
+        SDKBootstrap.init();
+        String txHex = "0600674944a76401000020d9e55d433903622f76cf3387789a713a20a9a993a06aa253e734445bf5eb720301230020d9e55d433903622f76cf3387789a713a20a9a993a06aa253e734445bf5eb7203000000000000000000ffffffffffff011701000144fdd048f38e1b0c0a54124b6d626fe1791c592fc0bdf0ffffffffff0000000000006a21037281566ae1be0f64a3241faaa32093a105cb1ecd470cc6d8d20b5856142f346800463044022033d8537b502dccaa60d2706283d9801b9ae86e6b44c004a296e6ba9b3f331f9e022020596bcb78512cecdb07b5a0053b4c653964cdd07947bab1c301bef54a13e4cc";
+        Result result = NulsSDKTool.broadcastTransaction(txHex);
+        System.out.println(result.isSuccess());
+    }
 }

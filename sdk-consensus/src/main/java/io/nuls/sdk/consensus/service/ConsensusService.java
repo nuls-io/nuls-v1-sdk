@@ -22,4 +22,6 @@ public interface ConsensusService {
     Result createStopAgentTransaction(Output output);
 
     Result getDeposits(String address, int pageNumber, int pageSize);
+
+    Result getAgentDeposits(String agentHash, int pageNumber, int pageSize);
 }

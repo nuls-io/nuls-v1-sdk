@@ -251,7 +251,11 @@ public class NulsSDKTool {
         return consensusService.createStopAgentTransaction(output);
     }
 
-    public static Result getDeposits(String address, int pageNumber ,int pageSize) {
+    public static Result getDeposits(String address, int pageNumber, int pageSize) {
         return consensusService.getDeposits(address, pageNumber, pageSize);
+    }
+
+    public static Result getAgentDeposits(String agentHash, int pageNumber, int pageSize) {
+        return consensusService.getAgentDeposits(agentHash, pageNumber, pageSize);
     }
 }

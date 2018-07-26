@@ -240,5 +240,27 @@ public class ConsensusServiceImpl implements ConsensusService {
         return result;
     }
 
+    @Override
+    public Result getAgentDeposits(String agentHash, int pageNumber, int pageSize) {
+        Result result = restFul.get("/consensus/deposit/agent/" + agentHash, null);
+        if (result.isSuccess()) {
+            Map<String, Object> data = (Map<String, Object>) result.getData();
+            List<Map<String, Object>> list = (List<Map<String, Object>>) data.get("list");
+            List<DepositInfo> depositInfos = new ArrayList<>();
+            for (Map<String, Object> map : list) {
+                DepositInfo info = new DepositInfo();
+                info.setDeposit((Long) map.get("deposit"));
+                info.setAgentHash((String) map.get("agentHash"));
+                info.setAddress((String) map.get("address"));
+                info.setAgentAddress((String) map.get("agentAddress"));
+                info.setBlockHeight(Long.parseLong(map.get("blockHeight").toString()));
+                info.setTxHash((String) map.get("txHash"));
+                depositInfos.add(info);
+            }
+            data.put("list", depositInfos);
+        }
+        return result;
+    }
+
 
 }

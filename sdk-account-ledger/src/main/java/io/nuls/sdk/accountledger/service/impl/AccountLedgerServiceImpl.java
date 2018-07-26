@@ -82,7 +82,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         if (!AddressTool.validAddress(address) || !AddressTool.validAddress(toAddress)) {
             return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
         }
-        if (!StringUtils.validPassword(password)) {
+        if (StringUtils.isNotBlank(password) && !StringUtils.validPassword(password)) {
             return Result.getFailed(AccountErrorCode.PASSWORD_IS_WRONG);
         }
         if (!validTxRemark(remark)) {

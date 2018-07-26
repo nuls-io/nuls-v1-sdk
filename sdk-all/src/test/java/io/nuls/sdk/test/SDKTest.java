@@ -362,4 +362,20 @@ Nsdz8mKKFMehRDVRZFyXNuuenugUYM7M
         Result result = NulsSDKTool.broadcastTransaction(txHex);
         System.out.println(result.isSuccess());
     }
+
+    @Test
+    public void testGetBlock() {
+        SDKBootstrap.init("192.168.1.109", "8001");
+        Result result = NulsSDKTool.getBlock(53118);
+        System.out.println(result.isSuccess());
+
+    }
+
+    @Test
+    public void testGetAgentDeposit() {
+        SDKBootstrap.init();
+        Result result = NulsSDKTool.getAgentDeposits("0020dfef1f368771fbdb5a82859c0eea74fa305b298267c6dc0b87d160634ea2feb8", 1, 10);
+    }
+
+
 }

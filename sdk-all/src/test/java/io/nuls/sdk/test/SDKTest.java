@@ -1,9 +1,15 @@
 package io.nuls.sdk.test;
 
+import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.SDKBootstrap;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.tool.NulsSDKTool;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class SDKTest {
 
@@ -305,10 +311,45 @@ Nsdz8mKKFMehRDVRZFyXNuuenugUYM7M
         System.out.println(result.getData());
     }
 
+
+
+        @Test
+    public void testDeposit() {
+        SDKBootstrap.init("192.168.1.163", "6001");
+        String address = "NsdyD94pXWpxZudbtJ4zpkBHhh8XmBQA";
+        Result result = NulsSDKTool.getDeposits(address, 1, 10);
+
+        System.out.println(result.isSuccess());
+    }
+
+
     @Test
+    public void testBroadcast() {
+        SDKBootstrap.init();
+        String txHex = "0600674944a76401000020d9e55d433903622f76cf3387789a713a20a9a993a06aa253e734445bf5eb720301230020d9e55d433903622f76cf3387789a713a20a9a993a06aa253e734445bf5eb7203000000000000000000ffffffffffff011701000144fdd048f38e1b0c0a54124b6d626fe1791c592fc0bdf0ffffffffff0000000000006a21037281566ae1be0f64a3241faaa32093a105cb1ecd470cc6d8d20b5856142f346800463044022033d8537b502dccaa60d2706283d9801b9ae86e6b44c004a296e6ba9b3f331f9e022020596bcb78512cecdb07b5a0053b4c653964cdd07947bab1c301bef54a13e4cc";
+        Result result = NulsSDKTool.broadcastTransaction(txHex);
+        System.out.println(result.isSuccess());
+    }
+
+    @Test
+    public void testGetBlock() {
+        SDKBootstrap.init("192.168.1.109", "8001");
+        Result result = NulsSDKTool.getBlock(53118);
+        System.out.println(result.isSuccess());
+
+    }
+
+    @Test
+    public void testGetAgentDeposit() {
+        SDKBootstrap.init();
+        Result result = NulsSDKTool.getAgentDeposits("0020dfef1f368771fbdb5a82859c0eea74fa305b298267c6dc0b87d160634ea2feb8", 1, 10);
+    }
+
+
+  @Test
     public void testTransaction() {
 
-        SDKBootstrap.init();
+        SDKBootstrap.init("192.168.1.109","6001");
 
         List<Input> inputs = new ArrayList<>();
         Input input = new Input();
@@ -337,7 +378,7 @@ Nsdz8mKKFMehRDVRZFyXNuuenugUYM7M
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
 
-        result = NulsSDKTool.signTransaction(txHex, "008e2b5c10370a46f72552b3b69c4d56bfd000e584134d1159157c811f53366307", "Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ", null);
+        result = NulsSDKTool.signTransaction(txHex, "00844a5d6a268e9efd24563beca8feb882526eea140f3394d534c0de6560c8f1cf", "Nse5x9foSzFjuwkwZLSvSjAHHLVf3MKJ", null);
         map = (Map<String, Object>) result.getData();
         String sign = (String) map.get("value");
 
@@ -345,37 +386,7 @@ Nsdz8mKKFMehRDVRZFyXNuuenugUYM7M
         System.out.println(result.isSuccess());
     }
 
-        @Test
-    public void testDeposit() {
-        SDKBootstrap.init("192.168.1.163", "6001");
-        String address = "NsdyD94pXWpxZudbtJ4zpkBHhh8XmBQA";
-        Result result = NulsSDKTool.getDeposits(address, 1, 10);
-
-        System.out.println(result.isSuccess());
-    }
     */
-
-    @Test
-    public void testBroadcast() {
-        SDKBootstrap.init();
-        String txHex = "0600674944a76401000020d9e55d433903622f76cf3387789a713a20a9a993a06aa253e734445bf5eb720301230020d9e55d433903622f76cf3387789a713a20a9a993a06aa253e734445bf5eb7203000000000000000000ffffffffffff011701000144fdd048f38e1b0c0a54124b6d626fe1791c592fc0bdf0ffffffffff0000000000006a21037281566ae1be0f64a3241faaa32093a105cb1ecd470cc6d8d20b5856142f346800463044022033d8537b502dccaa60d2706283d9801b9ae86e6b44c004a296e6ba9b3f331f9e022020596bcb78512cecdb07b5a0053b4c653964cdd07947bab1c301bef54a13e4cc";
-        Result result = NulsSDKTool.broadcastTransaction(txHex);
-        System.out.println(result.isSuccess());
-    }
-
-    @Test
-    public void testGetBlock() {
-        SDKBootstrap.init("192.168.1.109", "8001");
-        Result result = NulsSDKTool.getBlock(53118);
-        System.out.println(result.isSuccess());
-
-    }
-
-    @Test
-    public void testGetAgentDeposit() {
-        SDKBootstrap.init();
-        Result result = NulsSDKTool.getAgentDeposits("0020dfef1f368771fbdb5a82859c0eea74fa305b298267c6dc0b87d160634ea2feb8", 1, 10);
-    }
 
 
 }

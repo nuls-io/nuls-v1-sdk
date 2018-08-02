@@ -406,4 +406,28 @@ public interface AccountService {
      * If the operation fails, success is false and the result has error information
      */
     Result setAlias(String address, String alias);
+
+    /**
+     * get address by priKey
+     * @param priKey The privateKey of account
+     * @return Hex address
+     */
+    Result getAddressByPriKey(String priKey);
+
+    /**
+     * get address by encrypted priKey
+     * @param encryptedPriKey The encryptedPriKey of account
+     * @param password The password of account
+     * @return Hex address
+     */
+    Result getAddressByEncryptedPriKey(String encryptedPriKey, String password);
+
+
+
+    /**
+     * Verify whether the address format is correct
+     * @param address Hex address
+     * @return boolean
+     */
+    Result validateAddress(String address);
 }

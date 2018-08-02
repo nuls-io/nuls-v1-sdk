@@ -10,16 +10,19 @@ import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Account;
+import io.nuls.sdk.core.model.Address;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.core.model.dto.BalanceInfo;
 import io.nuls.sdk.core.utils.*;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 /**
  * @author: Charlie
@@ -576,6 +579,45 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Result setAlias(String address, String alias) {
         return setAlias(address, alias, null);
+    }
+
+    @Override
+    public Result getAddressByPriKey(String priKey) {
+        try {
+            byte[] key = Hex.decode(priKey);
+            ECKey ecKey = ECKey.fromPrivate(new BigInteger(key));
+            Address address = AccountTool.newAddress(ecKey);
+            Result result = Result.getSuccess();
+            result.setData(address.getBase58());
+            return result;
+        } catch (Exception e) {
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
+        }
+    }
+
+    @Override
+    public Result getAddressByEncryptedPriKey(String priKey, String password) {
+        try {
+            byte[] key = AESEncrypt.decrypt(Hex.decode(priKey), password);
+            ECKey ecKey = ECKey.fromPrivate(new BigInteger(key));
+            Address address = AccountTool.newAddress(ecKey);
+            Result result = Result.getSuccess();
+            result.setData(address.getBase58());
+            return result;
+        } catch (NulsException e) {
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
+        }
+    }
+
+    @Override
+    public Result validateAddress(String address) {
+        try {
+            Result result = Result.getSuccess();
+            result.setData( AddressTool.validAddress(address));
+            return result;
+        } catch (Exception e) {
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
+        }
     }
 
 }

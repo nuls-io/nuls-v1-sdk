@@ -179,6 +179,14 @@ public class NulsSDKTool {
         return accountService.setAlias(address, alias);
     }
 
+    public static Result getAddressByPriKey(String priKey) {
+        return accountService.getAddressByPriKey(priKey);
+    }
+
+    public static Result getAddressByEncryptedPriKey(String encryptedPriKey, String password) {
+        return accountService.getAddressByEncryptedPriKey(encryptedPriKey, password);
+    }
+
     public static Result getTxByHash(String hash) {
         return accountLedgerService.getTxByHash(hash);
     }
@@ -258,4 +266,6 @@ public class NulsSDKTool {
     public static Result getAgentDeposits(String agentHash, int pageNumber, int pageSize) {
         return consensusService.getAgentDeposits(agentHash, pageNumber, pageSize);
     }
+
+
 }

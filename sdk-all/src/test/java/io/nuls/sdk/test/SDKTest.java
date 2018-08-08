@@ -1,5 +1,6 @@
 package io.nuls.sdk.test;
 
+import com.sun.org.apache.regexp.internal.RE;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.SDKBootstrap;
@@ -144,7 +145,7 @@ public class SDKTest {
             assertTrue(result9.isSuccess());
         }
         @Test
-        public void tx(){
+        public void v1(){
             Result result1 = NulsSDKTool.transfer("6HgaqsowQbVM8AXbHbssSAAHddeypwcc",
                         addressPwd, "nuls123456",
                     99900000000L,"转账");
@@ -436,5 +437,12 @@ public class SDKTest {
         Result result  = NulsSDKTool.getAddressByEncryptedPriKey("0a710f7140e484c7a8e8902156e2b6756966ddc4ede6bdbf2f5e63cbccfcec312dccc24fd641953b5357603584c1c011", "nuls123456");
         System.out.println(result.isSuccess());
     }
-          */
+
+
+    @Test
+    public void test() {
+        Result result = NulsSDKTool.validateAddress("dafdsfdasdsf");
+        System.out.println(result.getData());
+    }
+              */
 }

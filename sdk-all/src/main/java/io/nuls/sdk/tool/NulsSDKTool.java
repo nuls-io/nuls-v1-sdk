@@ -187,6 +187,10 @@ public class NulsSDKTool {
         return accountService.getAddressByEncryptedPriKey(encryptedPriKey, password);
     }
 
+    public static Result validateAddress(String address) {
+        return accountService.validateAddress(address);
+    }
+
     public static Result getTxByHash(String hash) {
         return accountLedgerService.getTxByHash(hash);
     }

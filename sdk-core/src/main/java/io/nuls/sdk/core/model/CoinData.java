@@ -129,7 +129,7 @@ public class CoinData extends BaseNulsData {
      * 获取该交易的手续费
      * The handling charge for the transaction.
      *
-     * @return tx fee
+     * @return v1 fee
      */
     public Na getFee() {
         Na toNa = Na.ZERO;

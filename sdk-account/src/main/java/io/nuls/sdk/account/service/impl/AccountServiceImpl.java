@@ -588,7 +588,9 @@ public class AccountServiceImpl implements AccountService {
             ECKey ecKey = ECKey.fromPrivate(new BigInteger(key));
             Address address = AccountTool.newAddress(ecKey);
             Result result = Result.getSuccess();
-            result.setData(address.getBase58());
+            Map<String, Object> map = new HashMap<>();
+            map.put("value", address.getBase58());
+            result.setData(map);
             return result;
         } catch (Exception e) {
             return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
@@ -602,7 +604,9 @@ public class AccountServiceImpl implements AccountService {
             ECKey ecKey = ECKey.fromPrivate(new BigInteger(key));
             Address address = AccountTool.newAddress(ecKey);
             Result result = Result.getSuccess();
-            result.setData(address.getBase58());
+            Map<String, Object> map = new HashMap<>();
+            map.put("value", address.getBase58());
+            result.setData(map);
             return result;
         } catch (NulsException e) {
             return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
@@ -613,7 +617,9 @@ public class AccountServiceImpl implements AccountService {
     public Result validateAddress(String address) {
         try {
             Result result = Result.getSuccess();
-            result.setData( AddressTool.validAddress(address));
+            Map<String, Object> map = new HashMap<>();
+            map.put("value", AddressTool.validAddress(address));
+            result.setData(map);
             return result;
         } catch (Exception e) {
             return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);

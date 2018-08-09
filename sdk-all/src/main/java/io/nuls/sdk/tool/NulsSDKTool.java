@@ -1,6 +1,5 @@
 package io.nuls.sdk.tool;
 
-import com.sun.org.apache.regexp.internal.RE;
 import io.nuls.sdk.account.service.AccountService;
 import io.nuls.sdk.account.service.impl.AccountServiceImpl;
 import io.nuls.sdk.accountledger.model.Input;

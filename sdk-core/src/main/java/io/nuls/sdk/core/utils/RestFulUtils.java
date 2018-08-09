@@ -25,8 +25,8 @@
 
 package io.nuls.sdk.core.utils;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import io.nuls.sdk.core.model.Result;
-import org.glassfish.jersey.jackson.internal.jackson.jaxrs.json.JacksonJsonProvider;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;

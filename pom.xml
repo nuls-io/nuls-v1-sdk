@@ -16,6 +16,7 @@
         <module>sdk-protocol</module>
         <module>sdk-all</module>
         <module>sdk-consensus</module>
+        <module>sdk-contract</module>
     </modules>
 
     <parent>

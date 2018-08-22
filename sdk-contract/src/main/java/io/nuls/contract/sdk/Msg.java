@@ -8,7 +8,7 @@ public class Msg {
      * 剩余Gas
      * remaining gas
      *
-     * @return
+     * @return 剩余gas
      */
     public static native long gasleft();
 
@@ -16,7 +16,7 @@ public class Msg {
      * 消息发送者地址
      * sender of the message
      *
-     * @return
+     * @return 消息发送者地址
      */
     public static native Address sender();
 
@@ -24,7 +24,7 @@ public class Msg {
      * 随消息发送的Na数
      * number of na sent with the message
      *
-     * @return
+     * @return 随消息发送的Na数
      */
     public static native BigInteger value();
 
@@ -32,7 +32,7 @@ public class Msg {
      * Gas价格
      * gas price
      *
-     * @return
+     * @return Gas价格
      */
     public static native long gasprice();
 
@@ -40,7 +40,7 @@ public class Msg {
      * 合约地址
      * contract address
      *
-     * @return
+     * @return 合约地址
      */
     public static native Address address();
 

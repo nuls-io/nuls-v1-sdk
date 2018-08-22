@@ -14,7 +14,7 @@ public class Address {
     /**
      * 获取该地址的余额（只能获取合约地址余额）
      *
-     * @return
+     * @return BigInteger
      */
     public native BigInteger balance();
 
@@ -38,8 +38,7 @@ public class Address {
     /**
      * 验证地址
      *
-     * @param address
-     * @see io.nuls.kernel.utils.AddressTool#validAddress(String)
+     * @param address 地址
      */
     private native void valid(String address);
 

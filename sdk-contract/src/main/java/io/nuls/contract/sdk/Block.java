@@ -6,8 +6,8 @@ public class Block {
      * 给定块的哈希值
      * hash of the given block
      *
-     * @param blockNumber
-     * @return
+     * @param blockNumber 区块高度
+     * @return 区块hash
      */
     public static native byte[] blockhash(long blockNumber);
 
@@ -15,8 +15,8 @@ public class Block {
      * 给定块的哈希值
      * hash of the given block
      *
-     * @param blockNumber
-     * @return
+     * @param blockNumber 区块高度
+     * @return 区块hash
      */
     public static native String blockhashHex(long blockNumber);
 
@@ -24,7 +24,7 @@ public class Block {
      * 当前块矿工地址
      * current block miner’s address
      *
-     * @return
+     * @return 地址
      */
     public static native Address coinbase();
 
@@ -32,7 +32,7 @@ public class Block {
      * 当前块编号
      * current block number
      *
-     * @return
+     * @return number
      */
     public static native long number();
 
@@ -40,7 +40,7 @@ public class Block {
      * 当前块时间戳
      * current block timestamp
      *
-     * @return
+     * @return timestamp
      */
     public static native long timestamp();
 

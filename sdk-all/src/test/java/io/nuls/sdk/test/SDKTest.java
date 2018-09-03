@@ -8,9 +8,8 @@ import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.tool.NulsSDKTool;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 public class SDKTest {
 

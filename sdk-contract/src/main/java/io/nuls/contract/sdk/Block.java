@@ -3,22 +3,30 @@ package io.nuls.contract.sdk;
 public class Block {
 
     /**
-     * 给定块的哈希值
-     * hash of the given block
+     * 给定块的区块头
      *
      * @param blockNumber 区块高度
-     * @return 区块hash
+     * @return 给定块的区块头
      */
-    public static native byte[] blockhash(long blockNumber);
+    public static native BlockHeader getBlockHeader(long blockNumber);
+
+    /**
+     * 当前块的区块头
+     *
+     * @return 当前块的区块头
+     */
+    public static native BlockHeader currentBlockHeader();
 
     /**
      * 给定块的哈希值
      * hash of the given block
      *
-     * @param blockNumber 区块高度
-     * @return 区块hash
+     * @param blockNumber
+     * @return 给定块的哈希值
      */
-    public static native String blockhashHex(long blockNumber);
+    public static String blockhash(long blockNumber) {
+        return getBlockHeader(blockNumber).getHash();
+    }
 
     /**
      * 当前块矿工地址
@@ -26,7 +34,9 @@ public class Block {
      *
      * @return 地址
      */
-    public static native Address coinbase();
+    public static Address coinbase() {
+        return currentBlockHeader().getPackingAddress();
+    }
 
     /**
      * 当前块编号
@@ -34,7 +44,9 @@ public class Block {
      *
      * @return number
      */
-    public static native long number();
+    public static long number() {
+        return currentBlockHeader().getHeight();
+    }
 
     /**
      * 当前块时间戳
@@ -42,6 +54,8 @@ public class Block {
      *
      * @return timestamp
      */
-    public static native long timestamp();
+    public static long timestamp() {
+        return currentBlockHeader().getTime();
+    }
 
 }

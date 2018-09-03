@@ -33,7 +33,7 @@ public class Address {
      * @param args       参数
      * @param value      附带的货币量（多少Na）
      */
-    public native void call(String methodName, String methodDesc, String[] args, BigInteger value);
+    public native void call(String methodName, String methodDesc, String[][] args, BigInteger value);
 
     /**
      * 验证地址

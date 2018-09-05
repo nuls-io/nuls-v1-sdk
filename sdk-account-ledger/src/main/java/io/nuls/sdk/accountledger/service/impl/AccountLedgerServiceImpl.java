@@ -144,6 +144,14 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     }
 
     @Override
+    public Result validateTransaction(String txHex) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("txHex", txHex);
+        Result result = restFul.post("/accountledger/transaction/valiTransaction", map);
+        return result;
+    }
+
+    @Override
     public Result createTransaction(List<Input> inputs, List<Output> outputs, String remark) {
         if (inputs == null || inputs.isEmpty()) {
             return Result.getFailed("inputs error");

@@ -85,4 +85,11 @@ public interface AccountLedgerService {
      * @return Result
      */
     Result broadcastTransaction(String txHex);
+
+    /**
+     * 验证交易
+     * @param txHex txHex
+     * @return Result
+     */
+    Result validateTransaction(String txHex);
 }

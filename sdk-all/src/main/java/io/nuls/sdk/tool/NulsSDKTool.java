@@ -218,6 +218,10 @@ public class NulsSDKTool {
         return accountLedgerService.broadcastTransaction(txHex);
     }
 
+    public static Result validateTransaction(String txHex) {
+        return accountLedgerService.validateTransaction(txHex);
+    }
+
     public static Result getNewestBlockHeight() {
         return blockService.getNewestBlockHeight();
     }

@@ -1,5 +1,6 @@
 package io.nuls.sdk.account.service.impl;
 
+import io.nuls.sdk.account.model.AccountInfo;
 import io.nuls.sdk.core.SDKBootstrap;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.core.utils.AccountTool;
@@ -96,5 +97,21 @@ public class AccountServiceImplTest {
         result = NulsSDKTool.createAccount(AccountTool.CREATE_MAX_SIZE + 1);
         assertFalse("create more that " + AccountTool.CREATE_MAX_SIZE + " account is't illegal", result.isSuccess());
         assertTrue("create more that " + AccountTool.CREATE_MAX_SIZE + " account is't illegal", result.isFailed());
+    }
+
+    @Test
+    public void createOfflineAccount() {
+        Result result = NulsSDKTool.createOfflineAccount();
+        assertTrue("response must be true", result.isSuccess());
+        assertNotNull("response data can not be null", result.getData());
+        Map<String, Object> resp = (Map<String, Object>) result.getData();
+        List<AccountInfo> accountInfoList = (List<AccountInfo>) resp.get("list");
+        assertNotNull("response must contains list", accountInfoList);
+        assertEquals("response account must be 1", 1L, accountInfoList.size());
+        for (AccountInfo accountInfo : accountInfoList) {
+            assertTrue("address must correct", AddressTool.validAddress(accountInfo.getAddress()));
+            assertNotNull("private key can not be null", accountInfo.getPriKey());
+            assertNotNull("public key can not be null", accountInfo.getPubKey());
+        }
     }
 }

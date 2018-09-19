@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
 
 /**
  * @author: Charlie
@@ -621,6 +620,15 @@ public class AccountServiceImpl implements AccountService {
             map.put("value", AddressTool.validAddress(address));
             result.setData(map);
             return result;
+        } catch (Exception e) {
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
+        }
+    }
+
+    @Override
+    public Result createMSAccount(List<String> pubKeys, int threshold) {
+        try {
+            return null;
         } catch (Exception e) {
             return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
         }

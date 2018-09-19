@@ -29,6 +29,7 @@ package io.nuls.sdk.account.service;
 import io.nuls.sdk.core.model.Result;
 
 import java.io.FileReader;
+import java.util.List;
 
 /**
  * @author: Charlie
@@ -430,4 +431,12 @@ public interface AccountService {
      * @return boolean
      */
     Result validateAddress(String address);
+
+    /**
+     * Using pubKeys and threshold create an Multiple Signature Address
+     * @param pubKeys Hex public key list
+     * @param threshold how many signature can use account asset
+     * @return
+     */
+    Result createMSAccount(List<String> pubKeys,int threshold);
 }

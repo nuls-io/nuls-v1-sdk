@@ -15,6 +15,8 @@ import io.nuls.sdk.core.model.Coin;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.core.model.dto.BalanceInfo;
+import io.nuls.sdk.core.script.Script;
+import io.nuls.sdk.core.script.SignatureUtil;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.util.Arrays;
 
@@ -176,7 +178,14 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                 if (!AddressTool.validAddress(outputDto.getAddress())) {
                     return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
                 }
-                to.setOwner(AddressTool.getAddress(outputDto.getAddress()));
+                byte[] owner = AddressTool.getAddress(outputDto.getAddress());
+                if (owner[2] == 3) {
+                    Script scriptPubkey = SignatureUtil.createOutputScript(to.getAddress());
+                    to.setOwner(scriptPubkey.getProgram());
+                } else {
+                    to.setOwner(AddressTool.getAddress(outputDto.getAddress()));
+
+                }
             } catch (Exception e) {
                 return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
             }

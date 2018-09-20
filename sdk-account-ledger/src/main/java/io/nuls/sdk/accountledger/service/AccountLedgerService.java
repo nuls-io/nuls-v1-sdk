@@ -116,9 +116,8 @@ public interface AccountLedgerService {
     /**
      * 零钱换整
      * @param inputs inputs
-     * @param privKey privKey
      * @param address address
      * @return Result
      */
-    Result changeCoin(List<Input> inputs, String privKey, String address);
+    Result changeCoin(List<Input> inputs,String address);
 }

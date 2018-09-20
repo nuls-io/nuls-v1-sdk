@@ -297,4 +297,9 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     public Result transferWithMultipleAddress(List<Input> inputs, List<Output> outputs, List<String> privKeys, String remark) {
         return null;
     }
+
+    @Override
+    public Result changeCoin(List<Input> inputs, String address) {
+        return null;
+    }
 }

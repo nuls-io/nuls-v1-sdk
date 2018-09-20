@@ -112,7 +112,6 @@ public class NulsSDKTool {
         return accountService.importAccountByKeystore(path, overwrite);
     }
 
-
     public static Result importAccountByKeystore(FileReader fileReader, String password, boolean overwrite) {
         return accountService.importAccountByKeystore(fileReader, password, overwrite);
     }
@@ -188,6 +187,10 @@ public class NulsSDKTool {
 
     public static Result validateAddress(String address) {
         return accountService.validateAddress(address);
+    }
+
+    public static Result createMSAccount(List<String> pubKeys, Integer threshold) {
+        return accountService.createMSAccount(pubKeys, threshold);
     }
 
     public static Result getTxByHash(String hash) {

@@ -15,7 +15,20 @@ public interface SDKConstant {
      * and the current address begins with "Ns".16402.
      */
     short DEFAULT_CHAIN_ID = 8964;
+
     byte DEFAULT_ADDRESS_TYPE = 1;
+    /**
+     * 智能合约地址类型
+     * contract address type
+     */
+    byte CONTRACT_ADDRESS_TYPE = 2;
+
+    /**
+     * 多重签名地址
+     * contract address type
+     */
+    byte P2SH_ADDRESS_TYPE = 3;
+
     /**
      * 空值占位符
      * Null placeholder.
@@ -36,4 +49,10 @@ public interface SDKConstant {
     Na ENTRUSTER_DEPOSIT_LOWER_LIMIT = Na.parseNuls(2000);
 
     long CONSENSUS_LOCK_TIME = -1;
+
+    /**
+     * 脚本标识位
+     * Null placeholder.
+     */
+    byte[] SIGN_HOLDER = new byte[]{(byte) 0x00, (byte) 0x00};
 }

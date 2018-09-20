@@ -15,7 +15,6 @@ import io.nuls.sdk.core.model.Coin;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.core.model.dto.BalanceInfo;
-import io.nuls.sdk.core.script.P2PKHScriptSig;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.util.Arrays;
 

@@ -26,7 +26,10 @@
 
 package io.nuls.sdk.core.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.nuls.sdk.core.exception.NulsException;
+import io.nuls.sdk.core.script.Script;
+import io.nuls.sdk.core.utils.AddressTool;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
 import io.nuls.sdk.core.utils.NulsOutputStreamBuffer;
 import io.nuls.sdk.core.utils.SerializeUtils;
@@ -46,6 +49,13 @@ public class Coin extends BaseNulsData {
     private long lockTime;
 
     private transient Coin from;
+
+    /**
+     * 合约组装CoinData时使用
+     */
+    private transient String key;
+
+    private transient byte[] tempOwner;
 
     public Coin() {
     }
@@ -114,6 +124,55 @@ public class Coin extends BaseNulsData {
 
     public void setLockTime(long lockTime) {
         this.lockTime = lockTime;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public Coin setKey(String key) {
+        this.key = key;
+        return this;
+    }
+
+    public byte[] getTempOwner() {
+        return tempOwner;
+    }
+
+    public void setTempOwner(byte[] tempOwner) {
+        this.tempOwner = tempOwner;
+    }
+
+    @Override
+    public String toString() {
+        return "Coin{" +
+                "owner=" + AddressTool.getStringAddressByBytes(owner) +
+                ", na=" + na.getValue() +
+                ", lockTime=" + lockTime +
+                ", from=" + from +
+                ", key='" + key + '\'' +
+                '}';
+    }
+
+    @JsonIgnore
+    public byte[] getAddress() {
+        byte[] address = new byte[23];
+        //如果owner不是存放的脚本则直接返回owner
+        if (owner == null || owner.length == 23) {
+            return owner;
+        } else {
+            Script scriptPubkey = new Script(owner);
+            //如果为P2PKH类型交易则从第四位开始返回23个字节
+            if (scriptPubkey.isSentToAddress()) {
+                System.arraycopy(owner, 3, address, 0, 23);
+            }
+            //如果为P2SH或multi类型的UTXO则从第三位开始返回23个字节
+            else if (scriptPubkey.isPayToScriptHash()) {
+                scriptPubkey.isSentToMultiSig();
+                System.arraycopy(owner, 2, address, 0, 23);
+            }
+        }
+        return address;
     }
 
 }

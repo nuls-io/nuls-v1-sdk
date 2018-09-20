@@ -11,6 +11,7 @@ import io.nuls.sdk.core.model.NulsSignData;
 import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.utils.AddressTool;
 import io.nuls.sdk.core.utils.SerializeUtils;
+import io.nuls.sdk.core.utils.TransactionTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +129,7 @@ public class SignatureUtil {
                 List<byte[]> signtures = new ArrayList<>();
                 List<byte[]> pubkeys = new ArrayList<>();
                 for (ECKey ecKey : scriptEckeys) {
-                    signtures.add(signDigest(tx.getHash().getDigestBytes(), ecKey).getSignBytes());
+                    signtures.add(TransactionTool.signDigest(tx.getHash().getDigestBytes(), ecKey).getSignBytes());
                     pubkeys.add(ecKey.getPubKey());
                 }
                 scripts = createInputScripts(signtures, pubkeys);
@@ -142,6 +143,48 @@ public class SignatureUtil {
         } catch (IOException ie) {
             log.error("TransactionSignature serialize error!");
             throw ie;
+        }
+    }
+
+    /**
+     * 生成多签交易TransactionSignture
+     *
+     * @param tx           交易
+     * @param transactionSignature 交易签名
+     * @param ecKey        签名账户的eckey
+     */
+    public static void createMultiTransactionSignture(Transaction tx, TransactionSignature transactionSignature, ECKey ecKey) throws IOException {
+        List<P2PHKSignature> p2PHKSignatures = new ArrayList<>();
+        if(transactionSignature.getP2PHKSignatures() != null && transactionSignature.getP2PHKSignatures().size()> 0){
+            p2PHKSignatures = transactionSignature.getP2PHKSignatures();
+        }
+        List<Script> scripts = transactionSignature.getScripts();
+        //使用签名账户对交易进行签名
+        P2PHKSignature p2PHKSignature = new P2PHKSignature();
+        p2PHKSignature.setPublicKey(ecKey.getPubKey());
+        //用当前交易的hash和账户的私钥账户
+        p2PHKSignature.setSignData(TransactionTool.signDigest(tx.getHash().getDigestBytes(), ecKey));
+        p2PHKSignatures.add(p2PHKSignature);
+        //当已签名数等于M则自动广播该交易
+        if (p2PHKSignatures.size() == SignatureUtil.getM(scripts.get(0))) {
+            //将交易中的签名数据P2PHKSignatures按规则排序
+            Collections.sort(p2PHKSignatures, P2PHKSignature.PUBKEY_COMPARATOR);
+            //将排序后的P2PHKSignatures的签名数据取出和赎回脚本结合生成解锁脚本
+            List<byte[]> signatures = new ArrayList<>();
+            for (P2PHKSignature p2PHKSignatureTemp : p2PHKSignatures) {
+                signatures.add(p2PHKSignatureTemp.getSignData().getSignBytes());
+            }
+            transactionSignature.setP2PHKSignatures(null);
+            Script scriptSign = ScriptBuilder.createNulsP2SHMultiSigInputScript(signatures, scripts.get(0));
+            transactionSignature.getScripts().clear();
+            transactionSignature.getScripts().add(scriptSign);
+            tx.setTransactionSignature(transactionSignature.serialize());
+            //验证交易，广播交易
+        }
+        //如果签名数还没达到，则返回交易
+        else{
+            transactionSignature.setP2PHKSignatures(p2PHKSignatures);
+            tx.setTransactionSignature(transactionSignature.serialize());
         }
     }
 
@@ -169,7 +212,7 @@ public class SignatureUtil {
         P2PHKSignature p2PHKSignature = new P2PHKSignature();
         p2PHKSignature.setPublicKey(ecKey.getPubKey());
         //用当前交易的hash和账户的私钥账户
-        p2PHKSignature.setSignData(signDigest(tx.getHash().getDigestBytes(), ecKey));
+        p2PHKSignature.setSignData(TransactionTool.signDigest(tx.getHash().getDigestBytes(), ecKey));
         return p2PHKSignature;
     }
 
@@ -350,19 +393,4 @@ public class SignatureUtil {
         }
         return true;
     }
-
-    /**
-     * 生成交易签名
-     *
-     * @param digest 需要签名的交易数据
-     * @param ecKey  签名的私钥
-     */
-    public static NulsSignData signDigest(byte[] digest, ECKey ecKey) {
-        byte[] signbytes = ecKey.sign(digest);
-        NulsSignData nulsSignData = new NulsSignData();
-        nulsSignData.setSignAlgType(NulsSignData.SIGN_ALG_ECC);
-        nulsSignData.setSignBytes(signbytes);
-        return nulsSignData;
-    }
-
 }

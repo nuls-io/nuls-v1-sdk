@@ -299,7 +299,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     }
 
     @Override
-    public Result changeCoin(List<Input> inputs, String address) {
+    public Result createChangeCoinTransaction(List<Input> inputs, String address) {
         return null;
     }
 }

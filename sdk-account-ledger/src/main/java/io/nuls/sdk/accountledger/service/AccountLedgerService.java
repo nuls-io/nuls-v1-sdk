@@ -119,5 +119,5 @@ public interface AccountLedgerService {
      * @param address address
      * @return Result
      */
-    Result changeCoin(List<Input> inputs,String address);
+    Result createChangeCoinTransaction(List<Input> inputs,String address);
 }

@@ -15,6 +15,7 @@ import io.nuls.sdk.core.model.Coin;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.core.model.dto.BalanceInfo;
+import io.nuls.sdk.core.model.transaction.TransferTransaction;
 import io.nuls.sdk.core.script.Script;
 import io.nuls.sdk.core.script.SignatureUtil;
 import io.nuls.sdk.core.utils.*;
@@ -309,6 +310,25 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
 
     @Override
     public Result createChangeCoinTransaction(List<Input> inputs, String address) {
+        if (inputs == null || inputs.isEmpty()) {
+            return Result.getFailed("inputs error");
+        }
+        if(StringUtils.isBlank(address) || !AddressTool.validAddress(address)){
+            return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
+        }
+        int targetSize = TransactionTool.MAX_TX_SIZE;
+        List<String> transactionHexList = new ArrayList<>();
+        Na amount = Na.ZERO;
+        for (Input input:inputs) {
+            if (input.getAddress() == null || !input.getAddress().equals(address)) {
+                return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
+            }
+            byte[] key = Arrays.concatenate(Hex.decode(input.getFromHash()), new VarInt(input.getFromIndex()).encode());
+            Coin coin = new Coin();
+            coin.setOwner(key);
+            coin.setNa(Na.valueOf(input.getValue()));
+            coin.setLockTime(input.getLockTime());
+        }
         return null;
     }
 }

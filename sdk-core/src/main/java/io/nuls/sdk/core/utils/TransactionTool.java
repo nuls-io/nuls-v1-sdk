@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TransactionTool {
-
+    public static final int MAX_TX_SIZE = 300 * 1024;
     private static final Map<Integer, Class<? extends Transaction>> TYPE_TX_MAP = new HashMap<>();
 
     public static void init() {

@@ -68,9 +68,9 @@ public class Address {
 
     protected byte[] addressBytes;
 
-    //    /**
-//     * @param address
-//     */
+    /**
+     * @param address
+     */
     public Address(String address) {
         try {
             byte[] bytes = AddressTool.getAddress(address);

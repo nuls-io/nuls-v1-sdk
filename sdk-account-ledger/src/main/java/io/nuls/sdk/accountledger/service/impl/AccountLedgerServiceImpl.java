@@ -294,7 +294,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     }
 
     @Override
-    public Result transferWithMultipleAddress(List<Input> inputs, List<Output> outputs, List<ECKey> keys, String remark) {
+    public Result transferWithMultipleAddress(List<Input> inputs, List<Output> outputs, List<String> privKeys, String remark) {
         return null;
     }
 }

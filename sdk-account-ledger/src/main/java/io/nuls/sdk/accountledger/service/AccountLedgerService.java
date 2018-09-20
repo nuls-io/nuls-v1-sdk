@@ -2,7 +2,6 @@ package io.nuls.sdk.accountledger.service;
 
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
-import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.model.Result;
 
 import java.util.List;

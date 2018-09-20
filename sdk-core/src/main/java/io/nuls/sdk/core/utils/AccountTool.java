@@ -57,9 +57,9 @@ public class AccountTool {
             key = new ECKey();
         } else {
             try {
-                key = ECKey.fromPrivate(new BigInteger(Hex.decode(prikey)));
+                key = ECKey.fromPrivate(new BigInteger(1, Hex.decode(prikey)));
             } catch (Exception e) {
-                throw new NulsException(AccountErrorCode.PARAMETER_ERROR, e);
+                throw new NulsException(AccountErrorCode.PRIVATE_KEY_WRONG, e);
             }
         }
         Address address = new Address(SDKConstant.DEFAULT_CHAIN_ID, SDKConstant.DEFAULT_ADDRESS_TYPE, SerializeUtils.sha256hash160(key.getPubKey()));
@@ -77,9 +77,14 @@ public class AccountTool {
         return createAccount(null);
     }
 
-    //    /**
-//     * Generate the corresponding account management private key or transaction private key according to the seed private key and password
-//     */
+    public static Address createContractAddress() throws NulsException {
+        ECKey key = new ECKey();
+        return new Address(SDKConstant.DEFAULT_CHAIN_ID, SDKConstant.CONTRACT_ADDRESS_TYPE, SerializeUtils.sha256hash160(key.getPubKey()));
+    }
+
+    /**
+     * Generate the corresponding account management private key or transaction private key according to the seed private key and password
+     */
     public static BigInteger genPrivKey(byte[] encryptedPriKey, byte[] pw) {
         byte[] privSeedSha256 = Sha256Hash.hash(encryptedPriKey);
         //get sha256 of encryptedPriKey and  sha256 of pw，
@@ -94,4 +99,5 @@ public class AccountTool {
         //get prikey
         return new BigInteger(1, Sha256Hash.hash(pwPriBytes));
     }
+
 }

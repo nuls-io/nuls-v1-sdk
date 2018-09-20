@@ -38,6 +38,49 @@ public class ValidateResult<T> extends Result<T> {
 
     private String className;
 
+    public static ValidateResult getSuccessResult() {
+        ValidateResult result = new ValidateResult();
+        result.setSuccess(true);
+        result.setMsg("");
+        return result;
+    }
+
+    public static ValidateResult getFailedResult(String className, ErrorCode msg) {
+        return getFailedResult(className, SeverityLevelEnum.WRONG, msg);
+    }
+
+    public static ValidateResult getFailedResult(String className, SeverityLevelEnum level, ErrorCode errorCode) {
+        ValidateResult result = new ValidateResult();
+        result.setSuccess(false);
+        result.setLevel(level);
+        result.setErrorCode(errorCode);
+        result.setClassName(className);
+        return result;
+    }
+
+    @JsonIgnore
+    public SeverityLevelEnum getLevel() {
+        return level;
+    }
+
+    public void setLevel(SeverityLevelEnum level) {
+        this.level = level;
+    }
+
+
+    @JsonIgnore
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
+    }
+
+/*    private SeverityLevelEnum level;
+
+    private String className;
+
     public static ValidateResult getFailedResult(String className, String msg) {
         return getFailedResult(className, SeverityLevelEnum.WRONG, msg);
     }
@@ -94,5 +137,5 @@ public class ValidateResult<T> extends Result<T> {
 
     public void setClassName(String className) {
         this.className = className;
-    }
+    }*/
 }

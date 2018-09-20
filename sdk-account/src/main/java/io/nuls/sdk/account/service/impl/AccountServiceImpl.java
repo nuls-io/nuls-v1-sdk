@@ -5,6 +5,7 @@ import io.nuls.sdk.account.model.AccountInfo;
 import io.nuls.sdk.account.model.AccountKeyStore;
 import io.nuls.sdk.account.service.AccountService;
 import io.nuls.sdk.core.contast.AccountErrorCode;
+import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.AESEncrypt;
 import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.crypto.Hex;
@@ -14,6 +15,8 @@ import io.nuls.sdk.core.model.Address;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.core.model.dto.BalanceInfo;
+import io.nuls.sdk.core.script.Script;
+import io.nuls.sdk.core.script.ScriptBuilder;
 import io.nuls.sdk.core.utils.*;
 
 import java.io.*;
@@ -628,7 +631,24 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Result createMSAccount(List<String> pubKeys, int threshold) {
         try {
-            return null;
+            if (pubKeys == null || pubKeys.size() == 0) {
+                return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
+            }
+
+            if (threshold == 0) {
+                threshold = pubKeys.size();
+            }
+
+            Script redeemScript = ScriptBuilder.createNulsRedeemScript(threshold, pubKeys);
+            Address address = new Address(SDKConstant.DEFAULT_CHAIN_ID, SDKConstant.P2SH_ADDRESS_TYPE, SerializeUtils.sha256hash160(redeemScript.getProgram()));
+            Map<String, Object> map = new HashMap<>();
+            map.put("address", AddressTool.getStringAddressByBytes(address.getAddressBytes()));
+            map.put("threshold", threshold);
+            map.put("pubKeys", pubKeys);
+
+            Result result = Result.getSuccess();
+            result.setData(map);
+            return result;
         } catch (Exception e) {
             return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
         }

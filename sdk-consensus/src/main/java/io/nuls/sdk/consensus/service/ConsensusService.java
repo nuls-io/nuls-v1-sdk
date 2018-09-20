@@ -4,7 +4,6 @@ package io.nuls.sdk.consensus.service;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.consensus.model.AgentInfo;
-import io.nuls.sdk.consensus.model.CancelDepositInfo;
 import io.nuls.sdk.consensus.model.DepositInfo;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
@@ -24,4 +23,12 @@ public interface ConsensusService {
     Result getDeposits(String address, int pageNumber, int pageSize);
 
     Result getAgentDeposits(String agentHash, int pageNumber, int pageSize);
+
+    Result createMSAgentTransaction(AgentInfo agentInfo, List<Input> inputs, Na fee);
+
+    Result createStopMSAgentTransaction(Output output);
+
+    Result createMSAccountDepositTransaction(DepositInfo info, List<Input> inputs, Na fee);
+
+    Result createMSAccountCancelDepositTransaction(Output output);
 }

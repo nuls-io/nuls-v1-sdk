@@ -262,5 +262,23 @@ public class ConsensusServiceImpl implements ConsensusService {
         return result;
     }
 
+    @Override
+    public Result createMSAgentTransaction(AgentInfo agentInfo, List<Input> inputs, Na fee) {
+        return null;
+    }
 
+    @Override
+    public Result createStopMSAgentTransaction(Output output) {
+        return null;
+    }
+
+    @Override
+    public Result createMSAccountDepositTransaction(DepositInfo info, List<Input> inputs, Na fee) {
+        return null;
+    }
+
+    @Override
+    public Result createMSAccountCancelDepositTransaction(Output output) {
+        return null;
+    }
 }

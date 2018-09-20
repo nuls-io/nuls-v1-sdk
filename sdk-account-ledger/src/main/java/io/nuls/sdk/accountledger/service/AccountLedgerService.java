@@ -2,6 +2,7 @@ package io.nuls.sdk.accountledger.service;
 
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
+import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.model.Result;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public interface AccountLedgerService {
      * @param toAddress Beneficiary account Address
      * @param password  Remittance account password
      * @param amount    Transfer amount
-     * @param remark remark
+     * @param remark    remark
      * @return If the operation is successful, 'success' is true
      * If the operation fails, "success" is false and the result has error information
      */
@@ -39,7 +40,7 @@ public interface AccountLedgerService {
      * @param address   Remittance account address
      * @param toAddress Beneficiary account Address
      * @param amount    Transfer amount
-     * @param remark remark
+     * @param remark    remark
      * @return If the operation is successful, 'success' is true
      * If the operation fails, "success" is false and the result has error information
      */
@@ -58,9 +59,9 @@ public interface AccountLedgerService {
      * 创建交易
      * Create Transaction
      *
-     * @param inputs inputs
+     * @param inputs  inputs
      * @param outputs outputs
-     * @param remark remark
+     * @param remark  remark
      * @return Result
      */
     Result createTransaction(List<Input> inputs, List<Output> outputs, String remark);
@@ -69,9 +70,9 @@ public interface AccountLedgerService {
      * 签名交易
      * Sign Transaction
      *
-     * @param txHex txHex
-     * @param priKey  priKey
-     * @param address address
+     * @param txHex    txHex
+     * @param priKey   priKey
+     * @param address  address
      * @param password password
      * @return Result
      */
@@ -88,8 +89,28 @@ public interface AccountLedgerService {
 
     /**
      * 验证交易
+     *
      * @param txHex txHex
      * @return Result
      */
     Result validateTransaction(String txHex);
+
+    /**
+     * 创建多重签名转账交易
+     * @param inputs inputs
+     * @param outputs outputs
+     * @param remark remark
+     * @return Result
+     */
+    Result createMSAccountTransferTransaction(List<Input> inputs, List<Output> outputs, String remark);
+
+    /**
+     * 多地址转账
+     * @param inputs inputs
+     * @param outputs outputs
+     * @param privKeys privKeys
+     * @param remark remark
+     * @return Result
+     */
+    Result transferWithMultipleAddress(List<Input> inputs, List<Output> outputs, List<String> privKeys, String remark);
 }

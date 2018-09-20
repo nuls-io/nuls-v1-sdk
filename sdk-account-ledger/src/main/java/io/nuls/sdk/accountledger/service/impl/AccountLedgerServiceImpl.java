@@ -288,4 +288,13 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         }
     }
 
+    @Override
+    public Result createMSAccountTransferTransaction(List<Input> inputs, List<Output> outputs, String remark) {
+        return null;
+    }
+
+    @Override
+    public Result transferWithMultipleAddress(List<Input> inputs, List<Output> outputs, List<ECKey> keys, String remark) {
+        return null;
+    }
 }

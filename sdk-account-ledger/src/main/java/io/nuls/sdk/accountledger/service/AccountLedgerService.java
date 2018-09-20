@@ -112,4 +112,13 @@ public interface AccountLedgerService {
      * @return Result
      */
     Result transferWithMultipleAddress(List<Input> inputs, List<Output> outputs, List<String> privKeys, String remark);
+
+    /**
+     * 零钱换整
+     * @param inputs inputs
+     * @param privKey privKey
+     * @param address address
+     * @return Result
+     */
+    Result changeCoin(List<Input> inputs, String privKey, String address);
 }

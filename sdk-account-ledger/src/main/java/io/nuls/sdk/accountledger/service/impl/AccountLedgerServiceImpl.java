@@ -319,6 +319,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         int targetSize = TransactionTool.MAX_TX_SIZE;
         List<String> transactionHexList = new ArrayList<>();
         Na amount = Na.ZERO;
+        boolean newTransaction = true;
         for (Input input:inputs) {
             if (input.getAddress() == null || !input.getAddress().equals(address)) {
                 return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);

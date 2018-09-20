@@ -15,7 +15,17 @@ public interface SDKConstant {
      * and the current address begins with "Ns".16402.
      */
     short DEFAULT_CHAIN_ID = 8964;
-    byte DEFAULT_ADDRESS_TYPE = 1;
+    /**
+     * 默认的地址类型，一条链可以包含几种地址类型，地址类型包含在地址中
+     * The default address type, a chain can contain several address types, and the address type is contained in the address.
+     */
+     byte DEFAULT_ADDRESS_TYPE = 1;
+    /**
+     * 智能合约地址类型
+     * contract address type
+     */
+    byte CONTRACT_ADDRESS_TYPE = 2;
+
     /**
      * 空值占位符
      * Null placeholder.

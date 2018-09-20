@@ -25,6 +25,7 @@
 package io.nuls.sdk.core.validate;
 
 
+import io.nuls.sdk.core.contast.KernelErrorCode;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.NulsData;
 import io.nuls.sdk.core.utils.Log;
@@ -53,12 +54,12 @@ public class DataValidatorChain {
             result = doValidate(data);
         } catch (Exception e) {
             Log.error(e);
-            result = ValidateResult.getFailedResult(this.getClass().getName(), e.getMessage());
+            result = ValidateResult.getFailedResult(this.getClass().getName(), KernelErrorCode.SYS_UNKOWN_EXCEPTION);
         }
         boolean b = index.get() == list.size();
         index.remove();
         if (!b && result.isSuccess()) {
-            return ValidateResult.getFailedResult(this.getClass().getName(), "The Validators not fully executed`");
+            return ValidateResult.getFailedResult(this.getClass().getName(), KernelErrorCode.VALIDATORS_NOT_FULLY_EXECUTED);
         }
         return result;
     }
@@ -74,7 +75,7 @@ public class DataValidatorChain {
             result = validator.validate(data);
         } catch (NulsException e) {
             Log.error(e);
-            return ValidateResult.getFailedResult(this.getClass().getName(), e.getErrorCode(), e.getMessage());
+            return ValidateResult.getFailedResult(this.getClass().getName(), e.getErrorCode());
         }
         if (null == result) {
             Log.error(validator.getClass() + " has null result!");

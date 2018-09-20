@@ -51,8 +51,14 @@ public class AccountInfo {
      */
     private boolean encrypted;
 
+    /**
+     * only offline account
+     */
     private String priKey;
 
+    /**
+     * only offline account
+     */
     private String encryptedPriKey;
 
     public AccountInfo() {

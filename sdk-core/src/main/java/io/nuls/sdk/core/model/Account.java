@@ -27,19 +27,20 @@ import io.nuls.sdk.core.contast.AccountErrorCode;
 import io.nuls.sdk.core.crypto.AESEncrypt;
 import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.crypto.EncryptedData;
+import io.nuls.sdk.core.crypto.Exception.CryptoException;
 import io.nuls.sdk.core.crypto.Sha256Hash;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.crypto.params.KeyParameter;
 
-import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
  * @author: Charlie
  */
-public class Account extends BaseNulsData {
+public class Account implements Serializable {
 
 
     /**
@@ -93,10 +94,14 @@ public class Account extends BaseNulsData {
 
     private ECKey ecKey;
 
-    //    /**
-//     * 账户是否被加密(是否设置过密码)
-//     * Whether the account is encrypted (Whether the password is set)
-//     */
+
+    private String remark;
+
+
+    /**
+     * 账户是否被加密(是否设置过密码)
+     * Whether the account is encrypted (Whether the password is set)
+     */
     public boolean isEncrypted() {
         if (getEncryptedPriKey() != null && getEncryptedPriKey().length > 0) {
             return true;
@@ -104,10 +109,10 @@ public class Account extends BaseNulsData {
         return false;
     }
 
-    //    /**
-//     * 锁定账户
-//     * Lock account
-//     */
+    /**
+     * 锁定账户
+     * Lock account
+     */
     public void lock() {
         if (!isEncrypted()) {
             return;
@@ -124,10 +129,10 @@ public class Account extends BaseNulsData {
         return this.getAddress().getHash160();
     }
 
-    //    /**
-//     * 根据密码解锁账户
-//     * Unlock account based on password
-//     */
+    /**
+     * 根据密码解锁账户
+     * Unlock account based on password
+     */
     public boolean unlock(String password) throws NulsException {
         decrypt(password);
         if (isLocked()) {
@@ -136,16 +141,20 @@ public class Account extends BaseNulsData {
         return true;
     }
 
-    //    /**
-//     * 账户是否被锁定(是否有明文私钥) 有私钥表示解锁
-//     * Whether the account is locked (is there a cleartext private key)
-//     *
-//     * @return true: Locked, false: not Locked
-//     */
+    /**
+     * 账户是否被锁定(是否有明文私钥) 有私钥表示解锁
+     * Whether the account is locked (is there a cleartext private key)
+     *
+     * @return true: Locked, false: not Locked
+     */
     public boolean isLocked() {
         return (this.getPriKey() == null) || (this.getPriKey().length == 0);
     }
 
+    /**
+     * 验证账户密码是否正确
+     * Verify that the account password is correct
+     */
     public boolean validatePassword(String password) {
         boolean result = StringUtils.validPassword(password);
         if (!result) {
@@ -154,8 +163,7 @@ public class Account extends BaseNulsData {
         byte[] unencryptedPrivateKey;
         try {
             unencryptedPrivateKey = AESEncrypt.decrypt(this.getEncryptedPriKey(), password);
-        } catch (Exception e) {
-            Log.error(e);
+        } catch (CryptoException e) {
             return false;
         }
         BigInteger newPriv = new BigInteger(1, unencryptedPrivateKey);
@@ -167,18 +175,18 @@ public class Account extends BaseNulsData {
         return true;
     }
 
-    //    /**
-//     * 根据密码加密账户(给账户设置密码)
-//     * Password-encrypted account (set password for account)
-//     */
+    /**
+     * 根据密码加密账户(给账户设置密码)
+     * Password-encrypted account (set password for account)
+     */
     public void encrypt(String password) throws NulsException {
         encrypt(password, false);
     }
 
-    //    /**
-//     * 根据密码加密账户(给账户设置密码)
-//     * Password-encrypted account (set password for account)
-//     */
+    /**
+     * 根据密码加密账户(给账户设置密码)
+     * Password-encrypted account (set password for account)
+     */
     public void encrypt(String password, boolean isForce) throws NulsException {
         if (this.isEncrypted()) {
             if (isForce) {
@@ -199,12 +207,11 @@ public class Account extends BaseNulsData {
         this.setEncryptedPriKey(encryptedPrivateKey.getEncryptedBytes());
     }
 
-    //
-//    /**
-//     * 根据解密账户, 包括生成账户明文私钥
-//     * According to the decryption account, including generating the account plaintext private key
-//     */
-    public boolean decrypt(String password) throws NulsException {
+    /**
+     * 根据解密账户, 包括生成账户明文私钥
+     * According to the decryption account, including generating the account plaintext private key
+     */
+    private boolean decrypt(String password) throws NulsException {
         try {
             byte[] unencryptedPrivateKey = AESEncrypt.decrypt(this.getEncryptedPriKey(), password);
             BigInteger newPriv = new BigInteger(1, unencryptedPrivateKey);
@@ -222,37 +229,6 @@ public class Account extends BaseNulsData {
         return true;
     }
 
-    @Override
-    public int size() {
-        int s = Address.ADDRESS_LENGTH;
-        s += SerializeUtils.sizeOfString(alias);
-        s += SerializeUtils.sizeOfBytes(encryptedPriKey);
-        s += SerializeUtils.sizeOfBytes(pubKey);
-        s += 1;
-        s += SerializeUtils.sizeOfBytes(extend);
-        return s;
-    }
-
-    @Override
-    protected void serializeToStream(NulsOutputStreamBuffer stream) throws IOException {
-        stream.write(address.getAddressBytes());
-        stream.writeString(alias);
-        stream.writeBytesWithLength(encryptedPriKey);
-        stream.writeBytesWithLength(pubKey);
-        stream.write(status);
-        stream.writeBytesWithLength(extend);
-    }
-
-    @Override
-    public void parse(NulsByteBuffer byteBuffer) throws NulsException {
-        address = Address.fromHashs(byteBuffer.readBytes(Address.ADDRESS_LENGTH));
-        alias = new String(byteBuffer.readByLengthByte());
-        encryptedPriKey = byteBuffer.readByLengthByte();
-        pubKey = byteBuffer.readByLengthByte();
-        status = (int) (byteBuffer.readByte());
-        extend = byteBuffer.readByLengthByte();
-    }
-
     public Object copy() {
         Account account = new Account();
         account.setAlias(alias);
@@ -264,6 +240,7 @@ public class Account extends BaseNulsData {
         account.setEncryptedPriKey(encryptedPriKey);
         account.setPriKey(priKey);
         account.setEcKey(ecKey);
+        account.setRemark(remark);
         return account;
     }
 
@@ -329,15 +306,13 @@ public class Account extends BaseNulsData {
     }
 
     public byte[] getPriKey(String password) throws NulsException {
-        boolean result = validatePassword(password);
-        if (!result) {
+        if (!StringUtils.validPassword(password)) {
             throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
         }
         byte[] unencryptedPrivateKey;
         try {
             unencryptedPrivateKey = AESEncrypt.decrypt(this.getEncryptedPriKey(), password);
-        } catch (Exception e) {
-            Log.error(e);
+        } catch (CryptoException e) {
             throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
         }
         BigInteger newPriv = new BigInteger(1, unencryptedPrivateKey);
@@ -359,6 +334,43 @@ public class Account extends BaseNulsData {
 
     public void setEcKey(ECKey ecKey) {
         this.ecKey = ecKey;
+    }
+
+    /**
+     * 根据密码获取ECKey
+     */
+    public ECKey getEcKey(String password) throws NulsException {
+        ECKey eckey = null;
+        byte[] unencryptedPrivateKey;
+        //判断当前账户是否存在私钥，如果不存在私钥这为锁定账户
+        BigInteger newPriv = null;
+        if (this.isLocked()) {
+            AssertUtil.canNotEmpty(password, "the password can not be empty");
+            if (!validatePassword(password)) {
+                throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+            }
+            try {
+                unencryptedPrivateKey = AESEncrypt.decrypt(this.getEncryptedPriKey(), password);
+                newPriv = new BigInteger(1, unencryptedPrivateKey);
+            } catch (CryptoException e) {
+                throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+            }
+        } else {
+            newPriv = new BigInteger(1, this.getPriKey());
+        }
+        eckey = ECKey.fromPrivate(newPriv);
+        if (!Arrays.equals(eckey.getPubKey(), getPubKey())) {
+            throw new NulsException(AccountErrorCode.PASSWORD_IS_WRONG);
+        }
+        return eckey;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 
     @Override

@@ -324,6 +324,10 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             if (input.getAddress() == null || !input.getAddress().equals(address)) {
                 return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
             }
+            //判断是否需创建新交易
+            if(newTransaction){
+
+            }
             byte[] key = Arrays.concatenate(Hex.decode(input.getFromHash()), new VarInt(input.getFromIndex()).encode());
             Coin coin = new Coin();
             coin.setOwner(key);

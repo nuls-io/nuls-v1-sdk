@@ -7,7 +7,6 @@ import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Address;
 import io.nuls.sdk.core.model.Coin;
 import io.nuls.sdk.core.model.CoinData;
-import io.nuls.sdk.core.model.NulsSignData;
 import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.utils.AddressTool;
 import io.nuls.sdk.core.utils.SerializeUtils;
@@ -149,13 +148,13 @@ public class SignatureUtil {
     /**
      * 生成多签交易TransactionSignture
      *
-     * @param tx           交易
+     * @param tx                   交易
      * @param transactionSignature 交易签名
-     * @param ecKey        签名账户的eckey
+     * @param ecKey                签名账户的eckey
      */
     public static void createMultiTransactionSignture(Transaction tx, TransactionSignature transactionSignature, ECKey ecKey) throws IOException {
         List<P2PHKSignature> p2PHKSignatures = new ArrayList<>();
-        if(transactionSignature.getP2PHKSignatures() != null && transactionSignature.getP2PHKSignatures().size()> 0){
+        if (transactionSignature.getP2PHKSignatures() != null && transactionSignature.getP2PHKSignatures().size() > 0) {
             p2PHKSignatures = transactionSignature.getP2PHKSignatures();
         }
         List<Script> scripts = transactionSignature.getScripts();
@@ -182,7 +181,7 @@ public class SignatureUtil {
             //验证交易，广播交易
         }
         //如果签名数还没达到，则返回交易
-        else{
+        else {
             transactionSignature.setP2PHKSignatures(p2PHKSignatures);
             tx.setTransactionSignature(transactionSignature.serialize());
         }

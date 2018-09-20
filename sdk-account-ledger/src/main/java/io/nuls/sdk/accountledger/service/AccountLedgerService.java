@@ -95,25 +95,26 @@ public interface AccountLedgerService {
     Result validateTransaction(String txHex);
 
     /**
+     * 签名 input 为多个地址的转账交易
+     *
+     * @param txHex    txHex
+     * @param privKeys privKeys
+     * @param password password
+     * @return
+     */
+    Result signMultipleTransaction(String txHex, List<String> privKeys, String password);
+
+    /**
      * 创建多重签名转账交易
-     * @param inputs inputs
+     *
+     * @param inputs  inputs
      * @param outputs outputs
-     * @param remark remark
+     * @param remark  remark
      * @return Result
      */
     Result createMSAccountTransferTransaction(List<Input> inputs, List<Output> outputs, String remark);
 
-    /**
-     * 多地址转账
-     * @param inputs inputs
-     * @param outputs outputs
-     * @param privKeys privKeys
-     * @param remark remark
-     * @return Result
-     */
-    Result transferWithMultipleAddress(List<Input> inputs, List<Output> outputs, List<String> privKeys, String remark);
-
-    /**
+/**
      * 零钱换整
      * @param inputs inputs
      * @param address address

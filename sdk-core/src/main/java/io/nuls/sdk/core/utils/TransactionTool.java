@@ -8,6 +8,7 @@ import io.nuls.sdk.core.exception.NulsRuntimeException;
 import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.model.transaction.*;
 import io.nuls.sdk.core.script.P2PHKSignature;
+import io.nuls.sdk.core.script.SignatureUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -85,9 +86,7 @@ public class TransactionTool {
 
     public static Transaction signTransaction(Transaction tx, ECKey ecKey) throws IOException {
         tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
-        P2PHKSignature sig = new P2PHKSignature();
-        sig.setPublicKey(ecKey.getPubKey());
-        sig.setSignData(signDigest(tx.getHash().getDigestBytes(), ecKey));
+        P2PHKSignature sig = SignatureUtil.createSignatureByEckey(tx, ecKey);
         tx.setTransactionSignature(sig.serialize());
         return tx;
     }

@@ -15,19 +15,18 @@ import io.nuls.sdk.core.model.Coin;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.core.model.dto.BalanceInfo;
-import io.nuls.sdk.core.model.transaction.TransferTransaction;
+import io.nuls.sdk.core.script.P2PHKSignature;
 import io.nuls.sdk.core.script.Script;
 import io.nuls.sdk.core.script.SignatureUtil;
+import io.nuls.sdk.core.script.TransactionSignature;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.util.Arrays;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author: Charlie
@@ -299,12 +298,58 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     }
 
     @Override
-    public Result createMSAccountTransferTransaction(List<Input> inputs, List<Output> outputs, String remark) {
-        return null;
+    public Result signMultipleTransaction(String txHex, List<String> privKeys, String password) {
+        if (StringUtils.isBlank(txHex)) {
+            return Result.getFailed("txHex error");
+        }
+        if (privKeys == null || privKeys.size() == 0) {
+            return Result.getFailed("privKeys error");
+        }
+
+        // decode private key
+        if (StringUtils.isNotBlank(password)) {
+            if (!StringUtils.validPassword(password)) {
+                return Result.getFailed(AccountErrorCode.PASSWORD_IS_WRONG);
+            }
+
+            privKeys = privKeys.stream()
+                    .map(p -> {
+                        byte[] privateKeyBytes = null;
+                        try {
+                            privateKeyBytes = AESEncrypt.decrypt(Hex.decode(p), password);
+                        } catch (Exception e) {
+                            return null;
+                        }
+                        return Hex.encode(privateKeyBytes);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+
+        List<ECKey> keys = privKeys.stream()
+                .map(p -> ECKey.fromPrivate(new BigInteger(Hex.decode(p))))
+                .collect(Collectors.toList());
+
+        // sign the transaction
+        try {
+            byte[] data = Hex.decode(txHex);
+            io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.getInstance(new NulsByteBuffer(data));
+            List<P2PHKSignature> p2PHKSignatures = SignatureUtil.createSignaturesByEckey(tx, keys);
+            TransactionSignature transactionSignature = new TransactionSignature();
+            transactionSignature.setP2PHKSignatures(p2PHKSignatures);
+            txHex = Hex.encode(tx.serialize());
+            Map<String, String> map = new HashMap<>();
+            map.put("value", txHex);
+            return Result.getSuccess().setData(map);
+        } catch (Exception e) {
+            Log.error(e);
+            return Result.getFailed(AccountErrorCode.DATA_PARSE_ERROR);
+        }
     }
 
     @Override
-    public Result transferWithMultipleAddress(List<Input> inputs, List<Output> outputs, List<String> privKeys, String remark) {
+    public Result createMSAccountTransferTransaction(List<Input> inputs, List<Output> outputs, String remark) {
+
         return null;
     }
 

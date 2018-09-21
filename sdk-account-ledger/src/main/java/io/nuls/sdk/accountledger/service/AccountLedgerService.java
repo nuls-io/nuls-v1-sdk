@@ -121,4 +121,13 @@ public interface AccountLedgerService {
      * @return Result
      */
     Result createChangeCoinTransaction(List<Input> inputs,String address);
+
+    /**
+     * 多签账户交易签名
+     * @param txHex    txHex
+     * @param privKeys privKeys
+     * @param passwords passwords
+     * @return Result
+     */
+    Result signMultiTransaction(String txHex, List<String> privKeys,List<String> passwords);
 }

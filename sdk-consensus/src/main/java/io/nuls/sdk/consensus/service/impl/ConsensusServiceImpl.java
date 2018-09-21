@@ -406,7 +406,8 @@ public class ConsensusServiceImpl implements ConsensusService {
             toList.add(new Coin(deposit.getAddress(), inputTotal.subtract(deposit.getDeposit()).subtract(fee), 0));
         }
         io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createDepositTx(inputsList, toList, deposit);
-        if (!TransactionTool.isFeeEnough(tx, P2PHKSignature.SERIALIZE_LENGTH, 2)) {
+        int scriptSignLenth = transactionSignature.getScripts().get(0).getProgram().length + SignatureUtil.getM(transactionSignature.getScripts().get(0))* 72;
+        if (!TransactionTool.isFeeEnough(tx, scriptSignLenth, 2)) {
             return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
         }
         try {

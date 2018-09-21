@@ -469,7 +469,7 @@ public class ConsensusServiceImpl implements ConsensusService {
     }
 
     public TransactionSignature getTransactionSignature(String address){
-        Result result = restFul.get("/consensus/deposit/agent/"+address  , null);
+        Result result = restFul.get("/multiAccount/"+address  , null);
         if(result.isFailed()){
             return  null;
         }

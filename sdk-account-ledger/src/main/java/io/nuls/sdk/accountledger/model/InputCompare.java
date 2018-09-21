@@ -20,9 +20,9 @@ public class InputCompare implements Comparator<Input> {
             return 1;
         }
         if(o1.getValue() > o2.getValue()) {
-            return -1;
-        }else{
             return 1;
+        }else{
+            return -1;
         }
     }
 }

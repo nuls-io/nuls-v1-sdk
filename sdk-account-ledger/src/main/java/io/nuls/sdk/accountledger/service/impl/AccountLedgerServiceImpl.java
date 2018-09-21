@@ -433,9 +433,12 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                 coinData.getFrom().add(coin);
                 tx.setCoinData(coinData);
             }
+            Map<String, Object> map = new HashMap<>();
+            map.put("value", transactionList);
+            return Result.getSuccess().setData(map);
         }catch (IOException e){
             Log.error(e);
+            return Result.getFailed(AccountErrorCode.DATA_PARSE_ERROR);
         }
-        return null;
     }
 }

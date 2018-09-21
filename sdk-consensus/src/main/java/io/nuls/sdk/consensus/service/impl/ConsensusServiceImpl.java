@@ -15,6 +15,7 @@ import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.script.*;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.util.Arrays;
+import sun.management.resources.agent;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -269,18 +270,10 @@ public class ConsensusServiceImpl implements ConsensusService {
         if(Hex.decode(address)[2] != SDKConstant.P2SH_ADDRESS_TYPE){
             return Result.getFailed("Not a multi signature address!");
         }
-        Result result = restFul.get("/consensus/deposit/agent/"+address  , null);
-        if(result.isFailed()){
+        TransactionSignature transactionSignature = getTransactionSignature(agentInfo.getAgentAddress());
+        if(transactionSignature == null){
             return Result.getFailed("There is no multi sign account!");
         }
-        Map<String, Object> data = (Map<String, Object>) result.getData();
-        List<byte[]> pubkeys =(List<byte[]>)data.get("pubKeyList");
-        long n = (Long)data.get("m");
-        TransactionSignature transactionSignature = new TransactionSignature();
-        List<Script> scripts = new ArrayList<>();
-        Script redeemScript = ScriptBuilder.createByteNulsRedeemScript((int)n,pubkeys);
-        scripts.add(redeemScript);
-        transactionSignature.setScripts(scripts);
         agent.setAgentAddress(AddressTool.getAddress(address));
         agent.setPackingAddress(AddressTool.getAddress(agentInfo.getPackingAddress()));
         if (StringUtils.isBlank(agentInfo.getRewardAddress())) {
@@ -313,12 +306,13 @@ public class ConsensusServiceImpl implements ConsensusService {
             //找零
             toList.add(new Coin(agent.getAgentAddress(), inputTotal.subtract(agent.getDeposit()).subtract(fee), 0));
         }
-        io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createAgentTx(inputsList, toList, agent);
-        int scriptSignLenth = redeemScript.getProgram().length + (int)n* 72;
-        if (!TransactionTool.isFeeEnough(tx, scriptSignLenth, 2)) {
-            return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
-        }
         try {
+            io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createAgentTx(inputsList, toList, agent);
+            int scriptSignLenth = transactionSignature.getScripts().get(0).getProgram().length + SignatureUtil.getM(transactionSignature.getScripts().get(0))* 72;
+            tx.setTransactionSignature(transactionSignature.serialize());
+            if (!TransactionTool.isFeeEnough(tx, scriptSignLenth, 2)) {
+                return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
+            }
             String txHex = Hex.encode(tx.serialize());
             Map<String, String> map = new HashMap<>();
             map.put("value", txHex);
@@ -331,16 +325,161 @@ public class ConsensusServiceImpl implements ConsensusService {
 
     @Override
     public Result createStopMSAgentTransaction(Output output) {
-        return null;
+        NulsDigestData hash = null;
+        try {
+            hash = NulsDigestData.fromDigestHex(output.getTxHash());
+        } catch (NulsException e) {
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "agentTxHash error");
+        }
+        TransactionSignature transactionSignature = getTransactionSignature(output.getAddress());
+        if(transactionSignature == null){
+            return Result.getFailed("There is no multi sign account!");
+        }
+        StopAgent stopAgent = new StopAgent();
+        stopAgent.setAddress(AddressTool.getAddress(output.getAddress()));
+        stopAgent.setCreateTxHash(hash);
+        //组装input
+        Coin from = new Coin();
+        byte[] key = Arrays.concatenate(Hex.decode(output.getTxHash()), new VarInt(output.getIndex()).encode());
+        List<Coin> inputsList = new ArrayList<>();
+        from.setOwner(key);
+        from.setNa(Na.valueOf(output.getValue()));
+        from.setLockTime(-1);
+        inputsList.add(from);
+
+        //手续费
+        Na fee = Na.valueOf(1000000L);
+        //组装output
+        List<Coin> toList = new ArrayList<>();
+        if(stopAgent.getAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE){
+            Script scriptPubkey = SignatureUtil.createOutputScript(stopAgent.getAddress());
+            toList.add(new Coin(scriptPubkey.getProgram(), Na.valueOf(output.getValue()).subtract(fee), SDKConstant.CONSENSUS_LOCK_TIME));
+        }else{
+            toList.add(new Coin(stopAgent.getAddress(), Na.valueOf(output.getValue()).subtract(fee), 0));
+        }
+        io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createStopAgentTx(inputsList, toList, stopAgent);
+        try {
+            tx.setTransactionSignature(transactionSignature.serialize());
+            String txHex = Hex.encode(tx.serialize());
+            Map<String, String> map = new HashMap<>();
+            map.put("value", txHex);
+            return Result.getSuccess().setData(map);
+        } catch (IOException e) {
+            Log.error(e);
+            return Result.getFailed(e.getMessage());
+        }
     }
 
     @Override
     public Result createMSAccountDepositTransaction(DepositInfo info, List<Input> inputs, Na fee) {
-        return null;
+        Deposit deposit = new Deposit();
+        deposit.setAddress(AddressTool.getAddress(info.getAddress()));
+        try {
+            deposit.setAgentHash(NulsDigestData.fromDigestHex(info.getAgentHash()));
+        } catch (NulsException e) {
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "agentHash error");
+        }
+        TransactionSignature transactionSignature = getTransactionSignature(info.getAddress());
+        if(transactionSignature == null){
+            return Result.getFailed("There is no multi sign account!");
+        }
+        deposit.setDeposit(Na.valueOf(info.getDeposit()));
+        List<Coin> inputsList = new ArrayList<>();
+        Na inputTotal = Na.ZERO;
+        for (int i = 0; i < inputs.size(); i++) {
+            Input inputDto = inputs.get(i);
+            byte[] key = Arrays.concatenate(Hex.decode(inputDto.getFromHash()), new VarInt(inputDto.getFromIndex()).encode());
+            Coin coin = new Coin();
+            coin.setOwner(key);
+            coin.setNa(Na.valueOf(inputDto.getValue()));
+            coin.setLockTime(inputDto.getLockTime());
+            inputsList.add(coin);
+            inputTotal = inputTotal.add(coin.getNa());
+        }
+        List<Coin> toList = new ArrayList<>();
+        if(deposit.getAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE){
+            Script scriptPubkey = SignatureUtil.createOutputScript(deposit.getAddress());
+            toList.add(new Coin(scriptPubkey.getProgram(), deposit.getDeposit().subtract(fee), SDKConstant.CONSENSUS_LOCK_TIME));
+            toList.add(new Coin(scriptPubkey.getProgram(), inputTotal.subtract(deposit.getDeposit()).subtract(fee), 0));
+        }else{
+            toList.add(new Coin(deposit.getAddress(), deposit.getDeposit(), SDKConstant.CONSENSUS_LOCK_TIME));
+            toList.add(new Coin(deposit.getAddress(), inputTotal.subtract(deposit.getDeposit()).subtract(fee), 0));
+        }
+        io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createDepositTx(inputsList, toList, deposit);
+        if (!TransactionTool.isFeeEnough(tx, P2PHKSignature.SERIALIZE_LENGTH, 2)) {
+            return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
+        }
+        try {
+            tx.setTransactionSignature(transactionSignature.serialize());
+            String txHex = Hex.encode(tx.serialize());
+            Map<String, String> map = new HashMap<>();
+            map.put("value", txHex);
+            return Result.getSuccess().setData(map);
+        } catch (IOException e) {
+            Log.error(e);
+            return Result.getFailed(e.getMessage());
+        }
     }
 
     @Override
     public Result createMSAccountCancelDepositTransaction(Output output) {
-        return null;
+        CancelDeposit cancelDeposit = new CancelDeposit();
+        cancelDeposit.setAddress(AddressTool.getAddress(output.getAddress()));
+        try {
+            NulsDigestData hash = NulsDigestData.fromDigestHex(output.getTxHash());
+            cancelDeposit.setJoinTxHash(hash);
+        } catch (NulsException e) {
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "joinTxHash error");
+        }
+
+        TransactionSignature transactionSignature = getTransactionSignature(output.getAddress());
+        if(transactionSignature == null){
+            return Result.getFailed("There is no multi sign account!");
+        }
+        //组装input
+        Coin from = new Coin();
+        byte[] key = Arrays.concatenate(Hex.decode(output.getTxHash()), new VarInt(output.getIndex()).encode());
+        List<Coin> inputsList = new ArrayList<>();
+        from.setOwner(key);
+        from.setNa(Na.valueOf(output.getValue()));
+        from.setLockTime(-1);
+        inputsList.add(from);
+        //手续费
+        Na fee = Na.valueOf(1000000L);
+        //组装output
+        List<Coin> toList = new ArrayList<>();
+        if(cancelDeposit.getAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE){
+            Script scriptPubkey = SignatureUtil.createOutputScript(cancelDeposit.getAddress());
+            toList.add(new Coin(scriptPubkey.getProgram(), Na.valueOf(output.getValue()).subtract(fee),  SDKConstant.CONSENSUS_LOCK_TIME));
+        }else{
+            toList.add(new Coin(cancelDeposit.getAddress(), Na.valueOf(output.getValue()).subtract(fee), 0));
+        }
+        io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createCancelDepositTx(inputsList, toList, cancelDeposit);
+        try {
+            tx.setTransactionSignature(transactionSignature.serialize());
+            String txHex = Hex.encode(tx.serialize());
+            Map<String, String> map = new HashMap<>();
+            map.put("value", txHex);
+            return Result.getSuccess().setData(map);
+        } catch (IOException e) {
+            Log.error(e);
+            return Result.getFailed(e.getMessage());
+        }
+    }
+
+    public TransactionSignature getTransactionSignature(String address){
+        Result result = restFul.get("/consensus/deposit/agent/"+address  , null);
+        if(result.isFailed()){
+            return  null;
+        }
+        Map<String, Object> data = (Map<String, Object>) result.getData();
+        List<byte[]> pubkeys =(List<byte[]>)data.get("pubKeyList");
+        long n = (Long)data.get("m");
+        TransactionSignature transactionSignature = new TransactionSignature();
+        List<Script> scripts = new ArrayList<>();
+        Script redeemScript = ScriptBuilder.createByteNulsRedeemScript((int)n,pubkeys);
+        scripts.add(redeemScript);
+        transactionSignature.setScripts(scripts);
+        return  transactionSignature;
     }
 }

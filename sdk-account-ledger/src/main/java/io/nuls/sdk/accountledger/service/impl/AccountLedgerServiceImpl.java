@@ -403,6 +403,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     int signType = Integer.parseInt((String)resultMap.get("signType"));
                     //如果两种签名都存在
                     if((signType & 0x01) == 0x01 && (signType & 0x02) == 0x02){
+                        size+=P2PHKSignature.SERIALIZE_LENGTH;
                         Na fee = TransactionFeeCalculator.getFee(size, TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES);
                         amount = amount.subtract(fee);
                         tx.setCoinData(coinData);

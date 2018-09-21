@@ -445,10 +445,51 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
 
     @Override
     public Result signMultiTransaction(String txHex, List<String> privKeys, List<String> passwords) {
-        if(txHex == null ||privKeys == null || passwords == null || privKeys.size() != passwords.size()) {
-            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
+        try {
+            if(StringUtils.isBlank(txHex)){
+                return Result.getFailed("txHex can not be null!");
+            }
+            if(privKeys == null || privKeys.size() == 0){
+                return Result.getFailed("The privKeys list can not be null!");
+            }
+            if(passwords == null || passwords.size() == 0){
+                return Result.getFailed("The passwords list can not be null!");
+            }
+            if(passwords.size() != privKeys.size()){
+                return Result.getFailed("privKeys length and passwords length are not equal,If there is no password in the account, please empty the string.");
+            }
+            for(int i=0;i<privKeys.size();i++){
+                String priKey = privKeys.get(i);
+                String password = passwords.get(i);
+                priKey = getPrikey(priKey,password);
+                if (!ECKey.isValidPrivteHex(priKey)) {
+                    return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "priKey error");
+                }
+                ECKey key = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
+                io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.getInstance(new NulsByteBuffer(Hex.decode(txHex)));
+            }
+        }catch (Exception e){
+            Log.error(e);
+            return Result.getFailed(AccountErrorCode.DATA_PARSE_ERROR);
         }
-
         return null;
+    }
+
+    public String getPrikey(String prikey,String password){
+        if (StringUtils.isNotBlank(password)) {
+            if (StringUtils.validPassword(password)) {
+                //decrypt
+                byte[] privateKeyBytes = null;
+                try {
+                    privateKeyBytes = AESEncrypt.decrypt(Hex.decode(prikey), password);
+                } catch (Exception e) {
+                    return "";
+                }
+                prikey = Hex.encode(privateKeyBytes);
+            } else {
+                return "";
+            }
+        }
+        return prikey;
     }
 }

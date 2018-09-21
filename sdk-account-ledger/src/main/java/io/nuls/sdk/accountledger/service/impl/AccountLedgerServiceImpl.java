@@ -12,9 +12,11 @@ import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Coin;
+import io.nuls.sdk.core.model.CoinData;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.core.model.dto.BalanceInfo;
+import io.nuls.sdk.core.model.transaction.TransferTransaction;
 import io.nuls.sdk.core.script.P2PHKSignature;
 import io.nuls.sdk.core.script.Script;
 import io.nuls.sdk.core.script.SignatureUtil;
@@ -361,17 +363,23 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         if(StringUtils.isBlank(address) || !AddressTool.validAddress(address)){
             return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
         }
-        int targetSize = TransactionTool.MAX_TX_SIZE;
-        List<String> transactionHexList = new ArrayList<>();
+        int targetSize;
+        List<String> transactionList = new ArrayList<>();
         Na amount = Na.ZERO;
         boolean newTransaction = true;
+        TransferTransaction tx = null;
+        CoinData coinData = null;
         for (Input input:inputs) {
             if (input.getAddress() == null || !input.getAddress().equals(address)) {
                 return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
             }
             //判断是否需创建新交易
             if(newTransaction){
-
+                tx = new TransferTransaction();
+                tx.setTime(TimeService.currentTimeMillis());
+                coinData = new CoinData();
+                targetSize = TransactionTool.MAX_TX_SIZE;
+                newTransaction = false;
             }
             byte[] key = Arrays.concatenate(Hex.decode(input.getFromHash()), new VarInt(input.getFromIndex()).encode());
             Coin coin = new Coin();

@@ -445,6 +445,10 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
 
     @Override
     public Result signMultiTransaction(String txHex, List<String> privKeys, List<String> passwords) {
+        if(txHex == null ||privKeys == null || passwords == null || privKeys.size() != passwords.size()) {
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
+        }
+
         return null;
     }
 }

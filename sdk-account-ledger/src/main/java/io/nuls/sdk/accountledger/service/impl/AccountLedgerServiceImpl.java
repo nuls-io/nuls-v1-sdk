@@ -405,6 +405,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     if((signType & 0x01) == 0x01 && (signType & 0x02) == 0x02){
                         Na fee = TransactionFeeCalculator.getFee(size, TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES);
                         amount = amount.subtract(fee);
+                        tx.setCoinData(coinData);
                         Coin toCoin = new Coin(AddressTool.getAddress(address), amount);
                         coinData.getTo().add(toCoin);
                         tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
@@ -418,8 +419,19 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     size += 1;
                 }
                 if (size > targetSize) {
-
+                    Na fee = TransactionFeeCalculator.getFee(size, TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES);
+                    amount = amount.subtract(fee);
+                    Coin toCoin = new Coin(AddressTool.getAddress(address), amount);
+                    coinData.getTo().add(toCoin);
+                    tx.setCoinData(coinData);
+                    tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
+                    transactionList.add(Hex.encode(tx.serialize()));
+                    i--;
+                    newTransaction = true;
+                    continue;
                 }
+                coinData.getFrom().add(coin);
+                tx.setCoinData(coinData);
             }
         }catch (IOException e){
             Log.error(e);

@@ -12,10 +12,7 @@ import io.nuls.sdk.core.crypto.AESEncrypt;
 import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.exception.NulsException;
-import io.nuls.sdk.core.model.Coin;
-import io.nuls.sdk.core.model.CoinData;
-import io.nuls.sdk.core.model.Na;
-import io.nuls.sdk.core.model.Result;
+import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.model.dto.BalanceInfo;
 import io.nuls.sdk.core.model.transaction.TransferTransaction;
 import io.nuls.sdk.core.script.P2PHKSignature;
@@ -358,38 +355,74 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
 
     @Override
     public Result createChangeCoinTransaction(List<Input> inputs, String address) {
-        if (inputs == null || inputs.isEmpty()) {
-            return Result.getFailed("inputs error");
-        }
-        if(StringUtils.isBlank(address) || !AddressTool.validAddress(address)){
-            return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
-        }
-        Collections.sort(inputs, InputCompare.getInstance());
-        int targetSize;
-        int txsize;
-        List<String> transactionList = new ArrayList<>();
-        Na amount = Na.ZERO;
-        boolean newTransaction = true;
-        TransferTransaction tx = null;
-        CoinData coinData = null;
-        for (Input input:inputs) {
-            if (input.getAddress() == null || !input.getAddress().equals(address)) {
+        try {
+            if (inputs == null || inputs.isEmpty()) {
+                return Result.getFailed("inputs error");
+            }
+            if(StringUtils.isBlank(address) || !AddressTool.validAddress(address)){
                 return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
             }
-            //判断是否需创建新交易
-            if(newTransaction){
-                tx = new TransferTransaction();
-                tx.setTime(TimeService.currentTimeMillis());
-                txsize = tx.getSize() + 38;
-                coinData = new CoinData();
-                targetSize = TransactionTool.MAX_TX_SIZE - txsize;
-                newTransaction = false;
+            Collections.sort(inputs, InputCompare.getInstance());
+            int targetSize = 0;
+            int size = 0;
+            List<String> transactionList = new ArrayList<>();
+            Na amount = Na.ZERO;
+            boolean newTransaction = true;
+            TransferTransaction tx = null;
+            CoinData coinData = null;
+            List <String> ownerHexList = null;
+            for(int i = 0;i<inputs.size();i++){
+                Input input = inputs.get(i);
+                if (input.getAddress() == null || !input.getAddress().equals(address)) {
+                    return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
+                }
+                //判断是否需创建新交易
+                if(newTransaction){
+                    tx = new TransferTransaction();
+                    tx.setTime(TimeService.currentTimeMillis());
+                    size = tx.getSize() + 38;
+                    coinData = new CoinData();
+                    targetSize = TransactionTool.MAX_TX_SIZE - size - P2PHKSignature.SERIALIZE_LENGTH;
+                    amount = Na.ZERO;
+                    ownerHexList = new ArrayList<>();
+                    newTransaction = false;
+                }
+                byte[] key = Arrays.concatenate(Hex.decode(input.getFromHash()), new VarInt(input.getFromIndex()).encode());
+                Coin coin = new Coin();
+                coin.setOwner(key);
+                coin.setNa(Na.valueOf(input.getValue()));
+                coin.setLockTime(input.getLockTime());
+                size += coin.size();
+                ownerHexList.add(Hex.encode(key));
+                //判断当前交易中的UTXO是否存在脚本签名的交易
+                if(size > targetSize - P2PHKSignature.SERIALIZE_LENGTH){
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("utxoList", ownerHexList);
+                    Result result = restFul.post("/accountledger/multiAccount/getSignType", map);
+                    Map<String, Object> resultMap = (Map) result.getData();
+                    int signType = Integer.parseInt((String)resultMap.get("signType"));
+                    //如果两种签名都存在
+                    if((signType & 0x01) == 0x01 && (signType & 0x02) == 0x02){
+                        Na fee = TransactionFeeCalculator.getFee(size, TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES);
+                        amount = amount.subtract(fee);
+                        Coin toCoin = new Coin(AddressTool.getAddress(address), amount);
+                        coinData.getTo().add(toCoin);
+                        tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
+                        transactionList.add(Hex.encode(tx.serialize()));
+                        i--;
+                        newTransaction = true;
+                        continue;
+                    }
+                }
+                if (i == 127) {
+                    size += 1;
+                }
+                if (size > targetSize) {
+
+                }
             }
-            byte[] key = Arrays.concatenate(Hex.decode(input.getFromHash()), new VarInt(input.getFromIndex()).encode());
-            Coin coin = new Coin();
-            coin.setOwner(key);
-            coin.setNa(Na.valueOf(input.getValue()));
-            coin.setLockTime(input.getLockTime());
+        }catch (IOException e){
+            Log.error(e);
         }
         return null;
     }

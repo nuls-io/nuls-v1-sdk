@@ -1,5 +1,9 @@
 package io.nuls.sdk.accountledger.model;
 import java.util.Comparator;
+
+/****
+ * @author tag
+ */
 public class InputCompare implements Comparator<Input> {
     private static InputCompare instance = new InputCompare();
 

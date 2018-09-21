@@ -467,6 +467,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "priKey error");
                 }
                 ECKey key = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
+
             }
         }catch (Exception e){
             Log.error(e);

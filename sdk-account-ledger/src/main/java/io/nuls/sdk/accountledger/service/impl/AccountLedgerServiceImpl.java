@@ -370,10 +370,40 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
 
         inputs.sort(InputCompare.getInstance());
 
+        CoinData coinData = new CoinData();
+        for (Input p : inputs) {
+            byte[] fromAddr = AddressTool.getAddress(p.getAddress());
+            if (fromAddr[2] != SDKConstant.P2SH_ADDRESS_TYPE) {
+                return Result.getFailed("input address is not an multiple signature address");
+            }
+            Script scriptPubkey = SignatureUtil.createOutputScript(fromAddr);
+            Coin input = new Coin(scriptPubkey.getProgram(), Na.valueOf(p.getValue()), 0);
+            coinData.getFrom().add(input);
+        }
 
+        outputs.forEach(p -> {
+            byte[] receiverAddr = AddressTool.getAddress(p.getAddress());
+            Coin output = null;
+            if (receiverAddr[2] == SDKConstant.P2SH_ADDRESS_TYPE) {
+                Script scriptPubkey = SignatureUtil.createOutputScript(receiverAddr);
+                output = new Coin(scriptPubkey.getProgram(), Na.valueOf(p.getValue()));
+            } else {
+                output = new Coin(receiverAddr, Na.valueOf(p.getValue()));
+            }
+            coinData.getTo().add(output);
+        });
 
+        TransferTransaction tx = new TransferTransaction();
+        tx.setCoinData(coinData);
+        Map<String, Object> map = new HashMap<>();
+        try {
+            tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
+            map.put("txdata", Hex.encode(tx.serialize()));
+        } catch (IOException e) {
+            return Result.getFailed("outputs error");
+        }
 
-        return null;
+        return Result.getSuccess().setData(map);
     }
 
     @Override
@@ -469,16 +499,16 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     @Override
     public Result signMultiTransaction(String txHex, List<String> privKeys, List<String> passwords) {
         try {
-            if(StringUtils.isBlank(txHex)){
+            if (StringUtils.isBlank(txHex)) {
                 return Result.getFailed("txHex can not be null!");
             }
-            if(privKeys == null || privKeys.size() == 0){
+            if (privKeys == null || privKeys.size() == 0) {
                 return Result.getFailed("The privKeys list can not be null!");
             }
-            if(passwords == null || passwords.size() == 0){
+            if (passwords == null || passwords.size() == 0) {
                 return Result.getFailed("The passwords list can not be null!");
             }
-            if(passwords.size() != privKeys.size()){
+            if (passwords.size() != privKeys.size()) {
                 return Result.getFailed("privKeys length and passwords length are not equal,If there is no password in the account, please empty the string.");
             }
             Set <String> priKeySet = new HashSet<>(privKeys);
@@ -498,8 +528,8 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             for(int i=0;i<privKeys.size();i++){
                 String priKey = privKeys.get(i);
                 String password = passwords.get(i);
-                priKey = getPrikey(priKey,password);
-                if(StringUtils.isBlank(priKey)){
+                priKey = getPrikey(priKey, password);
+                if (StringUtils.isBlank(priKey)) {
                     return Result.getFailed(AccountErrorCode.PASSWORD_IS_WRONG);
                 }
                 if (!ECKey.isValidPrivteHex(priKey)) {
@@ -522,7 +552,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         }
     }
 
-    public String getPrikey(String prikey,String password){
+    public String getPrikey(String prikey, String password) {
         if (StringUtils.isNotBlank(password)) {
             if (StringUtils.validPassword(password)) {
                 //decrypt

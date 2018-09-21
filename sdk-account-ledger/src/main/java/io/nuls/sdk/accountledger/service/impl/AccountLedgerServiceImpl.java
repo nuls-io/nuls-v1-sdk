@@ -1,6 +1,7 @@
 package io.nuls.sdk.accountledger.service.impl;
 
 import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.InputCompare;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.accountledger.model.Transaction;
 import io.nuls.sdk.accountledger.service.AccountLedgerService;
@@ -363,7 +364,9 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         if(StringUtils.isBlank(address) || !AddressTool.validAddress(address)){
             return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
         }
+        Collections.sort(inputs, InputCompare.getInstance());
         int targetSize;
+        int txsize;
         List<String> transactionList = new ArrayList<>();
         Na amount = Na.ZERO;
         boolean newTransaction = true;
@@ -377,8 +380,9 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             if(newTransaction){
                 tx = new TransferTransaction();
                 tx.setTime(TimeService.currentTimeMillis());
+                txsize = tx.getSize() + 38;
                 coinData = new CoinData();
-                targetSize = TransactionTool.MAX_TX_SIZE;
+                targetSize = TransactionTool.MAX_TX_SIZE - txsize;
                 newTransaction = false;
             }
             byte[] key = Arrays.concatenate(Hex.decode(input.getFromHash()), new VarInt(input.getFromIndex()).encode());

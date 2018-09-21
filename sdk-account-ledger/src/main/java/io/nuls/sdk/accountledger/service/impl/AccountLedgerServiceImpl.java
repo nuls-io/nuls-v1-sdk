@@ -442,4 +442,9 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             return Result.getFailed(AccountErrorCode.DATA_PARSE_ERROR);
         }
     }
+
+    @Override
+    public Result signMultiTransaction(String txHex, List<String> privKeys, List<String> passwords) {
+        return null;
+    }
 }

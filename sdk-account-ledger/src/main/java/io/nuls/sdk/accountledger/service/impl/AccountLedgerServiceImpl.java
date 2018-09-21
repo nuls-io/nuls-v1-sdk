@@ -458,6 +458,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             if(passwords.size() != privKeys.size()){
                 return Result.getFailed("privKeys length and passwords length are not equal,If there is no password in the account, please empty the string.");
             }
+            io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.getInstance(new NulsByteBuffer(Hex.decode(txHex)));
             for(int i=0;i<privKeys.size();i++){
                 String priKey = privKeys.get(i);
                 String password = passwords.get(i);
@@ -466,7 +467,6 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "priKey error");
                 }
                 ECKey key = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
-                io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.getInstance(new NulsByteBuffer(Hex.decode(txHex)));
             }
         }catch (Exception e){
             Log.error(e);

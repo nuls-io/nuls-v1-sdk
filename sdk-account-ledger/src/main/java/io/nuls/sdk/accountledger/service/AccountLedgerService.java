@@ -114,7 +114,7 @@ public interface AccountLedgerService {
      */
     Result createMSAccountTransferTransaction(List<Input> inputs, List<Output> outputs, String remark);
 
-/**
+    /**
      * 零钱换整
      * @param inputs inputs
      * @param address address

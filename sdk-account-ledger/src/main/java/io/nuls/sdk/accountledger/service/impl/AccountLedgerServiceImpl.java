@@ -463,11 +463,13 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                 String priKey = privKeys.get(i);
                 String password = passwords.get(i);
                 priKey = getPrikey(priKey,password);
+                if(StringUtils.isBlank(priKey)){
+                    return Result.getFailed(AccountErrorCode.PASSWORD_IS_WRONG);
+                }
                 if (!ECKey.isValidPrivteHex(priKey)) {
                     return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "priKey error");
                 }
                 ECKey key = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
-
             }
         }catch (Exception e){
             Log.error(e);

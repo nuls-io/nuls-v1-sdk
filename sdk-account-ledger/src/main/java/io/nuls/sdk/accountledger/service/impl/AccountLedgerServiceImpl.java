@@ -481,7 +481,20 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             if(passwords.size() != privKeys.size()){
                 return Result.getFailed("privKeys length and passwords length are not equal,If there is no password in the account, please empty the string.");
             }
+            Set <String> priKeySet = new HashSet<>(privKeys);
+            if(priKeySet.size() != privKeys.size()){
+                return Result.getFailed("Private key can not be repeated!");
+            }
             io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.getInstance(new NulsByteBuffer(Hex.decode(txHex)));
+            TransactionSignature transactionSignature = new TransactionSignature();
+            transactionSignature.parse(new NulsByteBuffer(tx.getTransactionSignature()));
+            if(transactionSignature == null || transactionSignature.getScripts().size() != 1){
+                return Result.getFailed("Transaction data error!");
+            }
+            int n = SignatureUtil.getM(transactionSignature.getScripts().get(0));
+            if(n != privKeys.size()){
+                return Result.getFailed("The number of private keys is larger than the number of accounts that need to be signed!");
+            }
             for(int i=0;i<privKeys.size();i++){
                 String priKey = privKeys.get(i);
                 String password = passwords.get(i);
@@ -493,12 +506,20 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "priKey error");
                 }
                 ECKey key = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
+                transactionSignature.parse(new NulsByteBuffer(tx.getTransactionSignature()));
+                SignatureUtil.createMultiTransactionSignture(tx,transactionSignature,key);
             }
-        }catch (Exception e){
+            Map<String, Object> map = new HashMap<>();
+            map.put("value", Hex.encode(tx.serialize()));
+            return Result.getSuccess().setData(map);
+        }catch (IOException e){
+            Log.error(e);
+            return Result.getFailed("Transaction signature error!");
+        }
+        catch (Exception e){
             Log.error(e);
             return Result.getFailed(AccountErrorCode.DATA_PARSE_ERROR);
         }
-        return null;
     }
 
     public String getPrikey(String prikey,String password){

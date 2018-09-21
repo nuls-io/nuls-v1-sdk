@@ -178,7 +178,6 @@ public class SignatureUtil {
             transactionSignature.getScripts().clear();
             transactionSignature.getScripts().add(scriptSign);
             tx.setTransactionSignature(transactionSignature.serialize());
-            //验证交易，广播交易
         }
         //如果签名数还没达到，则返回交易
         else {

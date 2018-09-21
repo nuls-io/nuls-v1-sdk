@@ -3,20 +3,16 @@ package io.nuls.sdk.consensus.service.impl;
 
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
-import io.nuls.sdk.accountledger.service.AccountLedgerService;
 import io.nuls.sdk.consensus.model.AgentInfo;
-import io.nuls.sdk.consensus.model.CancelDepositInfo;
 import io.nuls.sdk.consensus.model.DepositInfo;
 import io.nuls.sdk.consensus.service.ConsensusService;
 import io.nuls.sdk.core.contast.AccountErrorCode;
-import io.nuls.sdk.core.contast.ErrorCode;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.contast.TransactionErrorCode;
 import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.*;
-import io.nuls.sdk.core.model.transaction.CreateAgentTransaction;
-import io.nuls.sdk.core.model.transaction.DepositTransaction;
+import io.nuls.sdk.core.script.P2PHKSignature;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.util.Arrays;
 
@@ -72,7 +68,7 @@ public class ConsensusServiceImpl implements ConsensusService {
         toList.add(new Coin(agent.getAgentAddress(), inputTotal.subtract(agent.getDeposit()).subtract(fee), 0));
 
         io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createAgentTx(inputsList, toList, agent);
-        if (!TransactionTool.isFeeEnough(tx, 2)) {
+        if (!TransactionTool.isFeeEnough(tx, P2PHKSignature.SERIALIZE_LENGTH, 2)) {
             return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
         }
 
@@ -117,7 +113,7 @@ public class ConsensusServiceImpl implements ConsensusService {
 
         io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createDepositTx(inputsList, toList, deposit);
 
-        if (!TransactionTool.isFeeEnough(tx, 2)) {
+        if (!TransactionTool.isFeeEnough(tx, P2PHKSignature.SERIALIZE_LENGTH, 2)) {
             return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
         }
 

@@ -66,6 +66,18 @@ public interface AccountLedgerService {
     Result createTransaction(List<Input> inputs, List<Output> outputs, String remark);
 
     /**
+     * 创建交易
+     * Create Transaction
+     *
+     * @param inputs  inputs
+     * @param nInputAccount nInputAccount
+     * @param outputs outputs
+     * @param remark  remark
+     * @return Result
+     */
+    Result createMultipleInputAddressTransaction(List<Input> inputs,int nInputAccount, List<Output> outputs, String remark);
+
+    /**
      * 签名交易
      * Sign Transaction
      *

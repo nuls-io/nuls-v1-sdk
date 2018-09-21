@@ -99,8 +99,8 @@ public class TransactionTool {
         return nulsSignData;
     }
 
-    public static boolean isFeeEnough(Transaction tx, int type) {
-        int size = tx.size() + P2PHKSignature.SERIALIZE_LENGTH;
+    public static boolean isFeeEnough(Transaction tx, int signatureSize, int type) {
+        int size = tx.size() + signatureSize;
         Na minFee = TransactionFeeCalculator.getTransferFee(size, type);
         //计算inputs和outputs的差额 ，求手续费
         Na fee = Na.ZERO;

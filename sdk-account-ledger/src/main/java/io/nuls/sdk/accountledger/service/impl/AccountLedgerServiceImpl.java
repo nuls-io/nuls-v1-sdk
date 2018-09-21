@@ -154,11 +154,19 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
 
     @Override
     public Result createTransaction(List<Input> inputs, List<Output> outputs, String remark) {
+        return createMultipleInputAddressTransaction(inputs, 1, outputs, remark);
+    }
+
+    @Override
+    public Result createMultipleInputAddressTransaction(List<Input> inputs, int nInputAccount, List<Output> outputs, String remark) {
         if (inputs == null || inputs.isEmpty()) {
             return Result.getFailed("inputs error");
         }
         if (outputs == null || outputs.isEmpty()) {
             return Result.getFailed("outputs error");
+        }
+        if (nInputAccount <= 0) {
+            return Result.getFailed("nInputAccount error");
         }
 
         byte[] remarkBytes = null;
@@ -227,7 +235,9 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         }
 
         io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createTransferTx(inputsList, outputList, remarkBytes);
-        if (!TransactionTool.isFeeEnough(tx, 1)) {
+        // 兜底，防止手续费不足
+        // 暂不支持 output 包含脚本交易
+        if (!TransactionTool.isFeeEnough(tx, P2PHKSignature.SERIALIZE_LENGTH * nInputAccount, 1)) {
             return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
         }
 
@@ -326,6 +336,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     .collect(Collectors.toList());
         }
 
+        // conversion private key string to ECKey
         List<ECKey> keys = privKeys.stream()
                 .map(p -> ECKey.fromPrivate(new BigInteger(Hex.decode(p))))
                 .collect(Collectors.toList());
@@ -349,6 +360,18 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
 
     @Override
     public Result createMSAccountTransferTransaction(List<Input> inputs, List<Output> outputs, String remark) {
+        // Check parameters
+        if (inputs == null || inputs.isEmpty()) {
+            return Result.getFailed("inputs error");
+        }
+        if (outputs == null || outputs.isEmpty()) {
+            return Result.getFailed("outputs error");
+        }
+
+        inputs.sort(InputCompare.getInstance());
+
+
+
 
         return null;
     }
@@ -359,7 +382,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             if (inputs == null || inputs.isEmpty()) {
                 return Result.getFailed("inputs error");
             }
-            if(StringUtils.isBlank(address) || !AddressTool.validAddress(address)){
+            if (StringUtils.isBlank(address) || !AddressTool.validAddress(address)) {
                 return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
             }
             Collections.sort(inputs, InputCompare.getInstance());
@@ -370,14 +393,14 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             boolean newTransaction = true;
             TransferTransaction tx = null;
             CoinData coinData = null;
-            List <String> ownerHexList = null;
-            for(int i = 0;i<inputs.size();i++){
+            List<String> ownerHexList = null;
+            for (int i = 0; i < inputs.size(); i++) {
                 Input input = inputs.get(i);
                 if (input.getAddress() == null || !input.getAddress().equals(address)) {
                     return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
                 }
                 //判断是否需创建新交易
-                if(newTransaction){
+                if (newTransaction) {
                     tx = new TransferTransaction();
                     tx.setTime(TimeService.currentTimeMillis());
                     size = tx.getSize() + 38;
@@ -395,15 +418,15 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                 size += coin.size();
                 ownerHexList.add(Hex.encode(key));
                 //判断当前交易中的UTXO是否存在脚本签名的交易
-                if(size > targetSize - P2PHKSignature.SERIALIZE_LENGTH){
+                if (size > targetSize - P2PHKSignature.SERIALIZE_LENGTH) {
                     Map<String, Object> map = new HashMap<>();
                     map.put("utxoList", ownerHexList);
                     Result result = restFul.post("/accountledger/multiAccount/getSignType", map);
                     Map<String, Object> resultMap = (Map) result.getData();
-                    int signType = Integer.parseInt((String)resultMap.get("signType"));
+                    int signType = Integer.parseInt((String) resultMap.get("signType"));
                     //如果两种签名都存在
-                    if((signType & 0x01) == 0x01 && (signType & 0x02) == 0x02){
-                        size+=P2PHKSignature.SERIALIZE_LENGTH;
+                    if ((signType & 0x01) == 0x01 && (signType & 0x02) == 0x02) {
+                        size += P2PHKSignature.SERIALIZE_LENGTH;
                         Na fee = TransactionFeeCalculator.getFee(size, TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES);
                         amount = amount.subtract(fee);
                         tx.setCoinData(coinData);
@@ -437,7 +460,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             Map<String, Object> map = new HashMap<>();
             map.put("value", transactionList);
             return Result.getSuccess().setData(map);
-        }catch (IOException e){
+        } catch (IOException e) {
             Log.error(e);
             return Result.getFailed(AccountErrorCode.DATA_PARSE_ERROR);
         }

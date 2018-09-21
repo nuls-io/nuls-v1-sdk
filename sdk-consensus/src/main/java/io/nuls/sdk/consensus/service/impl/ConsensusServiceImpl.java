@@ -12,7 +12,7 @@ import io.nuls.sdk.core.contast.TransactionErrorCode;
 import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.*;
-import io.nuls.sdk.core.script.P2PHKSignature;
+import io.nuls.sdk.core.script.*;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.util.Arrays;
 
@@ -260,7 +260,73 @@ public class ConsensusServiceImpl implements ConsensusService {
 
     @Override
     public Result createMSAgentTransaction(AgentInfo agentInfo, List<Input> inputs, Na fee) {
-        return null;
+        Agent agent = new Agent();
+        String address = agentInfo.getAgentAddress();
+        //根据Address获取，多签账户信息
+        if(!AddressTool.validAddress(address)){
+            return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
+        }
+        if(Hex.decode(address)[2] != SDKConstant.P2SH_ADDRESS_TYPE){
+            return Result.getFailed("Not a multi signature address!");
+        }
+        Result result = restFul.get("/consensus/deposit/agent/"+address  , null);
+        if(result.isFailed()){
+            return Result.getFailed("There is no multi sign account!");
+        }
+        Map<String, Object> data = (Map<String, Object>) result.getData();
+        List<byte[]> pubkeys =(List<byte[]>)data.get("pubKeyList");
+        long n = (Long)data.get("m");
+        TransactionSignature transactionSignature = new TransactionSignature();
+        List<Script> scripts = new ArrayList<>();
+        Script redeemScript = ScriptBuilder.createByteNulsRedeemScript((int)n,pubkeys);
+        scripts.add(redeemScript);
+        transactionSignature.setScripts(scripts);
+        agent.setAgentAddress(AddressTool.getAddress(address));
+        agent.setPackingAddress(AddressTool.getAddress(agentInfo.getPackingAddress()));
+        if (StringUtils.isBlank(agentInfo.getRewardAddress())) {
+            agent.setRewardAddress(agent.getAgentAddress());
+        } else {
+            agent.setRewardAddress(AddressTool.getAddress(agentInfo.getRewardAddress()));
+        }
+        agent.setDeposit(Na.valueOf(agentInfo.getDeposit()));
+        agent.setCommissionRate(agentInfo.getCommissionRate());
+        List<Coin> inputsList = new ArrayList<>();
+        Na inputTotal = Na.ZERO;
+        for (int i = 0; i < inputs.size(); i++) {
+            Input inputDto = inputs.get(i);
+            byte[] key = Arrays.concatenate(Hex.decode(inputDto.getFromHash()), new VarInt(inputDto.getFromIndex()).encode());
+            Coin coin = new Coin();
+            coin.setOwner(key);
+            coin.setNa(Na.valueOf(inputDto.getValue()));
+            coin.setLockTime(inputDto.getLockTime());
+            inputsList.add(coin);
+            inputTotal = inputTotal.add(coin.getNa());
+        }
+
+        List<Coin> toList = new ArrayList<>();
+        if(agent.getAgentAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE){
+            Script scriptPubkey = SignatureUtil.createOutputScript(agent.getAgentAddress());
+            toList.add(new Coin(scriptPubkey.getProgram(), agent.getDeposit(), SDKConstant.CONSENSUS_LOCK_TIME));
+            toList.add(new Coin(scriptPubkey.getProgram(), inputTotal.subtract(agent.getDeposit()).subtract(fee), 0));
+        }else{
+            toList.add(new Coin(agent.getAgentAddress(), agent.getDeposit(), SDKConstant.CONSENSUS_LOCK_TIME));
+            //找零
+            toList.add(new Coin(agent.getAgentAddress(), inputTotal.subtract(agent.getDeposit()).subtract(fee), 0));
+        }
+        io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createAgentTx(inputsList, toList, agent);
+        int scriptSignLenth = redeemScript.getProgram().length + (int)n* 72;
+        if (!TransactionTool.isFeeEnough(tx, scriptSignLenth, 2)) {
+            return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
+        }
+        try {
+            String txHex = Hex.encode(tx.serialize());
+            Map<String, String> map = new HashMap<>();
+            map.put("value", txHex);
+            return Result.getSuccess().setData(map);
+        } catch (IOException e) {
+            Log.error(e);
+            return Result.getFailed(e.getMessage());
+        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package io.nuls.sdk.tool;
 import io.nuls.sdk.account.service.AccountService;
 import io.nuls.sdk.account.service.impl.AccountServiceImpl;
 import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.MSAccount;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.accountledger.service.AccountLedgerService;
 import io.nuls.sdk.accountledger.service.impl.AccountLedgerServiceImpl;
@@ -277,5 +278,11 @@ public class NulsSDKTool {
         return consensusService.getAgentDeposits(agentHash, pageNumber, pageSize);
     }
 
+    public static Result createMSAccountTransferTransaction(MSAccount account, List<Input> inputs, List<Output> outputs, String remark) {
+        return accountLedgerService.createMSAccountTransferTransaction(account, inputs, outputs, remark);
+    }
 
+    public static Result signMultiTransaction(String txHex, List<String> privKeys, List<String> passwords) {
+        return accountLedgerService.signMultiTransaction(txHex, privKeys, passwords);
+    }
 }

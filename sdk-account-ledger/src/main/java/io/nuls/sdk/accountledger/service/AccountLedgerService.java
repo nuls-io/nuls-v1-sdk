@@ -1,6 +1,7 @@
 package io.nuls.sdk.accountledger.service;
 
 import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.MSAccount;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.model.Result;
 
@@ -66,16 +67,16 @@ public interface AccountLedgerService {
     Result createTransaction(List<Input> inputs, List<Output> outputs, String remark);
 
     /**
-     * 创建交易
-     * Create Transaction
+     * 创建多地址转账交易
+     * Create Multiple Address Transaction
      *
-     * @param inputs  inputs
+     * @param inputs        inputs
      * @param nInputAccount nInputAccount
-     * @param outputs outputs
-     * @param remark  remark
+     * @param outputs       outputs
+     * @param remark        remark
      * @return Result
      */
-    Result createMultipleInputAddressTransaction(List<Input> inputs,int nInputAccount, List<Output> outputs, String remark);
+    Result createMultipleInputAddressTransaction(List<Input> inputs, int nInputAccount, List<Output> outputs, String remark);
 
     /**
      * 签名交易
@@ -124,22 +125,24 @@ public interface AccountLedgerService {
      * @param remark  remark
      * @return Result
      */
-    Result createMSAccountTransferTransaction(List<Input> inputs, List<Output> outputs, String remark);
+    Result createMSAccountTransferTransaction(MSAccount account, List<Input> inputs, List<Output> outputs, String remark);
 
     /**
      * 零钱换整
-     * @param inputs inputs
+     *
+     * @param inputs  inputs
      * @param address address
      * @return Result
      */
-    Result createChangeCoinTransaction(List<Input> inputs,String address);
+    Result createChangeCoinTransaction(List<Input> inputs, String address);
 
     /**
      * 多签账户交易签名
-     * @param txHex    txHex
-     * @param privKeys privKeys
+     *
+     * @param txHex     txHex
+     * @param privKeys  privKeys
      * @param passwords passwords
      * @return Result
      */
-    Result signMultiTransaction(String txHex, List<String> privKeys,List<String> passwords);
+    Result signMultiTransaction(String txHex, List<String> privKeys, List<String> passwords);
 }

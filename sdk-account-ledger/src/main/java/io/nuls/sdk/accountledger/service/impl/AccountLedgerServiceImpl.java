@@ -1,9 +1,6 @@
 package io.nuls.sdk.accountledger.service.impl;
 
-import io.nuls.sdk.accountledger.model.Input;
-import io.nuls.sdk.accountledger.model.InputCompare;
-import io.nuls.sdk.accountledger.model.Output;
-import io.nuls.sdk.accountledger.model.Transaction;
+import io.nuls.sdk.accountledger.model.*;
 import io.nuls.sdk.accountledger.service.AccountLedgerService;
 import io.nuls.sdk.core.contast.AccountErrorCode;
 import io.nuls.sdk.core.contast.SDKConstant;
@@ -15,10 +12,7 @@ import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.model.dto.BalanceInfo;
 import io.nuls.sdk.core.model.transaction.TransferTransaction;
-import io.nuls.sdk.core.script.P2PHKSignature;
-import io.nuls.sdk.core.script.Script;
-import io.nuls.sdk.core.script.SignatureUtil;
-import io.nuls.sdk.core.script.TransactionSignature;
+import io.nuls.sdk.core.script.*;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.util.Arrays;
 
@@ -359,8 +353,11 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     }
 
     @Override
-    public Result createMSAccountTransferTransaction(List<Input> inputs, List<Output> outputs, String remark) {
+    public Result createMSAccountTransferTransaction(MSAccount account, List<Input> inputs, List<Output> outputs, String remark) {
         // Check parameters
+        if (account == null || account.getPubKeys() == null || account.getPubKeys().size() == 0) {
+            return Result.getFailed("Multiple Signature Account parameters error");
+        }
         if (inputs == null || inputs.isEmpty()) {
             return Result.getFailed("inputs error");
         }
@@ -394,10 +391,18 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         });
 
         TransferTransaction tx = new TransferTransaction();
+        tx.setTime(TimeService.currentTimeMillis());
         tx.setCoinData(coinData);
+        if (remark != null && remark.trim().length() > 0) {
+            tx.setRemark(remark.trim().getBytes());
+        }
+        TransactionSignature signature = new TransactionSignature();
+        Script redeemScript = ScriptBuilder.createNulsRedeemScript(account.getThreshold(), account.getPubKeys());
+        signature.setScripts(Collections.singletonList(redeemScript));
         Map<String, Object> map = new HashMap<>();
         try {
             tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
+            tx.setTransactionSignature(signature.serialize());
             map.put("txdata", Hex.encode(tx.serialize()));
         } catch (IOException e) {
             return Result.getFailed("outputs error");
@@ -511,21 +516,21 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             if (passwords.size() != privKeys.size()) {
                 return Result.getFailed("privKeys length and passwords length are not equal,If there is no password in the account, please empty the string.");
             }
-            Set <String> priKeySet = new HashSet<>(privKeys);
-            if(priKeySet.size() != privKeys.size()){
+            Set<String> priKeySet = new HashSet<>(privKeys);
+            if (priKeySet.size() != privKeys.size()) {
                 return Result.getFailed("Private key can not be repeated!");
             }
             io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.getInstance(new NulsByteBuffer(Hex.decode(txHex)));
             TransactionSignature transactionSignature = new TransactionSignature();
             transactionSignature.parse(new NulsByteBuffer(tx.getTransactionSignature()));
-            if(transactionSignature == null || transactionSignature.getScripts().size() != 1){
+            if (transactionSignature == null || transactionSignature.getScripts().size() != 1) {
                 return Result.getFailed("Transaction data error!");
             }
             int n = SignatureUtil.getM(transactionSignature.getScripts().get(0));
-            if(n != privKeys.size()){
+            if (n != privKeys.size()) {
                 return Result.getFailed("The number of private keys is larger than the number of accounts that need to be signed!");
             }
-            for(int i=0;i<privKeys.size();i++){
+            for (int i = 0; i < privKeys.size(); i++) {
                 String priKey = privKeys.get(i);
                 String password = passwords.get(i);
                 priKey = getPrikey(priKey, password);
@@ -537,16 +542,15 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                 }
                 ECKey key = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
                 transactionSignature.parse(new NulsByteBuffer(tx.getTransactionSignature()));
-                SignatureUtil.createMultiTransactionSignture(tx,transactionSignature,key);
+                SignatureUtil.createMultiTransactionSignture(tx, transactionSignature, key);
             }
             Map<String, Object> map = new HashMap<>();
             map.put("value", Hex.encode(tx.serialize()));
             return Result.getSuccess().setData(map);
-        }catch (IOException e){
+        } catch (IOException e) {
             Log.error(e);
             return Result.getFailed("Transaction signature error!");
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             Log.error(e);
             return Result.getFailed(AccountErrorCode.DATA_PARSE_ERROR);
         }

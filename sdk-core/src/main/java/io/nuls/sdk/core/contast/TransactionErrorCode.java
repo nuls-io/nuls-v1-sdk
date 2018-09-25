@@ -49,16 +49,4 @@ public interface TransactionErrorCode extends KernelErrorCode {
     ErrorCode TX_TYPE_ERROR = ErrorCode.init("31017");
     ErrorCode TX_NOT_EFFECTIVE = ErrorCode.init("31018");
 
-
-//    ErrorCode UTXO_UNUSABLE = ErrorCode.init("LED001", "12001");
-//    ErrorCode UTXO_STATUS_CHANGE = ErrorCode.init("LED002", "12002");
-//    ErrorCode BALANCE_NOT_ENOUGH = ErrorCode.init("LED003", "12003");
-//    ErrorCode INVALID_INPUT = ErrorCode.init("LED004", "12004");
-//    ErrorCode INVALID_AMOUNT = ErrorCode.init("LED005", "12005");
-//    ErrorCode ORPHAN_TX = ErrorCode.init("LED006", "12006");
-//    ErrorCode ORPHAN_BLOCK = ErrorCode.init("LED007", "12007");
-//    ErrorCode UTXO_NOT_FOUND = ErrorCode.init("LED008", "12008");
-//    ErrorCode FEE_NOT_RIGHT = ErrorCode.init("LED009", "12009");
-
-
 }

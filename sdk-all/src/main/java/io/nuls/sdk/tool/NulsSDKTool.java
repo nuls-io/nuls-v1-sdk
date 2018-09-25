@@ -286,7 +286,7 @@ public class NulsSDKTool {
         return accountLedgerService.signMultiTransaction(txHex, privKeys, passwords);
     }
 
-    public static Result createMSAgentTransaction(List<Input> inputs, String address) {
+    public static Result createChangeCoinTransaction(List<Input> inputs, String address) {
         return accountLedgerService.createChangeCoinTransaction(inputs,address);
     }
 

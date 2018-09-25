@@ -63,8 +63,8 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
     @Override
     public int size() {
         int size = 0;
-        size += SerializeUtils.sizeOfUint16(); // type
-        size += SerializeUtils.sizeOfUint48(); // time
+        size += SerializeUtils.sizeOfUint16();
+        size += SerializeUtils.sizeOfUint48();
         size += SerializeUtils.sizeOfBytes(remark);
         size += SerializeUtils.sizeOfNulsData(txData);
         size += SerializeUtils.sizeOfNulsData(coinData);
@@ -282,8 +282,8 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
             if (size == 0) {
                 bos.write(SDKConstant.PLACE_HOLDER);
             } else {
-                buffer.writeVarInt(type);
-                buffer.writeVarInt(time);
+                buffer.writeUint16(type);
+                buffer.writeUint48(time);
                 buffer.writeBytesWithLength(remark);
                 buffer.writeNulsData(txData);
                 buffer.writeNulsData(coinData);

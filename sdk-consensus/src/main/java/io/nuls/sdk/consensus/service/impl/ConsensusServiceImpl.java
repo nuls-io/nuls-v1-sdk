@@ -267,7 +267,6 @@ public class ConsensusServiceImpl implements ConsensusService {
         if(!AddressTool.validAddress(address)){
             return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
         }
-        //if(Hex.decode(address)[2] != SDKConstant.P2SH_ADDRESS_TYPE){
         if(AddressTool.getAddress(address)[2] != SDKConstant.P2SH_ADDRESS_TYPE){
             return Result.getFailed("Not a multi signature address!");
         }
@@ -470,16 +469,21 @@ public class ConsensusServiceImpl implements ConsensusService {
     }
 
     public TransactionSignature getTransactionSignature(String address){
-        Result result = restFul.get("/multiAccount/"+address  , null);
+        Result result = restFul.get("/account/multiAccount/"+address  , null);
         if(result.isFailed()){
             return  null;
         }
         Map<String, Object> data = (Map<String, Object>) result.getData();
-        List<byte[]> pubkeys =(List<byte[]>)data.get("pubKeyList");
-        long n = (Long)data.get("m");
+        List<Map<String, String>> pubkeyInfos =(List<Map<String, String>>)data.get("pubkeys");
+        List<byte[]> pubkeys = new ArrayList<>();
+        for (Map<String,String> pubkeyInfo:pubkeyInfos) {
+            pubkeys.add(Hex.decode(pubkeyInfo.get("pubkey")));
+        }
+
+        int n = (int)data.get("m");
         TransactionSignature transactionSignature = new TransactionSignature();
         List<Script> scripts = new ArrayList<>();
-        Script redeemScript = ScriptBuilder.createByteNulsRedeemScript((int)n,pubkeys);
+        Script redeemScript = ScriptBuilder.createByteNulsRedeemScript(n,pubkeys);
         scripts.add(redeemScript);
         transactionSignature.setScripts(scripts);
         return  transactionSignature;

@@ -30,7 +30,7 @@ public class MultiTransactionTest {
         input.setFromHash("0020f9366a00df33ba84cedfaeea1b92df24175079bd216700b5625ab1ee27c45dbe");
         input.setFromIndex(0);
         input.setAddress("NseWwCKxV1ToMCZnYHbFrEmKgU7p4fBm");
-        input.setValue(200000 * 100000000L);
+        input.setValue(500000 * 100000000L);
         inputs.add(input);
 
         AgentInfo info = new AgentInfo();

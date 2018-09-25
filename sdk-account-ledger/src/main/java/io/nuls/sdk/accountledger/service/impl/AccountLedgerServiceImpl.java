@@ -302,7 +302,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     }
 
     @Override
-    public Result signMultipleTransaction(String txHex, List<String> privKeys, String password) {
+    public Result signMultipleAddressTransaction(String txHex, List<String> privKeys, String password) {
         if (StringUtils.isBlank(txHex)) {
             return Result.getFailed("txHex error");
         }
@@ -502,7 +502,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     }
 
     @Override
-    public Result signMultiTransaction(String txHex, List<String> privKeys, List<String> passwords) {
+    public Result signMSTransaction(String txHex, List<String> privKeys, List<String> passwords) {
         try {
             if (StringUtils.isBlank(txHex)) {
                 return Result.getFailed("txHex can not be null!");

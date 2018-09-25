@@ -115,7 +115,7 @@ public interface AccountLedgerService {
      * @param password password
      * @return
      */
-    Result signMultipleTransaction(String txHex, List<String> privKeys, String password);
+    Result signMultipleAddressTransaction(String txHex, List<String> privKeys, String password);
 
     /**
      * 创建多重签名转账交易
@@ -144,5 +144,5 @@ public interface AccountLedgerService {
      * @param passwords passwords
      * @return Result
      */
-    Result signMultiTransaction(String txHex, List<String> privKeys, List<String> passwords);
+    Result signMSTransaction(String txHex, List<String> privKeys, List<String> passwords);
 }

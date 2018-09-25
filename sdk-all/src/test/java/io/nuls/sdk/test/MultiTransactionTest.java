@@ -27,9 +27,9 @@ public class MultiTransactionTest {
     public void testCreateMSAgent(){
         List<Input> inputs = new ArrayList<>();
         Input input = new Input();
-        input.setFromHash("002072d5df7545bfa20c26222b0f9a498c23dd91e9ba94027a2c8be47c5e8243373e");
+        input.setFromHash("0020f9366a00df33ba84cedfaeea1b92df24175079bd216700b5625ab1ee27c45dbe");
         input.setFromIndex(0);
-        //input.setAddress("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM");
+        input.setAddress("NseWwCKxV1ToMCZnYHbFrEmKgU7p4fBm");
         input.setValue(200000 * 100000000L);
         inputs.add(input);
 
@@ -146,11 +146,10 @@ public class MultiTransactionTest {
         System.out.println(result.getData());
     }
 
-    @Test
-    public String TestSignMultiTransaction(String txHex,List<String>priKeys,List<String>passwords){
+    /*public String TestSignMultiTransaction(String txHex,List<String>priKeys,List<String>passwords){
         Result  result = NulsSDKTool.signMultiTransaction(txHex, priKeys,passwords);
         Map<String, Object> map = (Map<String, Object>) result.getData();
         return (String) map.get("value");
-    }
+    }*/
 
 }

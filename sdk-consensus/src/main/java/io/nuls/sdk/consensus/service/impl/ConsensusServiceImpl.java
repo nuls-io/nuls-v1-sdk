@@ -267,7 +267,8 @@ public class ConsensusServiceImpl implements ConsensusService {
         if(!AddressTool.validAddress(address)){
             return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
         }
-        if(Hex.decode(address)[2] != SDKConstant.P2SH_ADDRESS_TYPE){
+        //if(Hex.decode(address)[2] != SDKConstant.P2SH_ADDRESS_TYPE){
+        if(AddressTool.getAddress(address)[2] != SDKConstant.P2SH_ADDRESS_TYPE){
             return Result.getFailed("Not a multi signature address!");
         }
         TransactionSignature transactionSignature = getTransactionSignature(agentInfo.getAgentAddress());

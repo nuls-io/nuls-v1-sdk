@@ -285,4 +285,24 @@ public class NulsSDKTool {
     public static Result signMultiTransaction(String txHex, List<String> privKeys, List<String> passwords) {
         return accountLedgerService.signMultiTransaction(txHex, privKeys, passwords);
     }
+
+    public static Result createMSAgentTransaction(List<Input> inputs, String address) {
+        return accountLedgerService.createChangeCoinTransaction(inputs,address);
+    }
+
+    public static Result createMSAgentTransaction(AgentInfo agentInfo, List<Input> inputs, Na fee) {
+        return consensusService.createMSAgentTransaction(agentInfo,inputs,fee);
+    }
+
+    public static Result createStopMSAgentTransaction(Output output) {
+        return consensusService.createStopMSAgentTransaction(output);
+    }
+
+    public static Result createMSAccountDepositTransaction(DepositInfo info, List<Input> inputs, Na fee) {
+        return consensusService.createMSAccountDepositTransaction(info,inputs,fee);
+    }
+
+    public static Result createMSAccountCancelDepositTransaction(Output output) {
+        return consensusService.createMSAccountCancelDepositTransaction(output);
+    }
 }

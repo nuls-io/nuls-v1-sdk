@@ -541,6 +541,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "priKey error");
                 }
                 ECKey key = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
+                transactionSignature.parse(new NulsByteBuffer(tx.getTransactionSignature()));
                 SignatureUtil.createMultiTransactionSignture(tx, transactionSignature, key);
             }
             Map<String, Object> map = new HashMap<>();

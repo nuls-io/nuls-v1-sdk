@@ -15,7 +15,7 @@ import java.util.*;
 public class MultiTransactionTest {
     @BeforeClass
     public static void init(){
-        SDKBootstrap.init("127.0.0.1", "8011");
+        SDKBootstrap.init("192.168.1.133", "8011");
     }
 
     @Test
@@ -27,10 +27,10 @@ public class MultiTransactionTest {
     public void testCreateMSAgent(){
         List<Input> inputs = new ArrayList<>();
         Input input = new Input();
-        input.setFromHash("0020f9366a00df33ba84cedfaeea1b92df24175079bd216700b5625ab1ee27c45dbe");
+        input.setFromHash("0020228e6aeb3bd85520287e56bceec50a5527177ccb5e585a505489420b73623167");
         input.setFromIndex(0);
         input.setAddress("NseWwCKxV1ToMCZnYHbFrEmKgU7p4fBm");
-        input.setValue(500000 * 100000000L);
+        input.setValue(5000000 * 100000000L);
         inputs.add(input);
 
         AgentInfo info = new AgentInfo();

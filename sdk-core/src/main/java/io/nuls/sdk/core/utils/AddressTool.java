@@ -31,8 +31,6 @@ import io.nuls.sdk.core.crypto.Base58;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.exception.NulsRuntimeException;
 import io.nuls.sdk.core.model.Address;
-import io.nuls.sdk.core.script.P2PKHScriptSig;
-import org.spongycastle.util.Arrays;
 
 /**
  * @author: Niels Wang
@@ -69,12 +67,12 @@ public class AddressTool {
         return xor;
     }
 
-    public static byte[] getAddress(P2PKHScriptSig scriptSig) {
-        if (scriptSig == null) {
-            return null;
-        }
-        return getAddress(scriptSig.getPublicKey());
-    }
+//    public static byte[] getAddress(P2PKHScriptSig scriptSig) {
+//        if (scriptSig == null) {
+//            return null;
+//        }
+//        return getAddress(scriptSig.getPublicKey());
+//    }
 
     public static boolean validAddress(String address) {
         if (StringUtils.isBlank(address)) {

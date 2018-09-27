@@ -24,11 +24,13 @@
  */
 package io.nuls.sdk.core.model.transaction;
 
+import io.nuls.sdk.core.contast.AccountErrorCode;
+import io.nuls.sdk.core.contast.ErrorCode;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.UnsafeByteArrayOutputStream;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.*;
-import io.nuls.sdk.core.script.P2PKHScriptSig;
+import io.nuls.sdk.core.script.SignatureUtil;
 import io.nuls.sdk.core.utils.*;
 
 import java.io.ByteArrayOutputStream;
@@ -48,7 +50,7 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
 
     protected long time;
 
-    private byte[] scriptSig;
+    private byte[] transactionSignature;
 
     protected byte[] remark;
 
@@ -63,12 +65,12 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
     @Override
     public int size() {
         int size = 0;
-        size += SerializeUtils.sizeOfUint16(); // type
-        size += SerializeUtils.sizeOfUint48(); // time
+        size += SerializeUtils.sizeOfUint16();
+        size += SerializeUtils.sizeOfUint48();
         size += SerializeUtils.sizeOfBytes(remark);
         size += SerializeUtils.sizeOfNulsData(txData);
         size += SerializeUtils.sizeOfNulsData(coinData);
-        size += SerializeUtils.sizeOfBytes(scriptSig);
+        size += SerializeUtils.sizeOfBytes(transactionSignature);
         return size;
     }
 
@@ -79,7 +81,7 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
         stream.writeBytesWithLength(remark);
         stream.writeNulsData(txData);
         stream.writeNulsData(coinData);
-        stream.writeBytesWithLength(scriptSig);
+        stream.writeBytesWithLength(transactionSignature);
     }
 
     @Override
@@ -94,7 +96,7 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
         } catch (IOException e) {
             Log.error(e);
         }
-        scriptSig = byteBuffer.readByLengthByte();
+        transactionSignature = byteBuffer.readByLengthByte();
     }
 //
 //    /**
@@ -169,12 +171,12 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
         this.hash = hash;
     }
 
-    public byte[] getScriptSig() {
-        return scriptSig;
+    public byte[] getTransactionSignature() {
+        return transactionSignature;
     }
 
-    public void setScriptSig(byte[] scriptSig) {
-        this.scriptSig = scriptSig;
+    public void setTransactionSignature(byte[] transactionSignature) {
+        this.transactionSignature = transactionSignature;
     }
 
     public T getTxData() {
@@ -232,7 +234,7 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
     }
 
     public byte[] getAddressFromSig() {
-        return AddressTool.getAddress(scriptSig);
+        return AddressTool.getAddress(transactionSignature);
     }
 
     public List<byte[]> getAllRelativeAddress() {
@@ -250,21 +252,20 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
                 addresses.addAll(txAddressSet);
             }
         }
-        if (scriptSig != null) {
+        if (this.transactionSignature != null) {
             try {
-                P2PKHScriptSig sig = P2PKHScriptSig.createFromBytes(scriptSig);
-                byte[] address = AddressTool.getAddress(sig);
-
-                boolean hasExist = false;
-                for (byte[] as : addresses) {
-                    if (Arrays.equals(as, address)) {
-                        hasExist = true;
-                        break;
+                Set<String> signAddresss = SignatureUtil.getAddressFromTX(this);
+                for (String signAddr : signAddresss) {
+                    boolean hasExist = false;
+                    for (byte[] addr : addresses) {
+                        if (Arrays.equals(AddressTool.getAddress(signAddr), addr)) {
+                            hasExist = true;
+                            break;
+                        }
                     }
-                }
-
-                if (!hasExist) {
-                    addresses.add(address);
+                    if (!hasExist) {
+                        addresses.add(AddressTool.getAddress(signAddr));
+                    }
                 }
             } catch (NulsException e) {
                 Log.error(e);
@@ -273,18 +274,51 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
         return new ArrayList<>(addresses);
     }
 
-    public byte[] serializeForHash() throws IOException {
+    /*public byte[] serializeForHash() throws IOException {
         ByteArrayOutputStream bos = null;
         try {
-            int size = size() - SerializeUtils.sizeOfBytes(scriptSig);
+            int size = size() - SerializeUtils.sizeOfBytes(transactionSignature);
 
             bos = new UnsafeByteArrayOutputStream(size);
             NulsOutputStreamBuffer buffer = new NulsOutputStreamBuffer(bos);
             if (size == 0) {
                 bos.write(SDKConstant.PLACE_HOLDER);
             } else {
-                buffer.writeVarInt(type);
-                buffer.writeVarInt(time);
+                buffer.writeUint16(type);
+                buffer.writeUint48(time);
+                buffer.writeBytesWithLength(remark);
+                buffer.writeNulsData(txData);
+                buffer.writeNulsData(coinData);
+            }
+            return bos.toByteArray();
+        } finally {
+            if (bos != null) {
+                try {
+                    bos.close();
+                } catch (IOException e) {
+                    throw e;
+                }
+            }
+        }
+    }*/
+
+    public byte[] serializeForHash() throws IOException {
+        ByteArrayOutputStream bos = null;
+        try {
+            int main_version = TransactionTool.getMainVersion();
+            int size = size() - SerializeUtils.sizeOfBytes(transactionSignature);
+            bos = new UnsafeByteArrayOutputStream(size);
+            NulsOutputStreamBuffer buffer = new NulsOutputStreamBuffer(bos);
+            if (size == 0) {
+                bos.write(SDKConstant.PLACE_HOLDER);
+            } else {
+                if (main_version == 1) {
+                    buffer.writeVarInt(type);
+                    buffer.writeVarInt(time);
+                } else {
+                    buffer.writeUint16(type);
+                    buffer.writeUint48(time);
+                }
                 buffer.writeBytesWithLength(remark);
                 buffer.writeNulsData(txData);
                 buffer.writeNulsData(coinData);

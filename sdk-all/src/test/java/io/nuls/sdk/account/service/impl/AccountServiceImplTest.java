@@ -9,6 +9,7 @@ import io.nuls.sdk.tool.NulsSDKTool;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -113,5 +114,28 @@ public class AccountServiceImplTest {
             assertNotNull("private key can not be null", accountInfo.getPriKey());
             assertNotNull("public key can not be null", accountInfo.getPubKey());
         }
+    }
+
+    @Test
+    public void createMSAccount() {
+        List<String> pubKeys = Arrays.asList(
+                "02c7b2761a51c2a2ddecf41021d67ce2cf86fdc6dd44bac2742e3025917e7a749a",
+                "023cee4d977974293ec436251e5c03840f5110e1c5155e4f357099404bd7be5ee3",
+                "03052f7ccfc4c87e5d2454d846c78fdc02fcd480b234735c1724741d3e04be2fc4"
+        );
+        Result result = NulsSDKTool.createMSAccount(pubKeys, 2);
+        assertTrue("Create multiple signature must success", result.isSuccess());
+        Map<String, Object> resp = (Map<String, Object>) result.getData();
+        assertNotNull("Create MSAccount must response value", resp);
+        assertEquals("Create algorithm error", "NseVy6D3xAhwfYXi9Cn7YajG1QXJxN43", resp.get("address"));
+        assertEquals("Response Pub Key List", pubKeys, resp.get("pubKeys"));
+        assertEquals("Threshold must be equal", 2, resp.get("threshold"));
+
+        result = NulsSDKTool.createMSAccount(pubKeys, 3);
+        assertTrue("Create multiple signature must success", result.isSuccess());
+        resp = (Map<String, Object>) result.getData();
+        assertNotNull("Create MSAccount must response value", resp);
+        assertEquals("Create algorithm error", "NseTwZQk1oM5vzKVBYhch6JF4tu2TDWd", resp.get("address"));
+        assertEquals("Threshold must be equal", 3, resp.get("threshold"));
     }
 }

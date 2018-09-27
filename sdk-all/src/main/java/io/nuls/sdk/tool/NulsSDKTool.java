@@ -3,6 +3,7 @@ package io.nuls.sdk.tool;
 import io.nuls.sdk.account.service.AccountService;
 import io.nuls.sdk.account.service.impl.AccountServiceImpl;
 import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.MSAccount;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.accountledger.service.AccountLedgerService;
 import io.nuls.sdk.accountledger.service.impl.AccountLedgerServiceImpl;
@@ -112,7 +113,6 @@ public class NulsSDKTool {
         return accountService.importAccountByKeystore(path, overwrite);
     }
 
-
     public static Result importAccountByKeystore(FileReader fileReader, String password, boolean overwrite) {
         return accountService.importAccountByKeystore(fileReader, password, overwrite);
     }
@@ -188,6 +188,10 @@ public class NulsSDKTool {
 
     public static Result validateAddress(String address) {
         return accountService.validateAddress(address);
+    }
+
+    public static Result createMSAccount(List<String> pubKeys, Integer threshold) {
+        return accountService.createMSAccount(pubKeys, threshold);
     }
 
     public static Result getTxByHash(String hash) {
@@ -274,5 +278,31 @@ public class NulsSDKTool {
         return consensusService.getAgentDeposits(agentHash, pageNumber, pageSize);
     }
 
+    public static Result createMSAccountTransferTransaction(MSAccount account, List<Input> inputs, List<Output> outputs, String remark) {
+        return accountLedgerService.createMSAccountTransferTransaction(account, inputs, outputs, remark);
+    }
 
+    public static Result signMultiTransaction(String txHex, List<String> privKeys, List<String> passwords) {
+        return accountLedgerService.signMultipleAddressTransaction(txHex, privKeys, passwords);
+    }
+
+    public static Result createChangeCoinTransaction(List<Input> inputs, String address) {
+        return accountLedgerService.createChangeCoinTransaction(inputs,address);
+    }
+
+    public static Result createMSAgentTransaction(AgentInfo agentInfo, List<Input> inputs, Na fee) {
+        return consensusService.createMSAgentTransaction(agentInfo,inputs,fee);
+    }
+
+    public static Result createStopMSAgentTransaction(Output output) {
+        return consensusService.createStopMSAgentTransaction(output);
+    }
+
+    public static Result createMSAccountDepositTransaction(DepositInfo info, List<Input> inputs, Na fee) {
+        return consensusService.createMSAccountDepositTransaction(info,inputs,fee);
+    }
+
+    public static Result createMSAccountCancelDepositTransaction(Output output) {
+        return consensusService.createMSAccountCancelDepositTransaction(output);
+    }
 }

@@ -109,7 +109,7 @@ public interface AccountService {
     /**
      * Create encrypted off-line accounts (Not saved to the database)
      *
-     * @param count The number of accounts you want to create
+     * @param count    The number of accounts you want to create
      * @param password password
      * @return Result
      * If the operation is successful, success is true and data is List
@@ -410,6 +410,7 @@ public interface AccountService {
 
     /**
      * get address by priKey
+     *
      * @param priKey The privateKey of account
      * @return Hex address
      */
@@ -417,16 +418,17 @@ public interface AccountService {
 
     /**
      * get address by encrypted priKey
+     *
      * @param encryptedPriKey The encryptedPriKey of account
-     * @param password The password of account
+     * @param password        The password of account
      * @return Hex address
      */
     Result getAddressByEncryptedPriKey(String encryptedPriKey, String password);
 
 
-
     /**
      * Verify whether the address format is correct
+     *
      * @param address Hex address
      * @return boolean
      */
@@ -434,9 +436,10 @@ public interface AccountService {
 
     /**
      * Using pubKeys and threshold create an Multiple Signature Address
-     * @param pubKeys Hex public key list
+     *
+     * @param pubKeys   Hex public key list
      * @param threshold how many signature can use account asset
-     * @return
+     * @return The multiple signature store at 'address' field when success
      */
-    Result createMSAccount(List<String> pubKeys,int threshold);
+    Result createMSAccount(List<String> pubKeys, int threshold);
 }

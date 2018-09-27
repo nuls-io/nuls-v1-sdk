@@ -3,12 +3,12 @@ package io.nuls.sdk.core.utils;
 
 import io.nuls.sdk.core.contast.KernelErrorCode;
 import io.nuls.sdk.core.contast.TransactionConstant;
-import io.nuls.sdk.core.contast.TransactionErrorCode;
 import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.exception.NulsRuntimeException;
 import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.model.transaction.*;
-import io.nuls.sdk.core.script.P2PKHScriptSig;
+import io.nuls.sdk.core.script.P2PHKSignature;
+import io.nuls.sdk.core.script.SignatureUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,8 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 public class TransactionTool {
-
+    public static final int MAX_TX_SIZE = 300 * 1024;
     private static final Map<Integer, Class<? extends Transaction>> TYPE_TX_MAP = new HashMap<>();
+    private static RestFulUtils restFul = RestFulUtils.getInstance();
 
     public static void init() {
 //        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_COINBASE, TransferTransaction.class);
@@ -86,10 +87,8 @@ public class TransactionTool {
 
     public static Transaction signTransaction(Transaction tx, ECKey ecKey) throws IOException {
         tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
-        P2PKHScriptSig sig = new P2PKHScriptSig();
-        sig.setPublicKey(ecKey.getPubKey());
-        sig.setSignData(signDigest(tx.getHash().getDigestBytes(), ecKey));
-        tx.setScriptSig(sig.serialize());
+        P2PHKSignature sig = SignatureUtil.createSignatureByEckey(tx, ecKey);
+        tx.setTransactionSignature(sig.serialize());
         return tx;
     }
 
@@ -101,8 +100,8 @@ public class TransactionTool {
         return nulsSignData;
     }
 
-    public static boolean isFeeEnough(Transaction tx, int type) {
-        int size = tx.size() + P2PKHScriptSig.DEFAULT_SERIALIZE_LENGTH;
+    public static boolean isFeeEnough(Transaction tx, int signatureSize, int type) {
+        int size = tx.size() + signatureSize;
         Na minFee = TransactionFeeCalculator.getTransferFee(size, type);
         //计算inputs和outputs的差额 ，求手续费
         Na fee = Na.ZERO;
@@ -127,5 +126,14 @@ public class TransactionTool {
         }
         Transaction tx = byteBuffer.readNulsData(txClass.newInstance());
         return tx;
+    }
+
+    public static int getMainVersion(){
+        Result result = restFul.get("/client/version" , null);
+        if (result.isFailed()) {
+            return  1;
+        }
+        Map<String, Object> map = ((Map)result.getData());
+        return  (int)map.get("networkVersion");
     }
 }

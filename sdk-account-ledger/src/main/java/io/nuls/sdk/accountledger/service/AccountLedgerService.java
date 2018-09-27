@@ -1,6 +1,7 @@
 package io.nuls.sdk.accountledger.service;
 
 import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.MSAccount;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.model.Result;
 
@@ -27,7 +28,7 @@ public interface AccountLedgerService {
      * @param toAddress Beneficiary account Address
      * @param password  Remittance account password
      * @param amount    Transfer amount
-     * @param remark remark
+     * @param remark    remark
      * @return If the operation is successful, 'success' is true
      * If the operation fails, "success" is false and the result has error information
      */
@@ -39,7 +40,7 @@ public interface AccountLedgerService {
      * @param address   Remittance account address
      * @param toAddress Beneficiary account Address
      * @param amount    Transfer amount
-     * @param remark remark
+     * @param remark    remark
      * @return If the operation is successful, 'success' is true
      * If the operation fails, "success" is false and the result has error information
      */
@@ -58,20 +59,32 @@ public interface AccountLedgerService {
      * 创建交易
      * Create Transaction
      *
-     * @param inputs inputs
+     * @param inputs  inputs
      * @param outputs outputs
-     * @param remark remark
+     * @param remark  remark
      * @return Result
      */
     Result createTransaction(List<Input> inputs, List<Output> outputs, String remark);
 
     /**
+     * 创建多地址转账交易
+     * Create Multiple Address Transaction
+     *
+     * @param inputs        inputs
+     * @param nInputAccount nInputAccount
+     * @param outputs       outputs
+     * @param remark        remark
+     * @return Result
+     */
+    Result createMultipleInputAddressTransaction(List<Input> inputs, int nInputAccount, List<Output> outputs, String remark);
+
+    /**
      * 签名交易
      * Sign Transaction
      *
-     * @param txHex txHex
-     * @param priKey  priKey
-     * @param address address
+     * @param txHex    txHex
+     * @param priKey   priKey
+     * @param address  address
      * @param password password
      * @return Result
      */
@@ -88,8 +101,48 @@ public interface AccountLedgerService {
 
     /**
      * 验证交易
+     *
      * @param txHex txHex
      * @return Result
      */
     Result validateTransaction(String txHex);
+
+    /**
+     * 签名 input 为多个地址的转账交易
+     *
+     * @param txHex    txHex
+     * @param privKeys privKeys
+     * @param passwords passwords
+     * @return
+     */
+    Result signMultipleAddressTransaction(String txHex, List<String> privKeys, List<String> passwords);
+
+    /**
+     * 创建多重签名转账交易
+     *
+     * @param inputs  inputs
+     * @param outputs outputs
+     * @param remark  remark
+     * @return Result
+     */
+    Result createMSAccountTransferTransaction(MSAccount account, List<Input> inputs, List<Output> outputs, String remark);
+
+    /**
+     * 零钱换整
+     *
+     * @param inputs  inputs
+     * @param address address
+     * @return Result
+     */
+    Result createChangeCoinTransaction(List<Input> inputs, String address);
+
+    /**
+     * 多签账户交易签名
+     *
+     * @param txHex     txHex
+     * @param privKeys  privKeys
+     * @param passwords passwords
+     * @return Result
+     */
+    Result signMSTransaction(String txHex, List<String> privKeys, List<String> passwords);
 }

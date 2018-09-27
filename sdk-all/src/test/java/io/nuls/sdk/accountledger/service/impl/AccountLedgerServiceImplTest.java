@@ -26,7 +26,7 @@ public class AccountLedgerServiceImplTest {
 
     @Before
     public void setup() {
-        SDKBootstrap.init("127.0.0.1", "8017");
+        SDKBootstrap.init("127.0.0.1", "8011");
     }
 
     @Test
@@ -283,5 +283,40 @@ public class AccountLedgerServiceImplTest {
         data = (Map<String, String>) result.getData();
         String txData = data.get("value");
         assertNotNull("Sign data must not be null", txData);
+    }
+
+
+    @Test
+    public void testChangeCoin() {
+        // 构建 Input
+        List<Input> inputs = new ArrayList<>();
+        Input input = new Input();
+        input.setAddress("Nse3PAyfC3tj7gpj8uWx9KtjsYvw5pVp");
+        input.setValue(57654167);
+        input.setLockTime(6220);
+        input.setFromHash("0020a0c217872f7a4acedc983067184d17dd1eb135c59947e0c883e1b623b798a8d1");
+        input.setFromIndex(0);
+        inputs.add(input);
+
+        input = new Input();
+        input.setAddress("Nse3PAyfC3tj7gpj8uWx9KtjsYvw5pVp");
+        input.setValue(57835985);
+        input.setLockTime(6218);
+        input.setFromHash("002032a9ecdcdf52747823c81fb9e21f3e433598f3979326cdffd1c674254131793d");
+        input.setFromIndex(0);
+        inputs.add(input);
+
+        Result result = NulsSDKTool.createChangeCoinTransaction(inputs,"Nse3PAyfC3tj7gpj8uWx9KtjsYvw5pVp");
+        Map<String, Object> map = (Map<String, Object>) result.getData();
+        List<String> txList =  (List<String>) map.get("value");
+        for (String txHex:txList) {
+            result = NulsSDKTool.signMultiTransaction(txHex, Arrays.asList("00e0784c09d16d7bab6f35f74a2b90c525397cee87864385e47df27e8c72061237"), Arrays.asList(""));
+            assertTrue("Sign the transaction must be true", result.isSuccess());
+            Map<String, String> txdata = (Map<String, String>) result.getData();
+            result = NulsSDKTool.validateTransaction(txdata.get("value"));
+            System.out.println(result.getData());
+            result = NulsSDKTool.broadcastTransaction(txdata.get("value"));
+            System.out.println(result.getData());
+        }
     }
 }

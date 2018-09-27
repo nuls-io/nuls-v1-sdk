@@ -428,6 +428,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             TransferTransaction tx = null;
             CoinData coinData = null;
             List<String> ownerHexList = null;
+            int signType = 1;
             for (int i = 0; i < inputs.size(); i++) {
                 Input input = inputs.get(i);
                 if (input.getAddress() == null || !input.getAddress().equals(address)) {
@@ -441,6 +442,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     coinData = new CoinData();
                     targetSize = TransactionTool.MAX_TX_SIZE - size - P2PHKSignature.SERIALIZE_LENGTH;
                     amount = Na.ZERO;
+                    signType = 1;
                     ownerHexList = new ArrayList<>();
                     newTransaction = false;
                 }
@@ -452,31 +454,26 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                 size += coin.size();
                 ownerHexList.add(Hex.encode(key));
                 //判断当前交易中的UTXO是否存在脚本签名的交易
-                if (size > targetSize - P2PHKSignature.SERIALIZE_LENGTH) {
+                /*if (size > targetSize - P2PHKSignature.SERIALIZE_LENGTH || i == inputs.size()-1) {
                     Map<String, Object> map = new HashMap<>();
                     map.put("utxoList", ownerHexList);
                     Result result = restFul.post("/accountledger/multiAccount/getSignType", map);
                     Map<String, Object> resultMap = (Map) result.getData();
-                    int signType = Integer.parseInt((String) resultMap.get("signType"));
+                    signType = Integer.parseInt((String) resultMap.get("signType"));
                     //如果两种签名都存在
                     if ((signType & 0x01) == 0x01 && (signType & 0x02) == 0x02) {
-                        size += P2PHKSignature.SERIALIZE_LENGTH;
-                        Na fee = TransactionFeeCalculator.getFee(size, TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES);
-                        amount = amount.subtract(fee);
-                        tx.setCoinData(coinData);
-                        Coin toCoin = new Coin(AddressTool.getAddress(address), amount);
-                        coinData.getTo().add(toCoin);
-                        tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
-                        transactionList.add(Hex.encode(tx.serialize()));
-                        i--;
-                        newTransaction = true;
-                        continue;
+                       size += P2PHKSignature.SERIALIZE_LENGTH;
                     }
-                }
+                }*/
                 if (i == 127) {
                     size += 1;
                 }
-                if (size > targetSize) {
+                if(size > targetSize || i == inputs.size()-1){
+                    if(i == inputs.size()-1 && size <= targetSize){
+                        coinData.getFrom().add(coin);
+                        tx.setCoinData(coinData);
+                        amount = amount.add(coin.getNa());
+                    }
                     Na fee = TransactionFeeCalculator.getFee(size, TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES);
                     amount = amount.subtract(fee);
                     Coin toCoin = new Coin(AddressTool.getAddress(address), amount);
@@ -484,12 +481,15 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     tx.setCoinData(coinData);
                     tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
                     transactionList.add(Hex.encode(tx.serialize()));
-                    i--;
-                    newTransaction = true;
+                    if(size > targetSize){
+                        i--;
+                        newTransaction = true;
+                    }
                     continue;
                 }
                 coinData.getFrom().add(coin);
                 tx.setCoinData(coinData);
+                amount = amount.add(coin.getNa());
             }
             Map<String, Object> map = new HashMap<>();
             map.put("value", transactionList);

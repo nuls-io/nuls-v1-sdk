@@ -58,4 +58,14 @@ public class Block {
         return currentBlockHeader().getTime();
     }
 
+    /**
+     * 当前块交易数量
+     * current block timestamp
+     *
+     * @return timestamp
+     */
+    public static long txCount() {
+        return currentBlockHeader().getTxCount();
+    }
+
 }

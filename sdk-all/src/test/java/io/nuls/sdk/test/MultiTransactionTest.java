@@ -15,7 +15,7 @@ import java.util.*;
 public class MultiTransactionTest {
     @BeforeClass
     public static void init(){
-        SDKBootstrap.init("192.168.1.133", "8011");
+        SDKBootstrap.init("127.0.0.1", "8011");
     }
 
     @Test
@@ -27,10 +27,10 @@ public class MultiTransactionTest {
     public void testCreateMSAgent(){
         List<Input> inputs = new ArrayList<>();
         Input input = new Input();
-        input.setFromHash("0020228e6aeb3bd85520287e56bceec50a5527177ccb5e585a505489420b73623167");
+        input.setFromHash("0020a1909a5b7582a2bb808e049e5681809c2233041269ce0c2055fe76918ca9dc14");
         input.setFromIndex(0);
         input.setAddress("NseWwCKxV1ToMCZnYHbFrEmKgU7p4fBm");
-        input.setValue(5000000 * 100000000L);
+        input.setValue(300000 * 100000000L);
         inputs.add(input);
 
         AgentInfo info = new AgentInfo();
@@ -60,13 +60,12 @@ public class MultiTransactionTest {
     @Test
     public void TestCreateStopMSAgent(){
         Output output = new Output();
-        output.setTxHash("0020b3455590664eea19ff78963a815077da0c3f7e4eebba2632ed479cdecae36233");
+        output.setTxHash("00206372ba9856aa4e97a79838dfe79ff5968920b468979f592fe8aed21ddd97e790");
         output.setIndex(0);
         output.setValue(20000000000000L);
         output.setLockTime(-1);
         output.setAddress("NseWwCKxV1ToMCZnYHbFrEmKgU7p4fBm");
-        Result result = NulsSDKTool.createStopAgentTransaction(output);
-
+        Result result = NulsSDKTool.createStopMSAgentTransaction(output);
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
 
@@ -79,7 +78,8 @@ public class MultiTransactionTest {
         result = NulsSDKTool.signMultiTransaction(txHex, priKeys,passwords);
         map = (Map<String, Object>) result.getData();
         String sign = (String) map.get("value");
-
+        result = NulsSDKTool.validateTransaction(sign);
+        System.out.println(result.getData());
         result = NulsSDKTool.broadcastTransaction(sign);
         System.out.println(result.getData());
     }
@@ -88,22 +88,21 @@ public class MultiTransactionTest {
     public void TestCreateMSAccountDeposit(){
         List<Input> inputs = new ArrayList<>();
         Input input = new Input();
-        input.setFromHash("0020b3455590664eea19ff78963a815077da0c3f7e4eebba2632ed479cdecae36233");
-        input.setFromIndex(1);
-        //input.setAddress("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM");
-        input.setValue(200000 * 100000000L);
+        input.setFromHash("002031f210834b031bfbc2abcf77808a079e86a23ca2279161beacf375b160f7e697");
+        input.setFromIndex(0);
+        input.setAddress("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM");
+        input.setValue(300000 * 100000000L);
         inputs.add(input);
 
         DepositInfo info = new DepositInfo();
         info.setAddress("NseWwCKxV1ToMCZnYHbFrEmKgU7p4fBm");
         info.setDeposit(200000 * 100000000L);
-        info.setAgentHash("0020b3455590664eea19ff78963a815077da0c3f7e4eebba2632ed479cdecae36233");
+        info.setAgentHash("00205492d3bf12dd32729a86de6fcb690c92539637935fbbc584e57c5fec46d027ef");
 
         Na fee = Na.valueOf(1000000L);
-        Result result = NulsSDKTool.createDepositTransaction(info, inputs, fee);
+        Result result = NulsSDKTool.createMSAccountDepositTransaction(info, inputs, fee);
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
-
 
         List<String> priKeys = new ArrayList<>();
         priKeys.add("31773bce0f96f97449205dc1ecc7366f90e2e848b0217b2b2842b3caea00e0cc");
@@ -114,7 +113,8 @@ public class MultiTransactionTest {
         result = NulsSDKTool.signMultiTransaction(txHex, priKeys,passwords);
         map = (Map<String, Object>) result.getData();
         String sign = (String) map.get("value");
-
+        result = NulsSDKTool.validateTransaction(sign);
+        System.out.println(result.getData());
         result = NulsSDKTool.broadcastTransaction(sign);
         System.out.println(result.getData());
     }
@@ -122,12 +122,12 @@ public class MultiTransactionTest {
     @Test
     public void TestCreateMSAccountCancelDeposit(){
         Output output = new Output();
-        output.setTxHash("0020b3455590664eea19ff78963a815077da0c3f7e4eebba2632ed479cdecae36233");
+        output.setTxHash("002076ecfadcd365b469deabaf2baa5daf42e367fb233330d94688cd316119a129b6");
         output.setIndex(0);
         output.setValue(20000000000000L);
-        output.setLockTime(-1);
+        output.setLockTime(0);
         output.setAddress("NseWwCKxV1ToMCZnYHbFrEmKgU7p4fBm");
-        Result result = NulsSDKTool.createCancelDepositTransaction(output);
+        Result result = NulsSDKTool.createMSAccountCancelDepositTransaction(output);
 
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
@@ -145,11 +145,4 @@ public class MultiTransactionTest {
         result = NulsSDKTool.broadcastTransaction(sign);
         System.out.println(result.getData());
     }
-
-    /*public String TestSignMultiTransaction(String txHex,List<String>priKeys,List<String>passwords){
-        Result  result = NulsSDKTool.signMultiTransaction(txHex, priKeys,passwords);
-        Map<String, Object> map = (Map<String, Object>) result.getData();
-        return (String) map.get("value");
-    }*/
-
 }

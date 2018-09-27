@@ -264,14 +264,14 @@ public class ConsensusServiceImpl implements ConsensusService {
         Agent agent = new Agent();
         String address = agentInfo.getAgentAddress();
         //根据Address获取，多签账户信息
-        if(!AddressTool.validAddress(address)){
+        if (!AddressTool.validAddress(address)) {
             return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
         }
-        if(AddressTool.getAddress(address)[2] != SDKConstant.P2SH_ADDRESS_TYPE){
+        if (AddressTool.getAddress(address)[2] != SDKConstant.P2SH_ADDRESS_TYPE) {
             return Result.getFailed("Not a multi signature address!");
         }
         TransactionSignature transactionSignature = getTransactionSignature(agentInfo.getAgentAddress());
-        if(transactionSignature == null){
+        if (transactionSignature == null) {
             return Result.getFailed("There is no multi sign account!");
         }
         agent.setAgentAddress(AddressTool.getAddress(address));
@@ -297,18 +297,18 @@ public class ConsensusServiceImpl implements ConsensusService {
         }
 
         List<Coin> toList = new ArrayList<>();
-        if(agent.getAgentAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE){
+        if (agent.getAgentAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE) {
             Script scriptPubkey = SignatureUtil.createOutputScript(agent.getAgentAddress());
             toList.add(new Coin(scriptPubkey.getProgram(), agent.getDeposit(), SDKConstant.CONSENSUS_LOCK_TIME));
             toList.add(new Coin(scriptPubkey.getProgram(), inputTotal.subtract(agent.getDeposit()).subtract(fee), 0));
-        }else{
+        } else {
             toList.add(new Coin(agent.getAgentAddress(), agent.getDeposit(), SDKConstant.CONSENSUS_LOCK_TIME));
             //找零
             toList.add(new Coin(agent.getAgentAddress(), inputTotal.subtract(agent.getDeposit()).subtract(fee), 0));
         }
         try {
             io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createAgentTx(inputsList, toList, agent);
-            int scriptSignLenth = transactionSignature.getScripts().get(0).getProgram().length + SignatureUtil.getM(transactionSignature.getScripts().get(0))* 72;
+            int scriptSignLenth = transactionSignature.getScripts().get(0).getProgram().length + SignatureUtil.getM(transactionSignature.getScripts().get(0)) * 72;
             tx.setTransactionSignature(transactionSignature.serialize());
             if (!TransactionTool.isFeeEnough(tx, scriptSignLenth, 2)) {
                 return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
@@ -332,7 +332,7 @@ public class ConsensusServiceImpl implements ConsensusService {
             return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "agentTxHash error");
         }
         TransactionSignature transactionSignature = getTransactionSignature(output.getAddress());
-        if(transactionSignature == null){
+        if (transactionSignature == null) {
             return Result.getFailed("There is no multi sign account!");
         }
         StopAgent stopAgent = new StopAgent();
@@ -351,10 +351,10 @@ public class ConsensusServiceImpl implements ConsensusService {
         Na fee = Na.valueOf(1000000L);
         //组装output
         List<Coin> toList = new ArrayList<>();
-        if(stopAgent.getAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE){
+        if (stopAgent.getAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE) {
             Script scriptPubkey = SignatureUtil.createOutputScript(stopAgent.getAddress());
             toList.add(new Coin(scriptPubkey.getProgram(), Na.valueOf(output.getValue()).subtract(fee), SDKConstant.CONSENSUS_LOCK_TIME));
-        }else{
+        } else {
             toList.add(new Coin(stopAgent.getAddress(), Na.valueOf(output.getValue()).subtract(fee), 0));
         }
         io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createStopAgentTx(inputsList, toList, stopAgent);
@@ -380,7 +380,7 @@ public class ConsensusServiceImpl implements ConsensusService {
             return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "agentHash error");
         }
         TransactionSignature transactionSignature = getTransactionSignature(info.getAddress());
-        if(transactionSignature == null){
+        if (transactionSignature == null) {
             return Result.getFailed("There is no multi sign account!");
         }
         deposit.setDeposit(Na.valueOf(info.getDeposit()));
@@ -397,16 +397,16 @@ public class ConsensusServiceImpl implements ConsensusService {
             inputTotal = inputTotal.add(coin.getNa());
         }
         List<Coin> toList = new ArrayList<>();
-        if(deposit.getAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE){
+        if (deposit.getAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE) {
             Script scriptPubkey = SignatureUtil.createOutputScript(deposit.getAddress());
-            toList.add(new Coin(scriptPubkey.getProgram(), deposit.getDeposit().subtract(fee), SDKConstant.CONSENSUS_LOCK_TIME));
+            toList.add(new Coin(scriptPubkey.getProgram(), deposit.getDeposit(), SDKConstant.CONSENSUS_LOCK_TIME));
             toList.add(new Coin(scriptPubkey.getProgram(), inputTotal.subtract(deposit.getDeposit()).subtract(fee), 0));
-        }else{
+        } else {
             toList.add(new Coin(deposit.getAddress(), deposit.getDeposit(), SDKConstant.CONSENSUS_LOCK_TIME));
             toList.add(new Coin(deposit.getAddress(), inputTotal.subtract(deposit.getDeposit()).subtract(fee), 0));
         }
         io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createDepositTx(inputsList, toList, deposit);
-        int scriptSignLenth = transactionSignature.getScripts().get(0).getProgram().length + SignatureUtil.getM(transactionSignature.getScripts().get(0))* 72;
+        int scriptSignLenth = transactionSignature.getScripts().get(0).getProgram().length + SignatureUtil.getM(transactionSignature.getScripts().get(0)) * 72;
         if (!TransactionTool.isFeeEnough(tx, scriptSignLenth, 2)) {
             return Result.getFailed(TransactionErrorCode.FEE_NOT_RIGHT);
         }
@@ -434,7 +434,7 @@ public class ConsensusServiceImpl implements ConsensusService {
         }
 
         TransactionSignature transactionSignature = getTransactionSignature(output.getAddress());
-        if(transactionSignature == null){
+        if (transactionSignature == null) {
             return Result.getFailed("There is no multi sign account!");
         }
         //组装input
@@ -449,10 +449,10 @@ public class ConsensusServiceImpl implements ConsensusService {
         Na fee = Na.valueOf(1000000L);
         //组装output
         List<Coin> toList = new ArrayList<>();
-        if(cancelDeposit.getAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE){
+        if (cancelDeposit.getAddress()[2] == SDKConstant.P2SH_ADDRESS_TYPE) {
             Script scriptPubkey = SignatureUtil.createOutputScript(cancelDeposit.getAddress());
-            toList.add(new Coin(scriptPubkey.getProgram(), Na.valueOf(output.getValue()).subtract(fee),  SDKConstant.CONSENSUS_LOCK_TIME));
-        }else{
+            toList.add(new Coin(scriptPubkey.getProgram(), Na.valueOf(output.getValue()).subtract(fee), SDKConstant.CONSENSUS_LOCK_TIME));
+        } else {
             toList.add(new Coin(cancelDeposit.getAddress(), Na.valueOf(output.getValue()).subtract(fee), 0));
         }
         io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.createCancelDepositTx(inputsList, toList, cancelDeposit);
@@ -468,24 +468,24 @@ public class ConsensusServiceImpl implements ConsensusService {
         }
     }
 
-    public TransactionSignature getTransactionSignature(String address){
-        Result result = restFul.get("/account/multiAccount/"+address  , null);
-        if(result.isFailed()){
-            return  null;
+    public TransactionSignature getTransactionSignature(String address) {
+        Result result = restFul.get("/account/multiAccount/" + address, null);
+        if (result.isFailed()) {
+            return null;
         }
         Map<String, Object> data = (Map<String, Object>) result.getData();
-        List<Map<String, String>> pubkeyInfos =(List<Map<String, String>>)data.get("pubkeys");
+        List<Map<String, String>> pubkeyInfos = (List<Map<String, String>>) data.get("pubkeys");
         List<byte[]> pubkeys = new ArrayList<>();
-        for (Map<String,String> pubkeyInfo:pubkeyInfos) {
+        for (Map<String, String> pubkeyInfo : pubkeyInfos) {
             pubkeys.add(Hex.decode(pubkeyInfo.get("pubkey")));
         }
 
-        int n = (int)data.get("m");
+        int n = (int) data.get("m");
         TransactionSignature transactionSignature = new TransactionSignature();
         List<Script> scripts = new ArrayList<>();
-        Script redeemScript = ScriptBuilder.createByteNulsRedeemScript(n,pubkeys);
+        Script redeemScript = ScriptBuilder.createByteNulsRedeemScript(n, pubkeys);
         scripts.add(redeemScript);
         transactionSignature.setScripts(scripts);
-        return  transactionSignature;
+        return transactionSignature;
     }
 }

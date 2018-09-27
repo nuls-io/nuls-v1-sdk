@@ -213,13 +213,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             if (inputDto.getAddress() == null) {
                 return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
             }
-            if (i == 0) {
-                address = inputDto.getAddress();
-            } else {
-                if (!address.equals(inputDto.getAddress())) {
-                    return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
-                }
-            }
+
             byte[] key = Arrays.concatenate(Hex.decode(inputDto.getFromHash()), new VarInt(inputDto.getFromIndex()).encode());
             Coin coin = new Coin();
             coin.setOwner(key);
@@ -302,36 +296,40 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     }
 
     @Override
-    public Result signMultipleAddressTransaction(String txHex, List<String> privKeys, String password) {
+    public Result signMultipleAddressTransaction(String txHex, List<String> privKeys, List<String> passwords) {
         if (StringUtils.isBlank(txHex)) {
-            return Result.getFailed("txHex error");
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "txHex error");
         }
         if (privKeys == null || privKeys.size() == 0) {
-            return Result.getFailed("privKeys error");
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "privKeys error");
+        }
+
+        if (passwords == null || passwords.size() != privKeys.size()) {
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
         }
 
         // decode private key
-        if (StringUtils.isNotBlank(password)) {
-            if (!StringUtils.validPassword(password)) {
-                return Result.getFailed(AccountErrorCode.PASSWORD_IS_WRONG);
+        List<String> signKeys = new ArrayList<>(privKeys.size());
+        for (int i = 0; i < privKeys.size(); i++) {
+            String encryptPrivKey = privKeys.get(i);
+            String decryptPass = passwords.get(i);
+            if (decryptPass == null || decryptPass.trim().length() == 0) {
+                // No need decrypt
+                signKeys.add(encryptPrivKey);
+                continue;
             }
 
-            privKeys = privKeys.stream()
-                    .map(p -> {
-                        byte[] privateKeyBytes = null;
-                        try {
-                            privateKeyBytes = AESEncrypt.decrypt(Hex.decode(p), password);
-                        } catch (Exception e) {
-                            return null;
-                        }
-                        return Hex.encode(privateKeyBytes);
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+            byte[] privateKeyBytes = null;
+            try {
+                privateKeyBytes = AESEncrypt.decrypt(Hex.decode(encryptPrivKey), decryptPass);
+            } catch (Exception e) {
+                return Result.getFailed(AccountErrorCode.DECRYPT_ACCOUNT_ERROR);
+            }
+            signKeys.add(Hex.encode(privateKeyBytes));
         }
 
         // conversion private key string to ECKey
-        List<ECKey> keys = privKeys.stream()
+        List<ECKey> keys = signKeys.stream()
                 .map(p -> ECKey.fromPrivate(new BigInteger(Hex.decode(p))))
                 .collect(Collectors.toList());
 
@@ -342,6 +340,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             List<P2PHKSignature> p2PHKSignatures = SignatureUtil.createSignaturesByEckey(tx, keys);
             TransactionSignature transactionSignature = new TransactionSignature();
             transactionSignature.setP2PHKSignatures(p2PHKSignatures);
+            tx.setTransactionSignature(transactionSignature.serialize());
             txHex = Hex.encode(tx.serialize());
             Map<String, String> map = new HashMap<>();
             map.put("value", txHex);

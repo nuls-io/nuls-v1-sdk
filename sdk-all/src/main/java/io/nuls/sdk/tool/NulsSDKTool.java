@@ -283,7 +283,7 @@ public class NulsSDKTool {
     }
 
     public static Result signMultiTransaction(String txHex, List<String> privKeys, List<String> passwords) {
-        return accountLedgerService.signMSTransaction(txHex, privKeys, passwords);
+        return accountLedgerService.signMultipleAddressTransaction(txHex, privKeys, passwords);
     }
 
     public static Result createChangeCoinTransaction(List<Input> inputs, String address) {

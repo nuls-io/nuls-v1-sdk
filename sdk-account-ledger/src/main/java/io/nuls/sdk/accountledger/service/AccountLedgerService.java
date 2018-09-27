@@ -112,10 +112,10 @@ public interface AccountLedgerService {
      *
      * @param txHex    txHex
      * @param privKeys privKeys
-     * @param password password
+     * @param passwords passwords
      * @return
      */
-    Result signMultipleAddressTransaction(String txHex, List<String> privKeys, String password);
+    Result signMultipleAddressTransaction(String txHex, List<String> privKeys, List<String> passwords);
 
     /**
      * 创建多重签名转账交易

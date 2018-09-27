@@ -24,6 +24,8 @@
  */
 package io.nuls.sdk.core.model.transaction;
 
+import io.nuls.sdk.core.contast.AccountErrorCode;
+import io.nuls.sdk.core.contast.ErrorCode;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.UnsafeByteArrayOutputStream;
 import io.nuls.sdk.core.exception.NulsException;
@@ -272,7 +274,7 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
         return new ArrayList<>(addresses);
     }
 
-    public byte[] serializeForHash() throws IOException {
+    /*public byte[] serializeForHash() throws IOException {
         ByteArrayOutputStream bos = null;
         try {
             int size = size() - SerializeUtils.sizeOfBytes(transactionSignature);
@@ -284,6 +286,39 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
             } else {
                 buffer.writeUint16(type);
                 buffer.writeUint48(time);
+                buffer.writeBytesWithLength(remark);
+                buffer.writeNulsData(txData);
+                buffer.writeNulsData(coinData);
+            }
+            return bos.toByteArray();
+        } finally {
+            if (bos != null) {
+                try {
+                    bos.close();
+                } catch (IOException e) {
+                    throw e;
+                }
+            }
+        }
+    }*/
+
+    public byte[] serializeForHash() throws IOException {
+        ByteArrayOutputStream bos = null;
+        try {
+            int main_version = TransactionTool.getMainVersion();
+            int size = size() - SerializeUtils.sizeOfBytes(transactionSignature);
+            bos = new UnsafeByteArrayOutputStream(size);
+            NulsOutputStreamBuffer buffer = new NulsOutputStreamBuffer(bos);
+            if (size == 0) {
+                bos.write(SDKConstant.PLACE_HOLDER);
+            } else {
+                if (main_version == 1) {
+                    buffer.writeVarInt(type);
+                    buffer.writeVarInt(time);
+                } else {
+                    buffer.writeUint16(type);
+                    buffer.writeUint48(time);
+                }
                 buffer.writeBytesWithLength(remark);
                 buffer.writeNulsData(txData);
                 buffer.writeNulsData(coinData);

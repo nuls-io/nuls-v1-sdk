@@ -18,6 +18,7 @@ import java.util.Map;
 public class TransactionTool {
     public static final int MAX_TX_SIZE = 300 * 1024;
     private static final Map<Integer, Class<? extends Transaction>> TYPE_TX_MAP = new HashMap<>();
+    private static RestFulUtils restFul = RestFulUtils.getInstance();
 
     public static void init() {
 //        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_COINBASE, TransferTransaction.class);
@@ -125,5 +126,14 @@ public class TransactionTool {
         }
         Transaction tx = byteBuffer.readNulsData(txClass.newInstance());
         return tx;
+    }
+
+    public static int getMainVersion(){
+        Result result = restFul.get("/client/version" , null);
+        if (result.isFailed()) {
+            return  1;
+        }
+        Map<String, Object> map = ((Map)result.getData());
+        return  (int)map.get("networkVersion");
     }
 }

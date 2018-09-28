@@ -278,6 +278,10 @@ public class NulsSDKTool {
         return consensusService.getAgentDeposits(agentHash, pageNumber, pageSize);
     }
 
+    public static Result createMultipleInputAddressTransaction(List<Input> inputs, int nInputAccount, List<Output> outputs, String remark) {
+        return accountLedgerService.createMultipleInputAddressTransaction(inputs, nInputAccount, outputs, remark);
+    }
+
     public static Result createMSAccountTransferTransaction(MSAccount account, List<Input> inputs, List<Output> outputs, String remark) {
         return accountLedgerService.createMSAccountTransferTransaction(account, inputs, outputs, remark);
     }
@@ -286,12 +290,16 @@ public class NulsSDKTool {
         return accountLedgerService.signMultipleAddressTransaction(txHex, privKeys, passwords);
     }
 
+    public static Result signMSTransaction(String txHex, List<String> privKeys, List<String> passwords) {
+        return accountLedgerService.signMSTransaction(txHex, privKeys, passwords);
+    }
+
     public static Result createChangeCoinTransaction(List<Input> inputs, String address) {
-        return accountLedgerService.createChangeCoinTransaction(inputs,address);
+        return accountLedgerService.createChangeCoinTransaction(inputs, address);
     }
 
     public static Result createMSAgentTransaction(AgentInfo agentInfo, List<Input> inputs, Na fee) {
-        return consensusService.createMSAgentTransaction(agentInfo,inputs,fee);
+        return consensusService.createMSAgentTransaction(agentInfo, inputs, fee);
     }
 
     public static Result createStopMSAgentTransaction(Output output) {
@@ -299,7 +307,7 @@ public class NulsSDKTool {
     }
 
     public static Result createMSAccountDepositTransaction(DepositInfo info, List<Input> inputs, Na fee) {
-        return consensusService.createMSAccountDepositTransaction(info,inputs,fee);
+        return consensusService.createMSAccountDepositTransaction(info, inputs, fee);
     }
 
     public static Result createMSAccountCancelDepositTransaction(Output output) {

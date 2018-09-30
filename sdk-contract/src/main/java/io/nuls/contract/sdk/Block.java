@@ -60,9 +60,9 @@ public class Block {
 
     /**
      * 当前块交易数量
-     * current block timestamp
+     * current block's txCount
      *
-     * @return timestamp
+     * @return txCount
      */
     public static long txCount() {
         return currentBlockHeader().getTxCount();

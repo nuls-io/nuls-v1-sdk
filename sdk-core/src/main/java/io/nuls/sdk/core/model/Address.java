@@ -36,9 +36,9 @@ import io.nuls.sdk.core.utils.SerializeUtils;
 
 import java.util.Arrays;
 
-/**
- * @author: Chralie
- */
+///**
+// * @author: Chralie
+// */
 public class Address {
 
     /**
@@ -68,9 +68,9 @@ public class Address {
 
     protected byte[] addressBytes;
 
-    /**
-     * @param address
-     */
+//    /**
+//     * @param address
+//     */
     public Address(String address) {
         try {
             byte[] bytes = AddressTool.getAddress(address);

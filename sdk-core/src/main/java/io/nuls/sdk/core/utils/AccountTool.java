@@ -36,9 +36,9 @@ import io.nuls.sdk.core.model.Address;
 
 import java.math.BigInteger;
 
-/**
- * @author: Charlie
- */
+///**
+// * @author: Charlie
+// */
 public class AccountTool {
 
     public static final int CREATE_MAX_SIZE = 10000;

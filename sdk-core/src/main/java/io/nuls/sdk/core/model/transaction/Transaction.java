@@ -305,20 +305,15 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
     public byte[] serializeForHash() throws IOException {
         ByteArrayOutputStream bos = null;
         try {
-            int main_version = TransactionTool.getMainVersion();
+          //  int main_version = TransactionTool.getMainVersion();
             int size = size() - SerializeUtils.sizeOfBytes(transactionSignature);
             bos = new UnsafeByteArrayOutputStream(size);
             NulsOutputStreamBuffer buffer = new NulsOutputStreamBuffer(bos);
             if (size == 0) {
                 bos.write(SDKConstant.PLACE_HOLDER);
             } else {
-                if (main_version == 1) {
-                    buffer.writeVarInt(type);
-                    buffer.writeVarInt(time);
-                } else {
-                    buffer.writeUint16(type);
-                    buffer.writeUint48(time);
-                }
+                buffer.writeUint16(type);
+                buffer.writeUint48(time);
                 buffer.writeBytesWithLength(remark);
                 buffer.writeNulsData(txData);
                 buffer.writeNulsData(coinData);

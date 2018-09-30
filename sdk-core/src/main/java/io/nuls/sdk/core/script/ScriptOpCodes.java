@@ -20,10 +20,10 @@ import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
-/**
- * Various constants that define the assembly-like scripting language that forms part of the Bitcoin protocol.
- * See {@link org.bitcoinj.script.Script} for details. Also provides a method to convert them to a string.
- */
+///**
+// * Various constants that define the assembly-like scripting language that forms part of the Bitcoin protocol.
+// * See {@link org.bitcoinj.script.Script} for details. Also provides a method to convert them to a string.
+// */
 public class ScriptOpCodes {
     // push value
     public static final int OP_0 = 0x00; // push empty vector
@@ -392,9 +392,9 @@ public class ScriptOpCodes {
             .put("NOP9", OP_NOP9)
             .put("NOP10", OP_NOP10).build();
 
-    /**
-     * Converts the given OpCode into a string (eg "0", "PUSHDATA", or "NON_OP(10)")
-     */
+//    /**
+//     * Converts the given OpCode into a string (eg "0", "PUSHDATA", or "NON_OP(10)")
+//     */
     public static String getOpCodeName(int opcode) {
         if (opCodeMap.containsKey(opcode)) {
             return opCodeMap.get(opcode);
@@ -403,9 +403,9 @@ public class ScriptOpCodes {
         return "NON_OP(" + opcode + ")";
     }
 
-    /**
-     * Converts the given pushdata OpCode into a string (eg "PUSHDATA2", or "PUSHDATA(23)")
-     */
+//    /**
+//     * Converts the given pushdata OpCode into a string (eg "PUSHDATA2", or "PUSHDATA(23)")
+//     */
     public static String getPushDataName(int opcode) {
         if (opCodeMap.containsKey(opcode)) {
             return opCodeMap.get(opcode);
@@ -414,9 +414,9 @@ public class ScriptOpCodes {
         return "PUSHDATA(" + opcode + ")";
     }
 
-    /**
-     * Converts the given OpCodeName into an int
-     */
+//    /**
+//     * Converts the given OpCodeName into an int
+//     */
     public static int getOpCode(String opCodeName) {
         if (opCodeNameMap.containsKey(opCodeName)) {
             return opCodeNameMap.get(opCodeName);

@@ -47,22 +47,22 @@ import static io.nuls.sdk.core.script.ScriptOpCodes.*;
 
 // TODO: Redesign this entire API to be more type safe and organised.
 
-/**
- * <p>Programs embedded inside transactions that control redemption of payments.</p>
- *
- * <p>Bitcoin transactions don't specify what they do directly. Instead <a href="https://en.bitcoin.it/wiki/Script">a
- * small binary stack language</a> is used to define programs that when evaluated return whether the transaction
- * "accepts" or rejects the other transactions connected to it.</p>
- *
- * <p>In SPV mode, scripts are not run, because that would require all transactions to be available and lightweight
- * clients don't have that data. In full mode, this class is used to run the interpreted language. It also has
- * static methods for building scripts.</p>
- */
+///**
+// * <p>Programs embedded inside transactions that control redemption of payments.</p>
+// *
+// * <p>Bitcoin transactions don't specify what they do directly. Instead <a href="https://en.bitcoin.it/wiki/Script">a
+// * small binary stack language</a> is used to define programs that when evaluated return whether the transaction
+// * "accepts" or rejects the other transactions connected to it.</p>
+// *
+// * <p>In SPV mode, scripts are not run, because that would require all transactions to be available and lightweight
+// * clients don't have that data. In full mode, this class is used to run the interpreted language. It also has
+// * static methods for building scripts.</p>
+// */
 public class Script {
 
-    /**
-     * Enumeration to encapsulate the type of this script.
-     */
+//    /**
+//     * Enumeration to encapsulate the type of this script.
+//     */
     public enum ScriptType {
         // Do NOT change the ordering of the following definitions because their ordinals are stored in databases.
         NO_TYPE,
@@ -71,10 +71,10 @@ public class Script {
         P2SH
     }
 
-    /**
-     * Flags to pass to {@link Script#correctlySpends(Transaction, long, Script, Set)}.
-     * Note currently only P2SH, DERSIG and NULLDUMMY are actually supported.
-     */
+//    /**
+//     * Flags to pass to {@link Script#correctlySpends(Transaction, long, Script, Set)}.
+//     * Note currently only P2SH, DERSIG and NULLDUMMY are actually supported.
+//     */
     public enum VerifyFlag {
         P2SH, // Enable BIP16-style subscript evaluation.
         STRICTENC, // Passing a non-strict-DER signature or one with undefined hashtype to a checksig operation causes script failure.
@@ -93,9 +93,9 @@ public class Script {
     private static final Logger log = LoggerFactory.getLogger(Script.class);
     public static final long MAX_SCRIPT_ELEMENT_SIZE = 520;  // bytes
     public static final int SIG_SIZE = 75;
-    /**
-     * Max number of sigops allowed in a standard p2sh redeem script
-     */
+//    /**
+//     * Max number of sigops allowed in a standard p2sh redeem script
+//     */
     public static final int MAX_P2SH_SIGOPS = 15;
 
     // The program is a set of chunks where each element is either [opcode] or [data, data, data ...]
@@ -107,9 +107,9 @@ public class Script {
     // Creation time of the associated keys in seconds since the epoch.
     private long creationTimeSeconds;
 
-    /**
-     * Creates an empty script that serializes to nothing.
-     */
+//    /**
+//     * Creates an empty script that serializes to nothing.
+//     */
     private Script() {
         chunks = Lists.newArrayList();
     }
@@ -120,12 +120,12 @@ public class Script {
         creationTimeSeconds = System.currentTimeMillis() / 1000;
     }
 
-    /**
-     * Construct a Script that copies and wraps the programBytes array. The array is parsed and checked for syntactic
-     * validity.
-     *
-     * @param programBytes Array of program bytes from a transaction.
-     */
+//    /**
+//     * Construct a Script that copies and wraps the programBytes array. The array is parsed and checked for syntactic
+//     * validity.
+//     *
+//     * @param programBytes Array of program bytes from a transaction.
+//     */
     public Script(byte[] programBytes) throws ScriptException {
         program = programBytes;
         parse(programBytes);
@@ -146,17 +146,17 @@ public class Script {
         this.creationTimeSeconds = creationTimeSeconds;
     }
 
-    /**
-     * Returns the program opcodes as a string, for example "[1234] DUP HASH160"
-     */
+//    /**
+//     * Returns the program opcodes as a string, for example "[1234] DUP HASH160"
+//     */
     @Override
     public String toString() {
         return SerializeUtils.join(chunks);
     }
 
-    /**
-     * Returns the serialized program as a newly created byte array.
-     */
+//    /**
+//     * Returns the serialized program as a newly created byte array.
+//     */
     public byte[] getProgram() {
         try {
             // Don't round-trip as Bitcoin Core doesn't and it would introduce a mismatch.
@@ -174,9 +174,9 @@ public class Script {
         }
     }
 
-    /**
-     * Returns an immutable list of the scripts parsed form. Each chunk is either an opcode or data element.
-     */
+//    /**
+//     * Returns an immutable list of the scripts parsed form. Each chunk is either an opcode or data element.
+//     */
     public List<ScriptChunk> getChunks() {
         return Collections.unmodifiableList(chunks);
     }
@@ -188,17 +188,17 @@ public class Script {
             new ScriptChunk(ScriptOpCodes.OP_CHECKSIG, null, 24),
     };
 
-    /**
-     * <p>To run a script, first we parse it which breaks it up into chunks representing pushes of data or logical
-     * opcodes. Then we can run the parsed chunks.</p>
-     *
-     * <p>The reason for this split, instead of just interpreting directly, is to make it easier
-     * to reach into a programs structure and pull out bits of data without having to run it.
-     * This is necessary to render the to/from addresses of transactions in a user interface.
-     * Bitcoin Core does something similar.</p>
-     * <p>
-     * 将输入流解析为脚本
-     */
+//    /**
+//     * <p>To run a script, first we parse it which breaks it up into chunks representing pushes of data or logical
+//     * opcodes. Then we can run the parsed chunks.</p>
+//     *
+//     * <p>The reason for this split, instead of just interpreting directly, is to make it easier
+//     * to reach into a programs structure and pull out bits of data without having to run it.
+//     * This is necessary to render the to/from addresses of transactions in a user interface.
+//     * Bitcoin Core does something similar.</p>
+//     * <p>
+//     * 将输入流解析为脚本
+//     */
     private void parse(byte[] program) throws ScriptException {
         chunks = new ArrayList<ScriptChunk>(5);   // Common size.
         ByteArrayInputStream bis = new ByteArrayInputStream(program);
@@ -252,27 +252,27 @@ public class Script {
         }
     }
 
-    /**
-     * Returns true if this script is of the form <pubkey> OP_CHECKSIG. This form was originally intended for transactions
-     * where the peers talked to each other directly via TCP/IP, but has fallen out of favor with time due to that mode
-     * of operation being susceptible to man-in-the-middle attacks. It is still used in coinbase outputs and can be
-     * useful more exotic types of transaction, but today most payments are to addresses.
-     * <p>
-     * 根据公钥生成的脚本(scriptPublicKey)
-     */
+//    /**
+//     * Returns true if this script is of the form <pubkey> OP_CHECKSIG. This form was originally intended for transactions
+//     * where the peers talked to each other directly via TCP/IP, but has fallen out of favor with time due to that mode
+//     * of operation being susceptible to man-in-the-middle attacks. It is still used in coinbase outputs and can be
+//     * useful more exotic types of transaction, but today most payments are to addresses.
+//     * <p>
+//     * 根据公钥生成的脚本(scriptPublicKey)
+//     */
     public boolean isSentToRawPubKey() {
         return chunks.size() == 2 && chunks.get(1).equalsOpCode(OP_CHECKSIG) &&
                 !chunks.get(0).isOpCode() && chunks.get(0).data.length > 1;
     }
 
-    /**
-     * Returns true if this script is of the form DUP HASH160 <pubkey hash> EQUALVERIFY CHECKSIG, ie, payment to an
-     * address like 1VayNert3x1KzbpzMGt2qdqrAThiRovi8. This form was originally intended for the case where you wish
-     * to send somebody money with a written code because their node is offline, but over time has become the standard
-     * way to make payments due to the short and recognizable base58 form addresses come in.
-     * <p>
-     * 判断脚本类型是否为发送到地址
-     */
+//    /**
+//     * Returns true if this script is of the form DUP HASH160 <pubkey hash> EQUALVERIFY CHECKSIG, ie, payment to an
+//     * address like 1VayNert3x1KzbpzMGt2qdqrAThiRovi8. This form was originally intended for the case where you wish
+//     * to send somebody money with a written code because their node is offline, but over time has become the standard
+//     * way to make payments due to the short and recognizable base58 form addresses come in.
+//     * <p>
+//     * 判断脚本类型是否为发送到地址
+//     */
     public boolean isSentToAddress() {
         return chunks.size() == 5 &&
                 chunks.get(0).equalsOpCode(OP_DUP) &&
@@ -282,27 +282,27 @@ public class Script {
                 chunks.get(4).equalsOpCode(OP_CHECKSIG);
     }
 
-    /**
-     * An alias for isPayToScriptHash.
-     */
+//    /**
+//     * An alias for isPayToScriptHash.
+//     */
     @Deprecated
     public boolean isSentToP2SH() {
         return isPayToScriptHash();
     }
 
-    /**
-     * <p>If a program matches the standard template DUP HASH160 &lt;pubkey hash&gt; EQUALVERIFY CHECKSIG
-     * then this function retrieves the third element.
-     * In this case, this is useful for fetching the destination address of a transaction.</p>
-     *
-     * <p>If a program matches the standard template HASH160 &lt;script hash&gt; EQUAL
-     * then this function retrieves the second element.
-     * In this case, this is useful for fetching the hash of the redeem script of a transaction.</p>
-     *
-     * <p>Otherwise it throws a ScriptException.</p>
-     * <p>
-     * 获取公钥HASH
-     */
+//    /**
+//     * <p>If a program matches the standard template DUP HASH160 &lt;pubkey hash&gt; EQUALVERIFY CHECKSIG
+//     * then this function retrieves the third element.
+//     * In this case, this is useful for fetching the destination address of a transaction.</p>
+//     *
+//     * <p>If a program matches the standard template HASH160 &lt;script hash&gt; EQUAL
+//     * then this function retrieves the second element.
+//     * In this case, this is useful for fetching the hash of the redeem script of a transaction.</p>
+//     *
+//     * <p>Otherwise it throws a ScriptException.</p>
+//     * <p>
+//     * 获取公钥HASH
+//     */
     public byte[] getPubKeyHash() throws ScriptException {
         if (isSentToAddress()) {
             return chunks.get(2).data;
@@ -313,16 +313,16 @@ public class Script {
         }
     }
 
-    /**
-     * Returns the public key in this script. If a script contains two constants and nothing else, it is assumed to
-     * be a scriptSig (input) for a pay-to-address output and the second constant is returned (the first is the
-     * signature). If a script contains a constant and an OP_CHECKSIG opcode, the constant is returned as it is
-     * assumed to be a direct pay-to-key scriptPubKey (output) and the first constant is the public key.
-     *
-     * @throws ScriptException if the script is none of the named forms.
-     *                         <p>
-     *                         获取公钥
-     */
+//    /**
+//     * Returns the public key in this script. If a script contains two constants and nothing else, it is assumed to
+//     * be a scriptSig (input) for a pay-to-address output and the second constant is returned (the first is the
+//     * signature). If a script contains a constant and an OP_CHECKSIG opcode, the constant is returned as it is
+//     * assumed to be a direct pay-to-key scriptPubKey (output) and the first constant is the public key.
+//     *
+//     * @throws ScriptException if the script is none of the named forms.
+//     *                         <p>
+//     *                         获取公钥
+//     */
     public byte[] getPubKey() throws ScriptException {
         if (chunks.size() != 2) {
             throw new ScriptException("Script not of right size, expecting 2 but got " + chunks.size());
@@ -341,13 +341,13 @@ public class Script {
             throw new ScriptException("Script did not match expected form: " + this);
         }
     }
-
-    /**
-     * Retrieves the sender public key from a LOCKTIMEVERIFY transaction
-     *
-     * @return
-     * @throws ScriptException
-     */
+//
+//    /**
+//     * Retrieves the sender public key from a LOCKTIMEVERIFY transaction
+//     *
+//     * @return
+//     * @throws ScriptException
+//     */
     public byte[] getCLTVPaymentChannelSenderPubKey() throws ScriptException {
         if (!isSentToCLTVPaymentChannel()) {
             throw new ScriptException("Script not a standard CHECKLOCKTIMVERIFY transaction: " + this);
@@ -355,12 +355,12 @@ public class Script {
         return chunks.get(8).data;
     }
 
-    /**
-     * Retrieves the recipient public key from a LOCKTIMEVERIFY transaction
-     *
-     * @return
-     * @throws ScriptException
-     */
+//    /**
+//     * Retrieves the recipient public key from a LOCKTIMEVERIFY transaction
+//     *
+//     * @return
+//     * @throws ScriptException
+//     */
     public byte[] getCLTVPaymentChannelRecipientPubKey() throws ScriptException {
         if (!isSentToCLTVPaymentChannel()) {
             throw new ScriptException("Script not a standard CHECKLOCKTIMVERIFY transaction: " + this);
@@ -374,34 +374,34 @@ public class Script {
         }
         return castToBigInteger(chunks.get(4).data, 5);
     }
-
-    /**
-     * For 2-element [input] scripts assumes that the paid-to-address can be derived from the public key.
-     * The concept of a "from address" isn't well defined in Bitcoin and you should not assume the sender of a
-     * transaction can actually receive coins on it. This method may be removed in future.
-     * 获取支付地址
-     *
-     */
+//
+//    /**
+//     * For 2-element [input] scripts assumes that the paid-to-address can be derived from the public key.
+//     * The concept of a "from address" isn't well defined in Bitcoin and you should not assume the sender of a
+//     * transaction can actually receive coins on it. This method may be removed in future.
+//     * 获取支付地址
+//     *
+//     */
     /*@Deprecated
     public Address getFromAddress(NetworkParameters params) throws ScriptException {
         return new Address(params, Utils.sha256hash160(getPubKey()));
     }*/
 
-    /**
-     * Gets the destination address from this script, if it's in the required form (see getPubKey).
-     * 获取接受地址
-     */
+//    /**
+//     * Gets the destination address from this script, if it's in the required form (see getPubKey).
+//     * 获取接受地址
+//     */
     /*public Address getToAddress(NetworkParameters params) throws ScriptException {
         return getToAddress(params, false);
     }*/
-
-    /**
-     * Gets the destination address from this script, if it's in the required form (see getPubKey).
-     *
-     * @param forcePayToPubKey
-     *            If true, allow payToPubKey to be casted to the corresponding address. This is useful if you prefer
-     *            showing addresses rather than pubkeys.
-     */
+//
+//    /**
+//     * Gets the destination address from this script, if it's in the required form (see getPubKey).
+//     *
+//     * @param forcePayToPubKey
+//     *            If true, allow payToPubKey to be casted to the corresponding address. This is useful if you prefer
+//     *            showing addresses rather than pubkeys.
+//     */
     /*public Address getToAddress(NetworkParameters params, boolean forcePayToPubKey) throws ScriptException {
         if (isSentToAddress())
             return new Address(params, getPubKeyHash());
@@ -415,12 +415,12 @@ public class Script {
 
     ////////////////////// Interface for writing scripts from scratch ////////////////////////////////
 
-    /**
-     * Writes out the given byte buffer to the output stream with the correct opcode prefix
-     * To write an integer call writeBytes(out, SerializeUtils.reverseBytes(SerializeUtils.encodeMPI(val, false)));
-     * <p>
-     * 将输出流按正确的方式写入到字节缓冲区
-     */
+//    /**
+//     * Writes out the given byte buffer to the output stream with the correct opcode prefix
+//     * To write an integer call writeBytes(out, SerializeUtils.reverseBytes(SerializeUtils.encodeMPI(val, false)));
+//     * <p>
+//     * 将输出流按正确的方式写入到字节缓冲区
+//     */
     public static void writeBytes(OutputStream os, byte[] buf) throws IOException {
         if (buf.length < OP_PUSHDATA1) {
             os.write(buf.length);
@@ -439,10 +439,10 @@ public class Script {
         }
     }
 
-    /**
-     * Creates a program that requires at least N of the given keys to sign, using OP_CHECKMULTISIG.
-     * 将OutputScript/scriptPublicKry  转为字节数组 用于传输
-     */
+//    /**
+//     * Creates a program that requires at least N of the given keys to sign, using OP_CHECKMULTISIG.
+//     * 将OutputScript/scriptPublicKry  转为字节数组 用于传输
+//     */
     public static byte[] createMultiSigOutputScript(int threshold, List<ECKey> pubkeys) {
         checkArgument(threshold > 0);
         checkArgument(threshold <= pubkeys.size());
@@ -464,9 +464,9 @@ public class Script {
         }
     }
 
-    /**
-     * 根据签名和公钥的字节数组转为inputScript/scriptSig 字节数组用于网络传播
-     **/
+//    /**
+//     * 根据签名和公钥的字节数组转为inputScript/scriptSig 字节数组用于网络传播
+//     **/
     public static byte[] createInputScript(byte[] signature, byte[] pubkey) {
         try {
             // TODO: Do this by creating a Script *first* then having the script reassemble itself into bytes.
@@ -478,10 +478,10 @@ public class Script {
             throw new RuntimeException(e);
         }
     }
-
-    /**
-     * 根据签名的字节数组转为inputScript/scriptSig 字节数组用于网络传播
-     **/
+//
+//    /**
+//     * 根据签名的字节数组转为inputScript/scriptSig 字节数组用于网络传播
+//     **/
     public static byte[] createInputScript(byte[] signature) {
         try {
             // TODO: Do this by creating a Script *first* then having the script reassemble itself into bytes.
@@ -493,14 +493,14 @@ public class Script {
         }
     }
 
-    /**
-     * Creates an incomplete scriptSig that, once filled with signatures, can redeem output containing this scriptPubKey.
-     * Instead of the signatures resulting script has OP_0.
-     * Having incomplete input script allows to pass around partially signed tx.
-     * It is expected that this program later on will be updated with proper signatures.
-     * <p>
-     * 创建一个空Script
-     */
+//    /**
+//     * Creates an incomplete scriptSig that, once filled with signatures, can redeem output containing this scriptPubKey.
+//     * Instead of the signatures resulting script has OP_0.
+//     * Having incomplete input script allows to pass around partially signed tx.
+//     * It is expected that this program later on will be updated with proper signatures.
+//     * <p>
+//     * 创建一个空Script
+//     */
     public Script createEmptyInputScript(@Nullable ECKey key, @Nullable Script redeemScript) {
         if (isSentToAddress()) {
             checkArgument(key != null, "Key required to create pay-to-address input script");
@@ -514,10 +514,10 @@ public class Script {
             throw new ScriptException("Do not understand script type: " + this);
         }
     }
-
-    /**
-     * Returns a copy of the given scriptSig with the signature inserted in the given position.
-     */
+//
+//    /**
+//     * Returns a copy of the given scriptSig with the signature inserted in the given position.
+//     */
     public Script getScriptSigWithSignature(Script scriptSig, byte[] sigBytes, int index) {
         int sigsPrefixCount = 0;
         int sigsSuffixCount = 0;
@@ -533,10 +533,10 @@ public class Script {
     }
 
 
-    /**
-     * Returns the index where a signature by the key should be inserted.  Only applicable to
-     * a P2SH scriptSig.
-     */
+//    /**
+//     * Returns the index where a signature by the key should be inserted.  Only applicable to
+//     * a P2SH scriptSig.
+//     */
     public int getSigInsertionIndex(Sha256Hash hash, ECKey signingKey) {
         // Iterate over existing signatures, skipping the initial OP_0, the final redeem script
         // and any placeholder OP_0 sigs.
@@ -572,12 +572,12 @@ public class Script {
 
         throw new IllegalStateException("Could not find matching key " + key.toString() + " in script " + this);
     }
-
-    /**
-     * Returns a list of the keys required by this script, assuming a multi-sig script.
-     *
-     * @throws ScriptException if the script type is not understood or is pay to address or is P2SH (run this method on the "Redeem script" instead).
-     */
+//
+//    /**
+//     * Returns a list of the keys required by this script, assuming a multi-sig script.
+//     *
+//     * @throws ScriptException if the script type is not understood or is pay to address or is P2SH (run this method on the "Redeem script" instead).
+//     */
     public List<ECKey> getPubKeys() {
         if (!isSentToMultiSig()) {
             throw new ScriptException("Only usable for multisig scripts.");
@@ -656,9 +656,9 @@ public class Script {
         }
     }
 
-    /**
-     * Gets the count of regular SigOps in the script program (counting multisig ops as 20)
-     */
+//    /**
+//     * Gets the count of regular SigOps in the script program (counting multisig ops as 20)
+//     */
     public static int getSigOpCount(byte[] program) throws ScriptException {
         Script script = new Script();
         try {
@@ -669,9 +669,9 @@ public class Script {
         return getSigOpCount(script.chunks, false);
     }
 
-    /**
-     * Gets the count of P2SH Sig Ops in the Script scriptSig
-     */
+//    /**
+//     * Gets the count of P2SH Sig Ops in the Script scriptSig
+//     */
     public static long getP2SHSigOpCount(byte[] scriptSig) throws ScriptException {
         Script script = new Script();
         try {
@@ -688,10 +688,10 @@ public class Script {
         }
         return 0;
     }
-
-    /**
-     * Returns number of signatures required to satisfy this script.
-     */
+//
+//    /**
+//     * Returns number of signatures required to satisfy this script.
+//     */
     public int getNumberOfSignaturesRequiredToSpend() {
         if (isSentToMultiSig()) {
             // for N of M CHECKMULTISIG script we will need N signatures to spend
@@ -707,10 +707,10 @@ public class Script {
         }
     }
 
-    /**
-     * Returns number of bytes required to spend this script. It accepts optional ECKey and redeemScript that may
-     * be required for certain types of script to estimate target size.
-     */
+//    /**
+//     * Returns number of bytes required to spend this script. It accepts optional ECKey and redeemScript that may
+//     * be required for certain types of script to estimate target size.
+//     */
     public int getNumberOfBytesRequiredToSpend(@Nullable ECKey pubKey, @Nullable Script redeemScript) {
         if (isPayToScriptHash()) {
             // scriptSig: <sig> [sig] [sig...] <redeemscript>
@@ -730,20 +730,20 @@ public class Script {
             throw new IllegalStateException("Unsupported script type");
         }
     }
-
-    /**
-     * <p>Whether or not this is a scriptPubKey representing a pay-to-script-hash output. In such outputs, the logic that
-     * controls reclamation is not actually in the output at all. Instead there's just a hash, and it's up to the
-     * spending input to provide a program matching that hash. This rule is "soft enforced" by the network as it does
-     * not exist in Bitcoin Core. It means blocks containing P2SH transactions that don't match
-     * correctly are considered valid, but won't be mined upon, so they'll be rapidly re-orgd out of the chain. This
-     * logic is defined by <a href="https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki">BIP 16</a>.</p>
-     *
-     * <p>bitcoinj does not support creation of P2SH transactions today. The goal of P2SH is to allow short addresses
-     * even for complex scripts (eg, multi-sig outputs) so they are convenient to work with in things like QRcodes or
-     * with copy/paste, and also to minimize the size of the unspent output set (which improves performance of the
-     * Bitcoin system).</p>
-     */
+//
+//    /**
+//     * <p>Whether or not this is a scriptPubKey representing a pay-to-script-hash output. In such outputs, the logic that
+//     * controls reclamation is not actually in the output at all. Instead there's just a hash, and it's up to the
+//     * spending input to provide a program matching that hash. This rule is "soft enforced" by the network as it does
+//     * not exist in Bitcoin Core. It means blocks containing P2SH transactions that don't match
+//     * correctly are considered valid, but won't be mined upon, so they'll be rapidly re-orgd out of the chain. This
+//     * logic is defined by <a href="https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki">BIP 16</a>.</p>
+//     *
+//     * <p>bitcoinj does not support creation of P2SH transactions today. The goal of P2SH is to allow short addresses
+//     * even for complex scripts (eg, multi-sig outputs) so they are convenient to work with in things like QRcodes or
+//     * with copy/paste, and also to minimize the size of the unspent output set (which improves performance of the
+//     * Bitcoin system).</p>
+//     */
     public boolean isPayToScriptHash() {
         // We have to check against the serialized form because BIP16 defines a P2SH output using an exact byte
         // template, not the logical program structure. Thus you can have two programs that look identical when
@@ -754,10 +754,10 @@ public class Script {
                 (program[1] & 0xff) == 0x17 &&
                 (program[25] & 0xff) == OP_EQUAL;
     }
-
-    /**
-     * Returns whether this script matches the format used for multisig outputs: [n] [keys...] [m] CHECKMULTISIG
-     */
+//
+//    /**
+//     * Returns whether this script matches the format used for multisig outputs: [n] [keys...] [m] CHECKMULTISIG
+//     */
     public boolean isSentToMultiSig() {
         if (chunks.size() < 4) {
             return false;
@@ -839,9 +839,9 @@ public class Script {
         return true;
     }
 
-    /**
-     * Returns the script bytes of inputScript with all instances of the specified script object removed
-     */
+//    /**
+//     * Returns the script bytes of inputScript with all instances of the specified script object removed
+//     */
     public static byte[] removeAllInstancesOf(byte[] inputScript, byte[] chunkToRemove) {
         // We usually don't end up removing anything
         UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(inputScript.length);
@@ -878,9 +878,9 @@ public class Script {
         return bos.toByteArray();
     }
 
-    /**
-     * Returns the script bytes of inputScript with all instances of the given op code removed
-     */
+//    /**
+//     * Returns the script bytes of inputScript with all instances of the given op code removed
+//     */
     public static byte[] removeAllInstancesOfOp(byte[] inputScript, int opCode) {
         return removeAllInstancesOf(inputScript, new byte[]{(byte) opCode});
     }
@@ -896,14 +896,14 @@ public class Script {
         }
         return false;
     }
-
-    /**
-     * Cast a script chunk to a BigInteger.
-     * <p>
-     * sizes.
-     *
-     * @throws ScriptException if the chunk is longer than 4 bytes.
-     */
+//
+//    /**
+//     * Cast a script chunk to a BigInteger.
+//     * <p>
+//     * sizes.
+//     *
+//     * @throws ScriptException if the chunk is longer than 4 bytes.
+//     */
     private static BigInteger castToBigInteger(byte[] chunk) throws ScriptException {
         if (chunk.length > 4) {
             throw new ScriptException("Script attempted to use an integer larger than 4 bytes");
@@ -911,13 +911,13 @@ public class Script {
         return SerializeUtils.decodeMPI(SerializeUtils.reverseBytes(chunk), false);
     }
 
-    /**
-     * Cast a script chunk to a BigInteger. Normally you would want
-     * the normal maximum length does not apply (i.e. CHECKLOCKTIMEVERIFY).
-     *
-     * @param maxLength the maximum length in bytes.
-     * @throws ScriptException if the chunk is longer than the specified maximum.
-     */
+//    /**
+//     * Cast a script chunk to a BigInteger. Normally you would want
+//     * the normal maximum length does not apply (i.e. CHECKLOCKTIMEVERIFY).
+//     *
+//     * @param maxLength the maximum length in bytes.
+//     * @throws ScriptException if the chunk is longer than the specified maximum.
+//     */
     private static BigInteger castToBigInteger(final byte[] chunk, final int maxLength) throws ScriptException {
         if (chunk.length > maxLength) {
             throw new ScriptException("Script attempted to use an integer larger than "
@@ -930,10 +930,10 @@ public class Script {
         return chunks.size() > 0 && chunks.get(0).equalsOpCode(OP_RETURN);
     }
 
-    /**
-     * Exposes the script interpreter. Normally you should not use this directly, instead use
-     * instead.
-     */
+//    /**
+//     * Exposes the script interpreter. Normally you should not use this directly, instead use
+//     * instead.
+//     */
     @Deprecated
     public static void executeScript(@Nullable Transaction txContainingThis, long index,
                                      Script script, LinkedList<byte[]> stack, boolean enforceNullDummy) throws ScriptException {
@@ -944,17 +944,17 @@ public class Script {
         executeScript(txContainingThis, index, script, stack, flags);
     }
 
-    /**
-     * Exposes the script interpreter. Normally you should not use this directly, instead use
-     * is useful if you need more precise control or access to the final state of the stack. This interface is very
-     * likely to change in future.
-     *
-     * @param txContainingThis 交易
-     * @param index            解锁脚本的索引
-     * @param script           锁定脚本
-     * @param stack            命令队列
-     * @param verifyFlags      验证类型集合
-     **/
+//    /**
+//     * Exposes the script interpreter. Normally you should not use this directly, instead use
+//     * is useful if you need more precise control or access to the final state of the stack. This interface is very
+//     * likely to change in future.
+//     *
+//     * @param txContainingThis 交易
+//     * @param index            解锁脚本的索引
+//     * @param script           锁定脚本
+//     * @param stack            命令队列
+//     * @param verifyFlags      验证类型集合
+//     **/
     public static void executeScript(@Nullable Transaction txContainingThis, long index,
                                      Script script, LinkedList<byte[]> stack, Set<VerifyFlag> verifyFlags) throws ScriptException {
         int opCount = 0;
@@ -1735,18 +1735,18 @@ public class Script {
         return opCount;
     }
 
-    /**
-     * Verifies that this script (interpreted as a scriptSig) correctly spends the given scriptPubKey, enabling all
-     * validation rules.验证此脚本（解锁脚本）是否正确地使用给定的scriptPubKey（锁定脚本），启用所有验证规则
-     *
-     * @param txContainingThis The transaction in which this input scriptSig resides.
-     *                         Accessing txContainingThis from another thread while this method runs results in undefined behavior.
-     * @param scriptSigIndex   交易中包含的解锁脚本的索引The index in txContainingThis of the scriptSig (note: NOT the index of the scriptPubKey).
-     * @param scriptPubKey     锁定脚本The connected scriptPubKey containing the conditions needed to claim the value.
-     *                         instead so that verification flags do not change as new verification options
-     *                         are added.
-     *                         交易，解锁脚本下标，锁定脚本 txContainingThis+scriptSigIndex用于定位解锁脚本（因为一笔交易中有可能有多个Input）
-     */
+//    /**
+//     * Verifies that this script (interpreted as a scriptSig) correctly spends the given scriptPubKey, enabling all
+//     * validation rules.验证此脚本（解锁脚本）是否正确地使用给定的scriptPubKey（锁定脚本），启用所有验证规则
+//     *
+//     * @param txContainingThis The transaction in which this input scriptSig resides.
+//     *                         Accessing txContainingThis from another thread while this method runs results in undefined behavior.
+//     * @param scriptSigIndex   交易中包含的解锁脚本的索引The index in txContainingThis of the scriptSig (note: NOT the index of the scriptPubKey).
+//     * @param scriptPubKey     锁定脚本The connected scriptPubKey containing the conditions needed to claim the value.
+//     *                         instead so that verification flags do not change as new verification options
+//     *                         are added.
+//     *                         交易，解锁脚本下标，锁定脚本 txContainingThis+scriptSigIndex用于定位解锁脚本（因为一笔交易中有可能有多个Input）
+//     */
     @Deprecated
     public boolean correctlySpends(Transaction txContainingThis, long scriptSigIndex, Script scriptPubKey) {
         return correctlySpends(txContainingThis, scriptSigIndex, scriptPubKey, ALL_VERIFY_FLAGS);
@@ -1757,18 +1757,18 @@ public class Script {
         return correctlySpends(txContainingThis, scriptSigIndex, scriptPubKey, ALL_VERIFY_FLAGS);
     }
 
-    /**
-     * Verifies that this script (interpreted as a scriptSig) correctly spends the given scriptPubKey.
-     *
-     * @param txContainingThis 交易 The transaction in which this input scriptSig resides.
-     *                         Accessing txContainingThis from another thread while this method runs results in undefined behavior.
-     * @param scriptSigIndex   scriptSig脚本索引 The index in txContainingThis of the scriptSig (note: NOT the index of the scriptPubKey).
-     * @param scriptPubKey     scriptPubKey   The connected scriptPubKey containing the conditions needed to claim the value.
-     * @param verifyFlags      验证标识 Each flag enables one validation rule. If in doubt, use {@link #correctlySpends(Transaction, long, Script)}
-     *                         which sets all flags.
-     *                         <p>
-     *                         验证此脚本scriptSig是否正确地使用给定的scriptPubKey
-     */
+//    /**
+//     * Verifies that this script (interpreted as a scriptSig) correctly spends the given scriptPubKey.
+//     *
+//     * @param txContainingThis 交易 The transaction in which this input scriptSig resides.
+//     *                         Accessing txContainingThis from another thread while this method runs results in undefined behavior.
+//     * @param scriptSigIndex   scriptSig脚本索引 The index in txContainingThis of the scriptSig (note: NOT the index of the scriptPubKey).
+//     * @param scriptPubKey     scriptPubKey   The connected scriptPubKey containing the conditions needed to claim the value.
+//     * @param verifyFlags      验证标识 Each flag enables one validation rule. If in doubt, use {@link #correctlySpends(Transaction, long, Script)}
+//     *                         which sets all flags.
+//     *                         <p>
+//     *                         验证此脚本scriptSig是否正确地使用给定的scriptPubKey
+//     */
     public boolean correctlySpends(Transaction txContainingThis, long scriptSigIndex, Script scriptPubKey, Set<VerifyFlag> verifyFlags) {
         // Clone the transaction because executing the script involves editing it, and if we die, we'll leave
         // the tx half broken (also it's not so thread safe to work on it directly.
@@ -1844,10 +1844,10 @@ public class Script {
         }
         return getProgram();
     }
-
-    /**
-     * @return The script type.
-     */
+//
+//    /**
+//     * @return The script type.
+//     */
     public ScriptType getScriptType() {
         ScriptType type = ScriptType.NO_TYPE;
         if (isSentToAddress()) {
@@ -1861,9 +1861,9 @@ public class Script {
     }
 
 
-    /**
-     * 签名验证
-     */
+//    /**
+//     * 签名验证
+//     */
     public static boolean verifySign(byte[] digestData, byte[] signData, byte[] publicKey) {
         return ECKey.verify(digestData, signData, publicKey);
     }

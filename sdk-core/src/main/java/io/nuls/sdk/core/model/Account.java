@@ -37,9 +37,9 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-/**
- * @author: Charlie
- */
+///**
+// * @author: Charlie
+// */
 public class Account implements Serializable {
 
 
@@ -96,12 +96,12 @@ public class Account implements Serializable {
 
 
     private String remark;
-
-
-    /**
-     * 账户是否被加密(是否设置过密码)
-     * Whether the account is encrypted (Whether the password is set)
-     */
+//
+//
+//    /**
+//     * 账户是否被加密(是否设置过密码)
+//     * Whether the account is encrypted (Whether the password is set)
+//     */
     public boolean isEncrypted() {
         if (getEncryptedPriKey() != null && getEncryptedPriKey().length > 0) {
             return true;
@@ -109,10 +109,10 @@ public class Account implements Serializable {
         return false;
     }
 
-    /**
-     * 锁定账户
-     * Lock account
-     */
+//    /**
+//     * 锁定账户
+//     * Lock account
+//     */
     public void lock() {
         if (!isEncrypted()) {
             return;
@@ -128,11 +128,11 @@ public class Account implements Serializable {
     public byte[] getHash160() {
         return this.getAddress().getHash160();
     }
-
-    /**
-     * 根据密码解锁账户
-     * Unlock account based on password
-     */
+//
+//    /**
+//     * 根据密码解锁账户
+//     * Unlock account based on password
+//     */
     public boolean unlock(String password) throws NulsException {
         decrypt(password);
         if (isLocked()) {
@@ -141,20 +141,20 @@ public class Account implements Serializable {
         return true;
     }
 
-    /**
-     * 账户是否被锁定(是否有明文私钥) 有私钥表示解锁
-     * Whether the account is locked (is there a cleartext private key)
-     *
-     * @return true: Locked, false: not Locked
-     */
+//    /**
+//     * 账户是否被锁定(是否有明文私钥) 有私钥表示解锁
+//     * Whether the account is locked (is there a cleartext private key)
+//     *
+//     * @return true: Locked, false: not Locked
+//     */
     public boolean isLocked() {
         return (this.getPriKey() == null) || (this.getPriKey().length == 0);
     }
-
-    /**
-     * 验证账户密码是否正确
-     * Verify that the account password is correct
-     */
+//
+//    /**
+//     * 验证账户密码是否正确
+//     * Verify that the account password is correct
+//     */
     public boolean validatePassword(String password) {
         boolean result = StringUtils.validPassword(password);
         if (!result) {
@@ -174,19 +174,19 @@ public class Account implements Serializable {
         }
         return true;
     }
-
-    /**
-     * 根据密码加密账户(给账户设置密码)
-     * Password-encrypted account (set password for account)
-     */
+//
+//    /**
+//     * 根据密码加密账户(给账户设置密码)
+//     * Password-encrypted account (set password for account)
+//     */
     public void encrypt(String password) throws NulsException {
         encrypt(password, false);
     }
-
-    /**
-     * 根据密码加密账户(给账户设置密码)
-     * Password-encrypted account (set password for account)
-     */
+//
+//    /**
+//     * 根据密码加密账户(给账户设置密码)
+//     * Password-encrypted account (set password for account)
+//     */
     public void encrypt(String password, boolean isForce) throws NulsException {
         if (this.isEncrypted()) {
             if (isForce) {
@@ -206,11 +206,11 @@ public class Account implements Serializable {
         this.setEcKey(result);
         this.setEncryptedPriKey(encryptedPrivateKey.getEncryptedBytes());
     }
-
-    /**
-     * 根据解密账户, 包括生成账户明文私钥
-     * According to the decryption account, including generating the account plaintext private key
-     */
+//
+//    /**
+//     * 根据解密账户, 包括生成账户明文私钥
+//     * According to the decryption account, including generating the account plaintext private key
+//     */
     private boolean decrypt(String password) throws NulsException {
         try {
             byte[] unencryptedPrivateKey = AESEncrypt.decrypt(this.getEncryptedPriKey(), password);
@@ -335,10 +335,10 @@ public class Account implements Serializable {
     public void setEcKey(ECKey ecKey) {
         this.ecKey = ecKey;
     }
-
-    /**
-     * 根据密码获取ECKey
-     */
+//
+//    /**
+//     * 根据密码获取ECKey
+//     */
     public ECKey getEcKey(String password) throws NulsException {
         ECKey eckey = null;
         byte[] unencryptedPrivateKey;

@@ -36,6 +36,17 @@ public class Address {
     public native void call(String methodName, String methodDesc, String[][] args, BigInteger value);
 
     /**
+     * 调用该地址的合约方法并带有返回值(String)
+     *
+     * @param methodName 方法名
+     * @param methodDesc 方法签名
+     * @param args       参数
+     * @param value      附带的货币量（多少Na）
+     * @return 调用合约后的返回值
+     */
+    public native String callWithReturnValue(String methodName, String methodDesc, String[][] args, BigInteger value);
+
+    /**
      * 验证地址
      *
      * @param address 地址

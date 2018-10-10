@@ -6,6 +6,7 @@ import io.nuls.contract.sdk.service.ContractService;
 import io.nuls.contract.sdk.service.UTXOService;
 import io.nuls.contract.sdk.transaction.CreateContractTransaction;
 import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.crypto.Hex;
@@ -17,7 +18,9 @@ import org.spongycastle.util.Arrays;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * contract sdk
@@ -53,12 +56,13 @@ public class ContractServiceImpl implements ContractService {
      * @throws NulsException
      * @throws IOException
      */
-    Result createContractTransaction(String sender,
-                                     long gasLimit,
-                                     Long price,
-                                     byte[] contractCode,
-                                     Object[] args,
-                                     String remark) throws NulsException, IOException {
+    @Override
+    public Result createContractTransaction(String sender,
+                                            long gasLimit,
+                                            Long price,
+                                            byte[] contractCode,
+                                            Object[] args,
+                                            String remark) throws NulsException, IOException {
 
         /**
          * 创建投票时
@@ -97,9 +101,10 @@ public class ContractServiceImpl implements ContractService {
         tx.setTxData(createContractData);
 
         //总共交易费用
-        //Long trxFee = transFeeDto.getNa().getValue();
-        //Long amount = LongUtils.add(totalNa, trxFee);
-        Long amount = 10000000000L;
+        //每次累加一条未花费余额时，需要重新计算手续费
+        //TODO.. i == 127为什么要加127就+1？
+        Na trxFee = TransactionFeeCalculator.getFee(tx.size(), TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES);
+        Long amount = LongUtils.add(totalNa, trxFee.getValue());
 
         List<Input> inputList = utxoService.getUTXOs(sender, amount);
 
@@ -133,6 +138,9 @@ public class ContractServiceImpl implements ContractService {
                 throw new RuntimeException(e);
             }
         }
-        return Result.getFailed("");
+        String txHex = Hex.encode(tx.serialize());
+        Map<String, String> map = new HashMap<>();
+        map.put("value", txHex);
+        return Result.getSuccess().setData(map);
     }
 }

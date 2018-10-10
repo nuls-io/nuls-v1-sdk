@@ -63,6 +63,7 @@ public class UTXOServiceImpl implements UTXOService {
             input.setFromIndex((int) utxo.get("txIndex"));
             input.setValue((long) utxo.get("value"));
             input.setLockTime((Integer) utxo.get("lockTime"));
+            inputs.add(input);
         }
         return inputs;
     }

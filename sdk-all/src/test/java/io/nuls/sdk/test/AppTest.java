@@ -99,12 +99,12 @@ public class AppTest {
 
             byte[] data = Hex.decode(txHex);
             CreateContractTransaction tx = new NulsByteBuffer(data).readNulsData(new CreateContractTransaction());
-
-            ECKey ecKey = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
-            P2PHKSignature signature = SignatureUtil.createSignatureByEckey(tx, ecKey);
-            logger.info("signature {}", signature.serialize());
-            tx.setTransactionSignature(signature.serialize());
-            txHex = Hex.encode(tx.serialize());
+//
+//            ECKey ecKey = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
+//            P2PHKSignature signature = SignatureUtil.createSignatureByEckey(tx, ecKey);
+//            logger.info("signature {}", signature.serialize());
+//            tx.setTransactionSignature(signature.serialize());
+//            txHex = Hex.encode(tx.serialize());
             //result = NulsSDKTool.signTransaction(txHex, priKey, address, null);
             result = NulsSDKTool.broadcastTransaction(txHex);
             logger.info("broadcastTransaction {}", result);

@@ -6,17 +6,19 @@ import io.nuls.contract.sdk.service.ContractService;
 import io.nuls.contract.sdk.service.UTXOService;
 import io.nuls.contract.sdk.transaction.CreateContractTransaction;
 import io.nuls.sdk.accountledger.model.Input;
-import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.*;
+import io.nuls.sdk.core.script.P2PHKSignature;
+import io.nuls.sdk.core.script.SignatureUtil;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.util.Arrays;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,9 +72,8 @@ public class ContractServiceImpl implements ContractService {
         Na value = Na.ZERO;
         long totalNa = LongUtils.mul(gasLimit, price);
 
-        ECKey ecKey = new ECKey();
         // 生成一个地址作为智能合约地址
-        Address contractAddress = AccountTool.newAddress(ecKey);
+        Address contractAddress = AccountTool.createContractAddress();
 
         byte[] contractAddressBytes = contractAddress.getAddressBytes();
         byte[] senderBytes = AddressTool.getAddress(sender);
@@ -117,6 +118,7 @@ public class ContractServiceImpl implements ContractService {
             coin.setNa(Na.valueOf(input.getValue()));
             inputs.add(coin);
         }
+
         List<Coin> outputs = new ArrayList<>();
         if (value.isGreaterThan(Na.ZERO)) {
             Coin to = new Coin();
@@ -138,6 +140,14 @@ public class ContractServiceImpl implements ContractService {
                 throw new RuntimeException(e);
             }
         }
+
+        //TODO.. remove 使用私钥签名测试
+        String priKey = "00ef8a6f90d707ab345740f0fab2d9f606165209ce41a71199f679f5dfd20bfd1d";
+        ECKey ecKeyTest = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
+        P2PHKSignature signature = SignatureUtil.createSignatureByEckey(tx, ecKeyTest);
+        tx.setTransactionSignature(signature.serialize());
+
+
         String txHex = Hex.encode(tx.serialize());
         Map<String, String> map = new HashMap<>();
         map.put("value", txHex);

@@ -109,6 +109,7 @@ public class ContractServiceImpl implements ContractService {
 
         List<Input> inputList = utxoService.getUTXOs(sender, amount);
 
+        Long balance = 0L;
         List<Coin> inputs = new ArrayList<>();
         for (Input input : inputList) {
             Coin coin = new Coin();
@@ -117,16 +118,19 @@ public class ContractServiceImpl implements ContractService {
             coin.setLockTime(input.getLockTime());
             coin.setNa(Na.valueOf(input.getValue()));
             inputs.add(coin);
+            balance = LongUtils.add(balance, input.getValue());
         }
 
+        Long outputAmount = balance - 1000000L;
+        System.out.printf("outputAmount: "+outputAmount);
         List<Coin> outputs = new ArrayList<>();
-        if (value.isGreaterThan(Na.ZERO)) {
-            Coin to = new Coin();
-            to.setLockTime(0);
-            to.setNa(value);
-            to.setOwner(contractAddressBytes);
-            outputs.add(to);
-        }
+        //if (value.isGreaterThan(Na.ZERO)) {
+        Coin to = new Coin();
+        to.setLockTime(0);
+        to.setNa(Na.valueOf(outputAmount));
+        to.setOwner(AddressTool.getAddress(sender));
+        outputs.add(to);
+        //}
         CoinData coinData = new CoinData();
         coinData.setFrom(inputs);
         coinData.setTo(outputs);
@@ -140,14 +144,6 @@ public class ContractServiceImpl implements ContractService {
                 throw new RuntimeException(e);
             }
         }
-
-        //TODO.. remove 使用私钥签名测试
-        String priKey = "00ef8a6f90d707ab345740f0fab2d9f606165209ce41a71199f679f5dfd20bfd1d";
-        ECKey ecKeyTest = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
-        P2PHKSignature signature = SignatureUtil.createSignatureByEckey(tx, ecKeyTest);
-        tx.setTransactionSignature(signature.serialize());
-
-
         String txHex = Hex.encode(tx.serialize());
         Map<String, String> map = new HashMap<>();
         map.put("value", txHex);

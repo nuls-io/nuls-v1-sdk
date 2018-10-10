@@ -92,21 +92,17 @@ public class AppTest {
             String txHex = (String) map.get("value");
             logger.info("txHex {}", txHex);
 
-
             String priKey = "00ef8a6f90d707ab345740f0fab2d9f606165209ce41a71199f679f5dfd20bfd1d";
-            String address = "Nsdv1Hbu4TokdgbXreypXmVttYKdPT1g";
-
 
             byte[] data = Hex.decode(txHex);
             CreateContractTransaction tx = new NulsByteBuffer(data).readNulsData(new CreateContractTransaction());
-//
-//            ECKey ecKey = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
-//            P2PHKSignature signature = SignatureUtil.createSignatureByEckey(tx, ecKey);
-//            logger.info("signature {}", signature.serialize());
-//            tx.setTransactionSignature(signature.serialize());
-//            txHex = Hex.encode(tx.serialize());
+            ECKey ecKey = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
+            P2PHKSignature signature = SignatureUtil.createSignatureByEckey(tx, ecKey);
+            tx.setTransactionSignature(signature.serialize());
             //result = NulsSDKTool.signTransaction(txHex, priKey, address, null);
-            result = NulsSDKTool.broadcastTransaction(txHex);
+
+            String txHex2 = Hex.encode(tx.serialize());
+            result = NulsSDKTool.broadcastTransaction(txHex2);
             logger.info("broadcastTransaction {}", result);
         } catch (NulsException e) {
             e.printStackTrace();

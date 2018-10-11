@@ -18,6 +18,13 @@ public class Block {
     public static native BlockHeader currentBlockHeader();
 
     /**
+     * 最新块的区块头
+     *
+     * @return 最新块的区块头
+     */
+    public static native BlockHeader newestBlockHeader();
+
+    /**
      * 给定块的哈希值
      * hash of the given block
      *
@@ -56,16 +63,6 @@ public class Block {
      */
     public static long timestamp() {
         return currentBlockHeader().getTime();
-    }
-
-    /**
-     * 当前块交易数量
-     * current block's txCount
-     *
-     * @return txCount
-     */
-    public static long txCount() {
-        return currentBlockHeader().getTxCount();
     }
 
 }

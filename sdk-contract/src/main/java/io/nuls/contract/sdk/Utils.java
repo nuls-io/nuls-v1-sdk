@@ -107,7 +107,7 @@ public class Utils {
      * @return pseudo random number (0 ~ (powerSizeFor(initialCapacity) - 1))
      */
     private static int pseudoRandom(Integer seed, String strSeed, Integer initialCapacity) {
-        BlockHeader blockHeader = Block.currentBlockHeader();
+        BlockHeader blockHeader = Block.newestBlockHeader();
         if(initialCapacity != null) {
             initialCapacity = powerSizeFor(initialCapacity);
         } else {

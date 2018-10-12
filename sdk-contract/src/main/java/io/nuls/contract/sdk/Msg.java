@@ -13,18 +13,18 @@ public class Msg {
     public static native long gasleft();
 
     /**
-     * 消息发送者地址
-     * sender of the message
+     * 合约发送者地址
+     * sender of the contract
      *
      * @return 消息发送者地址
      */
     public static native Address sender();
 
     /**
-     * 随消息发送的Na数
-     * number of na sent with the message
+     * 合约发送者转入合约地址的Nuls数量，单位是Na，1Nuls=1亿Na
+     * The number of Nuls transferred by the contract sender to the contract address, the unit is Na, 1Nuls = 1 billion Na
      *
-     * @return 随消息发送的Na数
+     * @return
      */
     public static native BigInteger value();
 

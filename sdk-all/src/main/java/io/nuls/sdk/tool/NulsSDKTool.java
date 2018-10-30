@@ -278,6 +278,10 @@ public class NulsSDKTool {
         return consensusService.getAgentDeposits(agentHash, pageNumber, pageSize);
     }
 
+    public static Result createMultipleInputAddressTransaction(List<Input> inputs, int nInputAccount, List<Output> outputs, String remark){
+        return accountLedgerService.createMultipleInputAddressTransaction(inputs,nInputAccount,outputs,remark);
+    }
+
     public static Result createMSAccountTransferTransaction(MSAccount account, List<Input> inputs, List<Output> outputs, String remark) {
         return accountLedgerService.createMSAccountTransferTransaction(account, inputs, outputs, remark);
     }

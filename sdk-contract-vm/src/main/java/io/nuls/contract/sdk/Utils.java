@@ -72,8 +72,16 @@ public class Utils {
         return pseudoRandom(0x5DEECE66DL);
     }
 
+    /**
+     * @param src source string
+     * @return sha3-256 hash (utf-8 encode)
+     */
     public static native String sha3(String src);
 
+    /**
+     * @param bytes source byte array
+     * @return sha3-256 hash
+     */
     public static native String sha3(byte[] bytes);
 
 }

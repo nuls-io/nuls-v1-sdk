@@ -47,6 +47,7 @@ public interface ContractConstant{
      *
      */
     String CONTRACT_EVENT = "event";
+    String CONTRACT_EVENT_ADDRESS = "contractAddress";
     String CONTRACT_EVENT_DATA = "payload";
 
     /**

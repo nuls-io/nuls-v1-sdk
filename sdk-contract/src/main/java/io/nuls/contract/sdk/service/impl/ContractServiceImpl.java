@@ -1,24 +1,24 @@
 package io.nuls.contract.sdk.service.impl;
 
 import io.nuls.contract.sdk.ContractUtil;
+import io.nuls.contract.sdk.model.CallContractData;
 import io.nuls.contract.sdk.model.CreateContractData;
 import io.nuls.contract.sdk.service.ContractService;
 import io.nuls.contract.sdk.service.UTXOService;
+import io.nuls.contract.sdk.transaction.CallContractTransaction;
 import io.nuls.contract.sdk.transaction.CreateContractTransaction;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.core.contast.SDKConstant;
-import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.*;
-import io.nuls.sdk.core.script.P2PHKSignature;
-import io.nuls.sdk.core.script.SignatureUtil;
 import io.nuls.sdk.core.utils.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongycastle.util.Arrays;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +29,8 @@ import java.util.Map;
  * Created by wangkun23 on 2018/10/8.
  */
 public class ContractServiceImpl implements ContractService {
+
+    final Logger logger = LoggerFactory.getLogger(ContractServiceImpl.class);
 
     private RestFulUtils restFulUtils = RestFulUtils.getInstance();
 
@@ -122,7 +124,7 @@ public class ContractServiceImpl implements ContractService {
         }
 
         Long outputAmount = balance - 1000000L;
-        System.out.printf("outputAmount: "+outputAmount);
+        System.out.printf("outputAmount: " + outputAmount);
         List<Coin> outputs = new ArrayList<>();
         //if (value.isGreaterThan(Na.ZERO)) {
         Coin to = new Coin();
@@ -148,5 +150,78 @@ public class ContractServiceImpl implements ContractService {
         Map<String, String> map = new HashMap<>();
         map.put("value", txHex);
         return Result.getSuccess().setData(map);
+    }
+
+    /**
+     * @param sender
+     * @param value
+     * @param gasLimit
+     * @param price
+     * @param contractAddress
+     * @param methodName
+     * @param methodDesc
+     * @param args
+     * @param remark
+     * @param utxos
+     * @return
+     */
+    @Override
+    public Result callContractTransaction(String sender,
+                                          Na value,
+                                          Long gasLimit,
+                                          Long price,
+                                          String contractAddress,
+                                          String methodName,
+                                          String methodDesc,
+                                          Object[] args,
+                                          String remark,
+                                          List<Input> utxos) {
+
+        byte[] senderBytes = AddressTool.getAddress(sender);
+        byte[] contractAddressBytes = AddressTool.getAddress(contractAddress);
+
+        CallContractTransaction tx = new CallContractTransaction();
+        if (StringUtils.isNotBlank(remark)) {
+            tx.setRemark(remark.getBytes());
+        }
+        tx.setTime(TimeService.currentTimeMillis());
+        long gasUsed = gasLimit.longValue();
+        Na imputedNa = Na.valueOf(LongUtils.mul(gasUsed, price));
+        // 总花费
+        Na totalNa = imputedNa.add(value);
+
+        // 组装txData
+        CallContractData callContractData = new CallContractData();
+        callContractData.setContractAddress(contractAddressBytes);
+        callContractData.setSender(senderBytes);
+        callContractData.setValue(value.getValue());
+        callContractData.setPrice(price.longValue());
+        callContractData.setGasLimit(gasLimit.longValue());
+        callContractData.setMethodName(methodName);
+        callContractData.setMethodDesc(methodDesc);
+        if (args != null) {
+            callContractData.setArgsCount((byte) args.length);
+            callContractData.setArgs(ContractUtil.twoDimensionalArray(args));
+        }
+        tx.setTxData(callContractData);
+
+        //TODO.. calculator transfer fee
+
+        List<Coin> outputs = new ArrayList<>();
+        if (value.isGreaterThan(Na.ZERO)) {
+            Coin to = new Coin();
+            to.setLockTime(0);
+            to.setNa(value);
+            to.setOwner(contractAddressBytes);
+            outputs.add(to);
+        }
+        //TODO.. build coin data
+        //tx.setCoinData(coinData);
+        try {
+            tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
+        } catch (IOException e) {
+            logger.error("call contact transaction serialize error", e);
+        }
+        return null;
     }
 }

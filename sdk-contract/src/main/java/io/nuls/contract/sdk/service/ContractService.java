@@ -54,4 +54,17 @@ public interface ContractService {
                                    Object[] args,
                                    String remark,
                                    List<Input> utxos);
+
+    /**
+     * delete smart contract
+     *
+     * @param sender
+     * @param contractAddress
+     * @param remark
+     * @param utxos
+     * @return
+     */
+    Result deleteContractTransaction(String sender,
+                                     String contractAddress,
+                                     String remark, List<Input> utxos);
 }

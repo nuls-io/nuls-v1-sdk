@@ -180,9 +180,18 @@ public class ContractServiceImpl implements ContractService {
         byte[] senderBytes = AddressTool.getAddress(sender);
         byte[] contractAddressBytes = AddressTool.getAddress(contractAddress);
 
+        if (value == null) {
+            value = Na.ZERO;
+        }
+
         CallContractTransaction tx = new CallContractTransaction();
         if (StringUtils.isNotBlank(remark)) {
-            tx.setRemark(remark.getBytes());
+            try {
+                tx.setRemark(remark.getBytes(SDKConstant.DEFAULT_ENCODING));
+            } catch (UnsupportedEncodingException e) {
+                Log.error(e);
+                throw new RuntimeException(e);
+            }
         }
         tx.setTime(TimeService.currentTimeMillis());
         long gasUsed = gasLimit.longValue();

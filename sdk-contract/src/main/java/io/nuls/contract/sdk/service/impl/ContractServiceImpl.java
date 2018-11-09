@@ -3,10 +3,12 @@ package io.nuls.contract.sdk.service.impl;
 import io.nuls.contract.sdk.ContractUtil;
 import io.nuls.contract.sdk.model.CallContractData;
 import io.nuls.contract.sdk.model.CreateContractData;
+import io.nuls.contract.sdk.model.DeleteContractData;
 import io.nuls.contract.sdk.service.ContractService;
 import io.nuls.contract.sdk.service.UTXOService;
 import io.nuls.contract.sdk.transaction.CallContractTransaction;
 import io.nuls.contract.sdk.transaction.CreateContractTransaction;
+import io.nuls.contract.sdk.transaction.DeleteContractTransaction;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.Hex;
@@ -223,5 +225,47 @@ public class ContractServiceImpl implements ContractService {
             logger.error("call contact transaction serialize error", e);
         }
         return null;
+    }
+
+    /**
+     * delete smart contract
+     *
+     * @param sender
+     * @param contractAddress
+     * @param remark
+     * @param utxos
+     * @return
+     */
+    @Override
+    public Result deleteContractTransaction(String sender,
+                                            String contractAddress,
+                                            String remark,
+                                            List<Input> utxos) {
+
+        DeleteContractTransaction tx = new DeleteContractTransaction();
+        if (StringUtils.isNotBlank(remark)) {
+            tx.setRemark(remark.getBytes());
+        }
+        tx.setTime(TimeService.currentTimeMillis());
+
+        byte[] senderBytes = AddressTool.getAddress(sender);
+        byte[] contractAddressBytes = AddressTool.getAddress(contractAddress);
+
+        // 组装txData
+        DeleteContractData deleteContractData = new DeleteContractData();
+        deleteContractData.setContractAddress(contractAddressBytes);
+        deleteContractData.setSender(senderBytes);
+        tx.setTxData(deleteContractData);
+        //TODO.. calculator transfer fee
+
+        List<Coin> outputs = new ArrayList<>();
+        //TODO.. build coin data
+        //tx.setCoinData(coinData);
+        try {
+            tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
+        } catch (IOException e) {
+            logger.error("delete contact transaction serialize error", e);
+        }
+        return Result.getSuccess().setData(tx);
     }
 }

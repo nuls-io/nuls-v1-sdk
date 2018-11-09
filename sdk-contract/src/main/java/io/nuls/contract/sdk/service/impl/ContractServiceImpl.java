@@ -10,7 +10,9 @@ import io.nuls.contract.sdk.transaction.CallContractTransaction;
 import io.nuls.contract.sdk.transaction.CreateContractTransaction;
 import io.nuls.contract.sdk.transaction.DeleteContractTransaction;
 import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.utils.ConvertCoinTool;
 import io.nuls.sdk.core.contast.SDKConstant;
+import io.nuls.sdk.core.contast.TransactionErrorCode;
 import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.*;
@@ -178,62 +180,76 @@ public class ContractServiceImpl implements ContractService {
                                           Object[] args,
                                           String remark,
                                           List<Input> utxos) {
-
-        byte[] senderBytes = AddressTool.getAddress(sender);
-        byte[] contractAddressBytes = AddressTool.getAddress(contractAddress);
-
-        if (value == null) {
-            value = Na.ZERO;
-        }
-
-        CallContractTransaction tx = new CallContractTransaction();
-        if (StringUtils.isNotBlank(remark)) {
-            try {
-                tx.setRemark(remark.getBytes(SDKConstant.DEFAULT_ENCODING));
-            } catch (UnsupportedEncodingException e) {
-                Log.error(e);
-                throw new RuntimeException(e);
-            }
-        }
-        tx.setTime(TimeService.currentTimeMillis());
-        long gasUsed = gasLimit.longValue();
-        Na imputedNa = Na.valueOf(LongUtils.mul(gasUsed, price));
-        // 总花费
-        Na totalNa = imputedNa.add(value);
-
-        // 组装txData
-        CallContractData callContractData = new CallContractData();
-        callContractData.setContractAddress(contractAddressBytes);
-        callContractData.setSender(senderBytes);
-        callContractData.setValue(value.getValue());
-        callContractData.setPrice(price.longValue());
-        callContractData.setGasLimit(gasLimit.longValue());
-        callContractData.setMethodName(methodName);
-        callContractData.setMethodDesc(methodDesc);
-        if (args != null) {
-            callContractData.setArgsCount((byte) args.length);
-            callContractData.setArgs(ContractUtil.twoDimensionalArray(args));
-        }
-        tx.setTxData(callContractData);
-
-        //TODO.. calculator transfer fee
-
-        List<Coin> outputs = new ArrayList<>();
-        if (value.isGreaterThan(Na.ZERO)) {
-            Coin to = new Coin();
-            to.setLockTime(0);
-            to.setNa(value);
-            to.setOwner(contractAddressBytes);
-            outputs.add(to);
-        }
-        //TODO.. build coin data
-        //tx.setCoinData(coinData);
         try {
-            tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
-        } catch (IOException e) {
-            logger.error("call contact transaction serialize error", e);
+            byte[] senderBytes = AddressTool.getAddress(sender);
+            byte[] contractAddressBytes = AddressTool.getAddress(contractAddress);
+
+            if (value == null) {
+                value = Na.ZERO;
+            }
+
+            CallContractTransaction tx = new CallContractTransaction();
+            if (StringUtils.isNotBlank(remark)) {
+                try {
+                    tx.setRemark(remark.getBytes(SDKConstant.DEFAULT_ENCODING));
+                } catch (UnsupportedEncodingException e) {
+                    Log.error(e);
+                    throw new RuntimeException(e);
+                }
+            }
+            tx.setTime(TimeService.currentTimeMillis());
+            long gasUsed = gasLimit.longValue();
+            Na imputedNa = Na.valueOf(LongUtils.mul(gasUsed, price));
+            // 总花费
+            Na totalNa = imputedNa.add(value);
+
+            // 组装txData
+            CallContractData callContractData = new CallContractData();
+            callContractData.setContractAddress(contractAddressBytes);
+            callContractData.setSender(senderBytes);
+            callContractData.setValue(value.getValue());
+            callContractData.setPrice(price.longValue());
+            callContractData.setGasLimit(gasLimit.longValue());
+            callContractData.setMethodName(methodName);
+            callContractData.setMethodDesc(methodDesc);
+            if (args != null) {
+                callContractData.setArgsCount((byte) args.length);
+                callContractData.setArgs(ContractUtil.twoDimensionalArray(args));
+            }
+            tx.setTxData(callContractData);
+
+            CoinData coinData = new CoinData();
+            // 向智能合约账户转账
+            if (value.isGreaterThan(Na.ZERO)) {
+                Coin toCoin = new Coin(contractAddressBytes, value);
+                coinData.getTo().add(toCoin);
+            }
+
+            List<Coin> coinList = ConvertCoinTool.convertCoinList(utxos);
+            CoinDataResult coinDataResult = TransactionTool.getCoinData(senderBytes, totalNa, tx.size() + coinData.size(), TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES, coinList);
+
+            if (!coinDataResult.isEnough()) {
+                return Result.getFailed(TransactionErrorCode.INSUFFICIENT_BALANCE);
+            }
+            coinData.setFrom(coinDataResult.getCoinList());
+            // 找零的UTXO
+            if (coinDataResult.getChange() != null) {
+                coinData.getTo().add(coinDataResult.getChange());
+            }
+            tx.setCoinData(coinData);
+
+            if(tx.getSize() > TransactionFeeCalculator.MAX_TX_SIZE){
+                return Result.getFailed(TransactionErrorCode.DATA_SIZE_ERROR);
+            }
+
+            String txHex = Hex.encode(tx.serialize());
+            Map<String, String> map = new HashMap<>();
+            map.put("value", txHex);
+            return Result.getSuccess().setData(map);
+        } catch (Exception e) {
+            Log.error(e);
+            return Result.getFailed(e.getMessage());
         }
-        return null;
     }
 
     /**

@@ -38,6 +38,7 @@ public class TransactionFeeCalculator {
     public static final Na OTHER_PRECE_PRE_1024_BYTES = Na.valueOf(1000000);
 
     public static final int KB = 1024;
+    public static final int MAX_TX_SIZE = 300 * 1024;
 
     //    /**
 //     * 根据交易大小计算需要交纳的手续费

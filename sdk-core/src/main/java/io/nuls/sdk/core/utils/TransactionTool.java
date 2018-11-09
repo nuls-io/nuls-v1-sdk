@@ -2,8 +2,10 @@ package io.nuls.sdk.core.utils;
 
 
 import io.nuls.sdk.core.contast.KernelErrorCode;
+import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.contast.TransactionConstant;
 import io.nuls.sdk.core.crypto.ECKey;
+import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.exception.NulsRuntimeException;
 import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.model.transaction.*;
@@ -11,9 +13,11 @@ import io.nuls.sdk.core.script.P2PHKSignature;
 import io.nuls.sdk.core.script.SignatureUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TransactionTool {
     public static final int MAX_TX_SIZE = 300 * 1024;
@@ -135,5 +139,80 @@ public class TransactionTool {
         }
         Map<String, Object> map = ((Map)result.getData());
         return  (int)map.get("networkVersion");
+    }
+
+    public static CoinDataResult getCoinData(byte[] address, Na amount, int size, Na price, List<Coin> coinList) throws NulsException {
+        if (null == price) {
+            throw new NulsRuntimeException(KernelErrorCode.PARAMETER_ERROR);
+        }
+        try {
+            CoinDataResult coinDataResult = new CoinDataResult();
+            coinDataResult.setEnough(false);
+
+            coinList = coinList.stream()
+                    .filter(coin1 -> !Na.ZERO.equals(coin1.getNa()))
+                    .sorted(CoinComparator.getInstance())
+                    .collect(Collectors.toList());
+
+            if (coinList.isEmpty()) {
+                return coinDataResult;
+            }
+            List<Coin> coins = new ArrayList<>();
+            Na values = Na.ZERO;
+            // 累加到足够支付转出额与手续费
+            for (int i = 0; i < coinList.size(); i++) {
+                Coin coin = coinList.get(i);
+                coins.add(coin);
+                size += coin.size();
+                if (i == 127) {
+                    size += 1;
+                }
+                //每次累加一条未花费余额时，需要重新计算手续费
+                Na fee = TransactionFeeCalculator.getFee(size, price);
+                values = values.add(coin.getNa());
+
+                /**
+                 * 判断是否是脚本验证UTXO
+                 * */
+                int signType = coinDataResult.getSignType();
+                if (signType != 3) {
+                    if ((signType & 0x01) == 0 && coin.getTempOwner().length == 23) {
+                        coinDataResult.setSignType((byte) (signType | 0x01));
+                        size += P2PHKSignature.SERIALIZE_LENGTH;
+                    } else if ((signType & 0x02) == 0 && coin.getTempOwner().length != 23) {
+                        coinDataResult.setSignType((byte) (signType | 0x02));
+                        size += P2PHKSignature.SERIALIZE_LENGTH;
+                    }
+                }
+
+                //需要判断是否找零，如果有找零，则需要重新计算手续费
+                if (values.isGreaterThan(amount.add(fee))) {
+                    Na change = values.subtract(amount.add(fee));
+                    Coin changeCoin = new Coin();
+                    if (address[2] == SDKConstant.P2SH_ADDRESS_TYPE) {
+                        changeCoin.setOwner(SignatureUtil.createOutputScript(address).getProgram());
+                    } else {
+                        changeCoin.setOwner(address);
+                    }
+                    changeCoin.setNa(change);
+                    fee = TransactionFeeCalculator.getFee(size + changeCoin.size(), price);
+                    if (values.isLessThan(amount.add(fee))) {
+                        continue;
+                    }
+                    changeCoin.setNa(values.subtract(amount.add(fee)));
+                    if (!changeCoin.getNa().equals(Na.ZERO)) {
+                        coinDataResult.setChange(changeCoin);
+                    }
+                }
+                coinDataResult.setFee(fee);
+                if (values.isGreaterOrEquals(amount.add(fee))) {
+                    coinDataResult.setEnough(true);
+                    coinDataResult.setCoinList(coins);
+                    break;
+                }
+            }
+            return coinDataResult;
+        } finally {
+        }
     }
 }

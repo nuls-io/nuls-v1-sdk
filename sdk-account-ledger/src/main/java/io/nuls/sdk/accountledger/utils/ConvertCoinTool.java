@@ -30,7 +30,6 @@ import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.utils.AddressTool;
 import io.nuls.sdk.core.utils.ArraysTool;
 import io.nuls.sdk.core.utils.VarInt;
-import org.spongycastle.util.Arrays;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +53,31 @@ public class ConvertCoinTool {
     public static Coin convertCoin(Input utxo) {
         Coin coin = new Coin();
         byte[] txHashBytes = Hex.decode(utxo.getFromHash());
-        coin.setOwner(Arrays.concatenate(txHashBytes, new VarInt(utxo.getFromIndex()).encode()));
+        coin.setOwner(ArraysTool.concatenate(txHashBytes, new VarInt(utxo.getFromIndex()).encode()));
         coin.setLockTime(utxo.getLockTime());
         coin.setNa(Na.valueOf(utxo.getValue()));
         coin.setTempOwner(AddressTool.getAddress(utxo.getAddress()));
         return coin;
+    }
+
+    public static List<Input> convertInputList(List<Coin> froms) {
+        if(froms == null || froms.size() == 0) {
+            return null;
+        }
+        List<Input> inputs = new ArrayList<>(froms.size());
+        for(Coin coin : froms) {
+            inputs.add(convertInput(coin));
+        }
+        return inputs;
+    }
+
+    public static Input convertInput(Coin coin) {
+        Input input = new Input();
+        input.setAddress(AddressTool.getStringAddressByBytes(coin.getTempOwner()));
+        input.setLockTime(coin.getLockTime());
+        input.setValue(coin.getNa().getValue());
+        input.setFromHash(LedgerUtil.getTxHash(coin.getOwner()));
+        input.setFromIndex(LedgerUtil.getIndex(coin.getOwner()));
+        return input;
     }
 }

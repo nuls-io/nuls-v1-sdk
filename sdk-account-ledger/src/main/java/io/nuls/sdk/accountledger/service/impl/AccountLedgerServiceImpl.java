@@ -2,6 +2,8 @@ package io.nuls.sdk.accountledger.service.impl;
 
 import io.nuls.sdk.accountledger.model.*;
 import io.nuls.sdk.accountledger.service.AccountLedgerService;
+import io.nuls.sdk.accountledger.utils.ConvertCoinTool;
+import io.nuls.sdk.accountledger.utils.LedgerUtil;
 import io.nuls.sdk.core.contast.AccountErrorCode;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.contast.TransactionErrorCode;
@@ -96,6 +98,71 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     @Override
     public Result transfer(String address, String toAddress, long amount, String remark) {
         return transfer(address, toAddress, null, amount, remark);
+    }
+
+    @Override
+    public Result transfer(String address, String toAddress, long amount, String remark, List<Input> utxos) {
+        try {
+            if (!AddressTool.validAddress(address) || !AddressTool.validAddress(toAddress)) {
+                return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
+            }
+            if (!validTxRemark(remark)) {
+                return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
+            }
+
+            byte[] remarkBytes = new byte[0];
+            try {
+                remarkBytes = remark.getBytes(SDKConstant.DEFAULT_ENCODING);
+            } catch (UnsupportedEncodingException e) {
+                return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
+            }
+
+            byte[] fromBytes = AddressTool.getAddress(address);
+            byte[] toBytes = AddressTool.getAddress(toAddress);
+            Na values = Na.valueOf(amount);
+
+            TransferTransaction tx = new TransferTransaction();
+            tx.setRemark(remarkBytes);
+            tx.setTime(TimeService.currentTimeMillis());
+            CoinData coinData = new CoinData();
+            //如果为多签地址则以脚本方式存储
+            Coin toCoin;
+            if (toBytes[2] == SDKConstant.P2SH_ADDRESS_TYPE) {
+                Script scriptPubkey = SignatureUtil.createOutputScript(toBytes);
+                toCoin = new Coin(scriptPubkey.getProgram(), values);
+            } else {
+                toCoin = new Coin(toBytes, values);
+            }
+            coinData.getTo().add(toCoin);
+
+            List<Coin> coinList = ConvertCoinTool.convertCoinList(utxos);
+            CoinDataResult coinDataResult = TransactionTool.getCoinData(fromBytes, values, tx.size() + coinData.size(), TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES, coinList);
+
+            if (!coinDataResult.isEnough()) {
+                return Result.getFailed(TransactionErrorCode.INSUFFICIENT_BALANCE);
+            }
+            coinData.setFrom(coinDataResult.getCoinList());
+            // 找零的UTXO
+            if (coinDataResult.getChange() != null) {
+                coinData.getTo().add(coinDataResult.getChange());
+            }
+            tx.setCoinData(coinData);
+
+            // 重置为0，重新计算交易对象的size
+            tx.setSize(0);
+            if (tx.getSize() > TransactionFeeCalculator.MAX_TX_SIZE) {
+                return Result.getFailed(TransactionErrorCode.DATA_SIZE_ERROR);
+            }
+
+            TransactionCreatedReturnInfo returnInfo = LedgerUtil.makeReturnInfo(tx);
+            Map<String, TransactionCreatedReturnInfo> map = new HashMap<>();
+            map.put("value", returnInfo);
+            return Result.getSuccess().setData(map);
+
+        } catch (Exception e) {
+            Log.error(e);
+            return Result.getFailed(e.getMessage());
+        }
     }
 
     private boolean validTxRemark(String remark) {
@@ -468,8 +535,8 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                 if (i == 127) {
                     size += 1;
                 }
-                if(size > targetSize || i == inputs.size()-1){
-                    if(i == inputs.size()-1 && size <= targetSize){
+                if (size > targetSize || i == inputs.size() - 1) {
+                    if (i == inputs.size() - 1 && size <= targetSize) {
                         coinData.getFrom().add(coin);
                         tx.setCoinData(coinData);
                         amount = amount.add(coin.getNa());
@@ -481,7 +548,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     tx.setCoinData(coinData);
                     tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
                     transactionList.add(Hex.encode(tx.serialize()));
-                    if(size > targetSize){
+                    if (size > targetSize) {
                         i--;
                         newTransaction = true;
                     }

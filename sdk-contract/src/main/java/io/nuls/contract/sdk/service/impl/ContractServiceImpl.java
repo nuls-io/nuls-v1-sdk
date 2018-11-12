@@ -238,6 +238,8 @@ public class ContractServiceImpl implements ContractService {
             }
             tx.setCoinData(coinData);
 
+            // 重置为0，重新计算交易对象的size
+            tx.setSize(0);
             if(tx.getSize() > TransactionFeeCalculator.MAX_TX_SIZE){
                 return Result.getFailed(TransactionErrorCode.DATA_SIZE_ERROR);
             }

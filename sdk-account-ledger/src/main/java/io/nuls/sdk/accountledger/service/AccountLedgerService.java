@@ -3,6 +3,7 @@ package io.nuls.sdk.accountledger.service;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.MSAccount;
 import io.nuls.sdk.accountledger.model.Output;
+import io.nuls.sdk.accountledger.model.TransactionCreatedReturnInfo;
 import io.nuls.sdk.core.model.Result;
 
 import java.util.List;
@@ -45,6 +46,19 @@ public interface AccountLedgerService {
      * If the operation fails, "success" is false and the result has error information
      */
     Result transfer(String address, String toAddress, long amount, String remark);
+
+    /**
+     * Transfer
+     *
+     * @param address   Remittance account address
+     * @param toAddress Beneficiary account Address
+     * @param amount    Transfer amount
+     * @param remark    remark
+     * @param utxos    list of available utxo owned by the remittance account
+     * @return If the operation is successful, 'success' is true
+     * If the operation fails, "success" is false and the result has error information
+     */
+    Result transfer(String address, String toAddress, long amount, String remark, List<Input> utxos);
 
     /**
      * Get account balance

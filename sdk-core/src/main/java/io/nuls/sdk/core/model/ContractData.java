@@ -1,4 +1,4 @@
-package io.nuls.contract.sdk.model;
+package io.nuls.sdk.core.model;
 
 /**
  * Created by wangkun23 on 2018/10/8.

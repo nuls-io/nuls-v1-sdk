@@ -1,8 +1,10 @@
 package io.nuls.sdk.test;
 
 import io.nuls.contract.sdk.service.ContractService;
+import io.nuls.contract.sdk.service.UTXOService;
 import io.nuls.contract.sdk.service.impl.ContractServiceImpl;
-import io.nuls.contract.sdk.transaction.CreateContractTransaction;
+import io.nuls.contract.sdk.service.impl.UTXOServiceImpl;
+import io.nuls.sdk.core.model.transaction.CreateContractTransaction;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.SDKBootstrap;
@@ -14,6 +16,7 @@ import io.nuls.sdk.core.script.P2PHKSignature;
 import io.nuls.sdk.core.script.SignatureUtil;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
 import io.nuls.sdk.core.utils.RestFulUtils;
+import io.nuls.sdk.core.utils.TransactionTool;
 import io.nuls.sdk.tool.NulsSDKTool;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +39,7 @@ public class AppTest {
 
     @Before
     public void init() {
-        SDKBootstrap.init("127.0.0.1", "8001");
+        SDKBootstrap.init("192.168.1.133", "8001");
     }
 
     @Test
@@ -111,8 +114,37 @@ public class AppTest {
         }
     }
 
+
     @Test
-    public void fromPrivate(){
+    public void deleteDeleteContractTransaction() {
+        String sender = "Nsdv1Hbu4TokdgbXreypXmVttYKdPT1g";
+        String contractAddress = "NseCP7pgDbBQtinCgeRX3i5Rrx2SKkce";
+        ContractService contractService = ContractServiceImpl.getInstance();
+        UTXOService utxoService = UTXOServiceImpl.getInstance();
+        Result result = contractService.deleteContractTransaction(sender,
+                contractAddress,
+                "delete contract test.",
+                utxoService.getUTXOs(sender, 100L));
+
+        logger.info("broadcastTransaction {}", result);
+        Map<String, Object> map = (Map<String, Object>) result.getData();
+        String txHex = (String) map.get("value");
+        logger.info("txHex {}", txHex);
+        String priKey = "00ef8a6f90d707ab345740f0fab2d9f606165209ce41a71199f679f5dfd20bfd1d";
+        result = NulsSDKTool.signTransaction(txHex, priKey, sender, null);
+        logger.info("signature result {}", result);
+
+    }
+
+    @Test
+    public void broadcastTransaction() {
+        String txHex ="6600246c420767011564656c65746520636f6e747261637420746573742e0423011eaa95ce055cef73615af36c71bdd3d278c4a28404230228fc6352daf9ad7b36f6db46444755d87a7a47fe012300207b6d80dcbb459be4390bacc760b67370a43273a78c1bf48cd77b2f7aebf2961800a6e901000000000000000000000001170423011eaa95ce055cef73615af36c71bdd3d278c4a28406630000000000000000000000006a21039a174f19e2539c3c2bd11eb5f6451d0c4d4a6d015a57061694ac4e1a81576e570046304402203edb9d9811c22343d8c4cbb41b79c31500ba2724e85154c30950f4650a5e26b60220200981d771846a8ffbb26abda34a31beb88172fbf8c5ca671988f4c6cfd01198";
+        Result result = NulsSDKTool.broadcastTransaction(txHex);
+        logger.info("broadcastTransaction {}", result);
+    }
+
+    @Test
+    public void fromPrivate() {
         String priKey = "00ef8a6f90d707ab345740f0fab2d9f606165209ce41a71199f679f5dfd20bfd1d";
         ECKey ecKey = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
         logger.info("txHex {}", ecKey.getPrivateKeyAsHex());

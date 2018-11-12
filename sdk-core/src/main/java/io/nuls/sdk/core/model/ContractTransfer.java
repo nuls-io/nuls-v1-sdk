@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.nuls.contract.sdk.model;
+package io.nuls.sdk.core.model;
 
 
 import io.nuls.sdk.core.model.Na;

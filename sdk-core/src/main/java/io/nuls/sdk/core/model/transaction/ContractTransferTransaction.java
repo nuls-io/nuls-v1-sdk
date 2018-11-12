@@ -21,15 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.nuls.contract.sdk.transaction;
+package io.nuls.sdk.core.model.transaction;
 
-import io.nuls.contract.sdk.constant.ContractConstant;
-import io.nuls.contract.sdk.model.ContractTransfer;
-import io.nuls.contract.sdk.model.ContractTransferData;
+import io.nuls.sdk.core.contast.ContractConstant;
+import io.nuls.sdk.core.model.ContractTransfer;
+import io.nuls.sdk.core.model.ContractTransferData;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Coin;
 import io.nuls.sdk.core.model.Na;
-import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
 
 /**

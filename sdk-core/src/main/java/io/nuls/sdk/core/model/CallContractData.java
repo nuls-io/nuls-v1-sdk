@@ -1,8 +1,6 @@
-package io.nuls.contract.sdk.model;
+package io.nuls.sdk.core.model;
 
 import io.nuls.sdk.core.exception.NulsException;
-import io.nuls.sdk.core.model.Address;
-import io.nuls.sdk.core.model.TransactionLogicData;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
 import io.nuls.sdk.core.utils.NulsOutputStreamBuffer;
 import io.nuls.sdk.core.utils.SerializeUtils;

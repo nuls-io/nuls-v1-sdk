@@ -1,4 +1,4 @@
-package io.nuls.contract.sdk.model;
+package io.nuls.sdk.core.model;
 
 import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.utils.AddressTool;

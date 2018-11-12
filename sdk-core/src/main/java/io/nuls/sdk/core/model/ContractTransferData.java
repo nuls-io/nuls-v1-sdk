@@ -21,47 +21,90 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.nuls.contract.sdk.model;
+package io.nuls.sdk.core.model;
+
 
 import io.nuls.sdk.core.exception.NulsException;
-import io.nuls.sdk.core.model.Address;
-import io.nuls.sdk.core.model.TransactionLogicData;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
 import io.nuls.sdk.core.utils.NulsOutputStreamBuffer;
+import io.nuls.sdk.core.utils.SerializeUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * copy from nuls repository
- *
- * @Author: PierreLuo
- * Created by wangkun23 on 2018/11/8.
+ * Created by wangkun23 on 2018/10/8.
  */
-public class DeleteContractData extends TransactionLogicData implements ContractData {
+public class ContractTransferData extends TransactionLogicData implements ContractData {
 
-    private byte[] sender;
+    private NulsDigestData orginTxHash;
     private byte[] contractAddress;
+    private byte success;
+
+    public ContractTransferData() {
+
+    }
+
+    public ContractTransferData(NulsDigestData orginTxHash, byte[] contractAddress, byte success) {
+        this.orginTxHash = orginTxHash;
+        this.contractAddress = contractAddress;
+        this.success = success;
+    }
 
     @Override
     public int size() {
         int size = 0;
+        size += SerializeUtils.sizeOfNulsData(orginTxHash);
         size += Address.ADDRESS_LENGTH;
-        size += Address.ADDRESS_LENGTH;
+        size += 1;
         return size;
     }
 
     @Override
     protected void serializeToStream(NulsOutputStreamBuffer stream) throws IOException {
-        stream.write(sender);
+        stream.writeNulsData(orginTxHash);
         stream.write(contractAddress);
+        stream.write(success);
     }
 
     @Override
     public void parse(NulsByteBuffer byteBuffer) throws NulsException {
-        this.sender = byteBuffer.readBytes(Address.ADDRESS_LENGTH);
+        this.orginTxHash = byteBuffer.readHash();
         this.contractAddress = byteBuffer.readBytes(Address.ADDRESS_LENGTH);
+        this.success = byteBuffer.readByte();
+    }
+
+    @Override
+    public Set<byte[]> getAddresses() {
+        Set<byte[]> addressSet = new HashSet<>();
+        addressSet.add(contractAddress);
+        return addressSet;
+    }
+
+    public byte getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(byte success) {
+        this.success = success;
+    }
+
+    @Override
+    public byte[] getContractAddress() {
+        return contractAddress;
+    }
+
+    public void setContractAddress(byte[] contractAddress) {
+        this.contractAddress = contractAddress;
+    }
+
+    public NulsDigestData getOrginTxHash() {
+        return orginTxHash;
+    }
+
+    public void setOrginTxHash(NulsDigestData orginTxHash) {
+        this.orginTxHash = orginTxHash;
     }
 
     @Override
@@ -71,7 +114,7 @@ public class DeleteContractData extends TransactionLogicData implements Contract
 
     @Override
     public byte[] getSender() {
-        return sender;
+        return null;
     }
 
     @Override
@@ -84,23 +127,5 @@ public class DeleteContractData extends TransactionLogicData implements Contract
         return 0L;
     }
 
-    public void setSender(byte[] sender) {
-        this.sender = sender;
-    }
 
-    @Override
-    public byte[] getContractAddress() {
-        return contractAddress;
-    }
-
-    public void setContractAddress(byte[] contractAddress) {
-        this.contractAddress = contractAddress;
-    }
-
-    @Override
-    public Set<byte[]> getAddresses() {
-        Set<byte[]> addressSet = new HashSet<>();
-        addressSet.add(contractAddress);
-        return addressSet;
-    }
 }

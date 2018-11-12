@@ -21,18 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.nuls.contract.sdk.transaction;
+package io.nuls.sdk.core.model.transaction;
 
 
-import io.nuls.contract.sdk.constant.ContractConstant;
-import io.nuls.contract.sdk.model.ContractResult;
-import io.nuls.contract.sdk.model.CreateContractData;
+import io.nuls.sdk.core.contast.ContractConstant;
+import io.nuls.sdk.core.model.ContractResult;
+import io.nuls.sdk.core.model.CreateContractData;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Coin;
 import io.nuls.sdk.core.model.Na;
-import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
-import io.nuls.sdk.protocol.model.BlockHeader;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,8 +46,6 @@ public class CreateContractTransaction extends Transaction<CreateContractData> i
     private ContractResult contractResult;
 
     private transient Na returnNa;
-
-    private transient BlockHeader blockHeader;
 
     public CreateContractTransaction() {
         super(ContractConstant.TX_TYPE_CREATE_CONTRACT);
@@ -99,16 +95,6 @@ public class CreateContractTransaction extends Transaction<CreateContractData> i
     @Override
     public void setReturnNa(Na returnNa) {
         this.returnNa = returnNa;
-    }
-
-    @Override
-    public BlockHeader getBlockHeader() {
-        return blockHeader;
-    }
-
-    @Override
-    public void setBlockHeader(BlockHeader blockHeader) {
-        this.blockHeader = blockHeader;
     }
 
     @Override

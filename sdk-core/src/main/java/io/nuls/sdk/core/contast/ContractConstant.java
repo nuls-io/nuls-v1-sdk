@@ -1,7 +1,7 @@
 /**
  * 智能合约相关静态配置
  */
-package io.nuls.contract.sdk.constant;
+package io.nuls.sdk.core.contast;
 
 import java.util.ArrayList;
 import java.util.Arrays;

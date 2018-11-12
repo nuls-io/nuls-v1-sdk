@@ -31,6 +31,7 @@ public class TransactionTool {
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_JOIN_CONSENSUS, DepositTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CANCEL_DEPOSIT, CancelDepositTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_STOP_AGENT, StopAgentTransaction.class);
+        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_DELETE_CONTRACT, DeleteContractTransaction.class);
     }
 
     public static Transaction createTransferTx(List<Coin> inputs, List<Coin> outputs, byte[] remark) {
@@ -132,16 +133,16 @@ public class TransactionTool {
         return tx;
     }
 
-    public static int getMainVersion(){
-        Result result = restFul.get("/client/version" , null);
+    public static int getMainVersion() {
+        Result result = restFul.get("/client/version", null);
         if (result.isFailed()) {
-            return  1;
+            return 1;
         }
-        Map<String, Object> map = ((Map)result.getData());
-        return  (int)map.get("networkVersion");
+        Map<String, Object> map = ((Map) result.getData());
+        return (int) map.get("networkVersion");
     }
 
-    public static CoinDataResult getCoinData(byte[] address, Na amount, int size, Na price, List<Coin> coinList) throws NulsException {
+    public static CoinDataResult getCoinData(byte[] address, Na amount, int size, Na price, List<Coin> coinList) {
         if (null == price) {
             throw new NulsRuntimeException(KernelErrorCode.PARAMETER_ERROR);
         }

@@ -1,14 +1,14 @@
 package io.nuls.contract.sdk.service.impl;
 
 import io.nuls.contract.sdk.ContractUtil;
-import io.nuls.contract.sdk.model.CallContractData;
-import io.nuls.contract.sdk.model.CreateContractData;
-import io.nuls.contract.sdk.model.DeleteContractData;
+import io.nuls.sdk.core.model.CallContractData;
+import io.nuls.sdk.core.model.CreateContractData;
+import io.nuls.sdk.core.model.DeleteContractData;
 import io.nuls.contract.sdk.service.ContractService;
 import io.nuls.contract.sdk.service.UTXOService;
-import io.nuls.contract.sdk.transaction.CallContractTransaction;
-import io.nuls.contract.sdk.transaction.CreateContractTransaction;
-import io.nuls.contract.sdk.transaction.DeleteContractTransaction;
+import io.nuls.sdk.core.model.transaction.CallContractTransaction;
+import io.nuls.sdk.core.model.transaction.CreateContractTransaction;
+import io.nuls.sdk.core.model.transaction.DeleteContractTransaction;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.utils.ConvertCoinTool;
 import io.nuls.sdk.core.contast.SDKConstant;
@@ -238,7 +238,7 @@ public class ContractServiceImpl implements ContractService {
             }
             tx.setCoinData(coinData);
 
-            if(tx.getSize() > TransactionFeeCalculator.MAX_TX_SIZE){
+            if (tx.getSize() > TransactionFeeCalculator.MAX_TX_SIZE) {
                 return Result.getFailed(TransactionErrorCode.DATA_SIZE_ERROR);
             }
 
@@ -281,16 +281,43 @@ public class ContractServiceImpl implements ContractService {
         deleteContractData.setContractAddress(contractAddressBytes);
         deleteContractData.setSender(senderBytes);
         tx.setTxData(deleteContractData);
-        //TODO.. calculator transfer fee
+        /**
+         * calculator transfer fee
+         */
+        List<Coin> coinList = ConvertCoinTool.convertCoinList(utxos);
 
-        List<Coin> outputs = new ArrayList<>();
-        //TODO.. build coin data
-        //tx.setCoinData(coinData);
+        CoinDataResult coinDataResult = TransactionTool.getCoinData(senderBytes, Na.ZERO, tx.size(), TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES, coinList);
+        if (!coinDataResult.isEnough()) {
+            return Result.getFailed(TransactionErrorCode.INSUFFICIENT_BALANCE);
+        }
+        /**
+         * build coin data
+         */
+        CoinData coinData = new CoinData();
+        coinData.setFrom(coinDataResult.getCoinList());
+        // 找零的UTXO
+        if (coinDataResult.getChange() != null) {
+            coinData.getTo().add(coinDataResult.getChange());
+        }
+        tx.setCoinData(coinData);
+
+        if (tx.getSize() > TransactionFeeCalculator.MAX_TX_SIZE) {
+            return Result.getFailed(TransactionErrorCode.DATA_SIZE_ERROR);
+        }
+        tx.setCoinData(coinData);
         try {
             tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
         } catch (IOException e) {
             logger.error("delete contact transaction serialize error", e);
         }
-        return Result.getSuccess().setData(tx);
+        try {
+            String txHex = Hex.encode(tx.serialize());
+            Map<String, String> map = new HashMap<>();
+            map.put("value", txHex);
+            return Result.getSuccess().setData(map);
+        } catch (IOException e) {
+            Log.error(e);
+            return Result.getFailed(e.getMessage());
+        }
     }
 }

@@ -21,16 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.nuls.contract.sdk.transaction;
+package io.nuls.sdk.core.model.transaction;
 
-import io.nuls.contract.sdk.constant.ContractConstant;
-import io.nuls.contract.sdk.model.ContractResult;
-import io.nuls.contract.sdk.model.DeleteContractData;
+import io.nuls.sdk.core.contast.ContractConstant;
+import io.nuls.sdk.core.model.ContractResult;
+import io.nuls.sdk.core.model.DeleteContractData;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Na;
-import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
-import io.nuls.sdk.protocol.model.BlockHeader;
 
 /**
  * copy from nuls repository
@@ -44,7 +42,6 @@ public class DeleteContractTransaction extends Transaction<DeleteContractData> i
 
     private transient Na returnNa;
 
-    private transient BlockHeader blockHeader;
 
     public DeleteContractTransaction() {
         super(ContractConstant.TX_TYPE_DELETE_CONTRACT);
@@ -73,16 +70,6 @@ public class DeleteContractTransaction extends Transaction<DeleteContractData> i
     @Override
     public void setReturnNa(Na returnNa) {
         this.returnNa = returnNa;
-    }
-
-    @Override
-    public BlockHeader getBlockHeader() {
-        return blockHeader;
-    }
-
-    @Override
-    public void setBlockHeader(BlockHeader blockHeader) {
-        this.blockHeader = blockHeader;
     }
 
     @Override

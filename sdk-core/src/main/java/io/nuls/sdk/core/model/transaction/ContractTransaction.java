@@ -21,11 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.nuls.contract.sdk.transaction;
+package io.nuls.sdk.core.model.transaction;
 
-import io.nuls.contract.sdk.model.ContractResult;
+import io.nuls.sdk.core.model.ContractResult;
 import io.nuls.sdk.core.model.Na;
-import io.nuls.sdk.protocol.model.BlockHeader;
 
 /**
  * copy from nuls repository
@@ -40,9 +39,4 @@ public interface ContractTransaction {
     void setContractResult(ContractResult contractResult);
 
     void setReturnNa(Na returnNa);
-
-    BlockHeader getBlockHeader();
-
-    void setBlockHeader(BlockHeader blockHeader);
-
 }

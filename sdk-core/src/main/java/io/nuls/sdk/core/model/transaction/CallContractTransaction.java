@@ -21,24 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.nuls.contract.sdk.transaction;
+package io.nuls.sdk.core.model.transaction;
 
-import io.nuls.contract.sdk.constant.ContractConstant;
-import io.nuls.contract.sdk.model.CallContractData;
-import io.nuls.contract.sdk.model.ContractResult;
-import io.nuls.contract.sdk.model.ContractTransfer;
-import io.nuls.contract.sdk.service.ContractService;
-import io.nuls.contract.sdk.service.impl.ContractServiceImpl;
-import io.nuls.contract.sdk.service.impl.UTXOServiceImpl;
+import io.nuls.sdk.core.contast.ContractConstant;
+import io.nuls.sdk.core.model.CallContractData;
+import io.nuls.sdk.core.model.ContractResult;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Coin;
 import io.nuls.sdk.core.model.Na;
-import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.script.SignatureUtil;
 import io.nuls.sdk.core.utils.AddressTool;
 import io.nuls.sdk.core.utils.JSONUtils;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
-import io.nuls.sdk.protocol.model.BlockHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +47,6 @@ import java.util.*;
 public class CallContractTransaction extends Transaction<CallContractData> implements ContractTransaction {
 
     final Logger logger = LoggerFactory.getLogger(CallContractTransaction.class);
-    private transient ContractService contractService = ContractServiceImpl.getInstance();
 
     /**
      * 保存到全网账本中
@@ -63,8 +56,6 @@ public class CallContractTransaction extends Transaction<CallContractData> imple
     private transient Collection<ContractTransferTransaction> contractTransferTxs;
 
     private transient Na returnNa;
-
-    private transient BlockHeader blockHeader;
 
     public CallContractTransaction() {
         super(ContractConstant.TX_TYPE_CALL_CONTRACT);
@@ -150,16 +141,6 @@ public class CallContractTransaction extends Transaction<CallContractData> imple
             resultFee = resultFee.minus(returnNa);
         }
         return resultFee;
-    }
-
-    @Override
-    public BlockHeader getBlockHeader() {
-        return blockHeader;
-    }
-
-    @Override
-    public void setBlockHeader(BlockHeader blockHeader) {
-        this.blockHeader = blockHeader;
     }
 
     @Override

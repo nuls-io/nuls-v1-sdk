@@ -31,6 +31,7 @@ public class TransactionTool {
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_JOIN_CONSENSUS, DepositTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CANCEL_DEPOSIT, CancelDepositTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_STOP_AGENT, StopAgentTransaction.class);
+        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CALL_CONTRACT, CallContractTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_DELETE_CONTRACT, DeleteContractTransaction.class);
     }
 

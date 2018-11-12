@@ -4,6 +4,7 @@ import io.nuls.contract.sdk.service.ContractService;
 import io.nuls.contract.sdk.service.UTXOService;
 import io.nuls.contract.sdk.service.impl.ContractServiceImpl;
 import io.nuls.contract.sdk.service.impl.UTXOServiceImpl;
+import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.transaction.CreateContractTransaction;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
@@ -25,10 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by wangkun23 on 2018/10/8.
@@ -114,9 +112,39 @@ public class AppTest {
         }
     }
 
+    @Test
+    public void callContractTransaction() {
+        String sender = "Nsdv1Hbu4TokdgbXreypXmVttYKdPT1g";
+        String contractAddress = "NseMGKKGooiKdzEAT3UvwPYTshebUfhX";
+        ContractService contractService = ContractServiceImpl.getInstance();
+        UTXOService utxoService = UTXOServiceImpl.getInstance();
+
+        Na value = Na.valueOf(100_0000_0000L);
+        Long gasLimit = 81325l;
+        Long price = 25L;
+        String methodName = "create";
+        String methodDesc = "";
+        Object[] args = {"test", "test desc", Arrays.asList("1", "2", "3"), "1542042000000", "1542646800000", "false", "1", "1", "false"};
+        String remark = "test call contract";
+        Result result = contractService.callContractTransaction(sender,
+                value, gasLimit, price,
+                contractAddress,
+                methodName, methodDesc, args,
+                remark,
+                utxoService.getUTXOs(sender, 150_0000_0000L));
+
+        logger.info("callContractTransaction {}", result);
+        Map<String, Object> map = (Map<String, Object>) result.getData();
+        String txHex = (String) map.get("value");
+        logger.info("txHex {}", txHex);
+        String priKey = "00ef8a6f90d707ab345740f0fab2d9f606165209ce41a71199f679f5dfd20bfd1d";
+        result = NulsSDKTool.signTransaction(txHex, priKey, sender, null);
+        logger.info("signature result {}", result);
+
+    }
 
     @Test
-    public void deleteDeleteContractTransaction() {
+    public void deleteContractTransaction() {
         String sender = "Nsdv1Hbu4TokdgbXreypXmVttYKdPT1g";
         String contractAddress = "NseCP7pgDbBQtinCgeRX3i5Rrx2SKkce";
         ContractService contractService = ContractServiceImpl.getInstance();
@@ -138,7 +166,7 @@ public class AppTest {
 
     @Test
     public void broadcastTransaction() {
-        String txHex ="6600246c420767011564656c65746520636f6e747261637420746573742e0423011eaa95ce055cef73615af36c71bdd3d278c4a28404230228fc6352daf9ad7b36f6db46444755d87a7a47fe012300207b6d80dcbb459be4390bacc760b67370a43273a78c1bf48cd77b2f7aebf2961800a6e901000000000000000000000001170423011eaa95ce055cef73615af36c71bdd3d278c4a28406630000000000000000000000006a21039a174f19e2539c3c2bd11eb5f6451d0c4d4a6d015a57061694ac4e1a81576e570046304402203edb9d9811c22343d8c4cbb41b79c31500ba2724e85154c30950f4650a5e26b60220200981d771846a8ffbb26abda34a31beb88172fbf8c5ca671988f4c6cfd01198";
+        String txHex = "65008b368707670112746573742063616c6c20636f6e74726163740423011eaa95ce055cef73615af36c71bdd3d278c4a284042302b970b7dd22f039e7d9db01be02b24477a8441fb900e40b5402000000ad3d0100000000001900000000000000066372656174650009010474657374010974657374206465736301095b312c20322c20335d010d31353432303432303030303030010d31353432363436383030303030010566616c7365010131010131010566616c736502230020cb5268e85645d5d91f60cc88d0f125978448c0a4ea93333c283fccead6aa79d60000e40b540200000000000000000023002093be05675b36dd5b4edda504c2ee1e31934cae17f6c731496539474bd5e6f12c01352be9c5f60800000000000000000217042302b970b7dd22f039e7d9db01be02b24477a8441fb900e40b5402000000000000000000170423011eaa95ce055cef73615af36c71bdd3d278c4a284b09ec8c5f60800000000000000006b21039a174f19e2539c3c2bd11eb5f6451d0c4d4a6d015a57061694ac4e1a81576e5700473045022100899d2874039a3f22e3110f1901fab2e5adb45752ba134023c7856a58e4b711b302205851cd95a3fcf2bf1cb29714075f0ad6c19357a7a50bd53324b294742d208973";
         Result result = NulsSDKTool.broadcastTransaction(txHex);
         logger.info("broadcastTransaction {}", result);
     }
@@ -196,5 +224,15 @@ public class AppTest {
 
         result = NulsSDKTool.broadcastTransaction(sign);
         System.out.println(result.isSuccess());
+    }
+
+
+    @Test
+    public void app() {
+        Map<String, Object> map = new HashMap<>();
+        String sender = "Nsdv1Hbu4TokdgbXreypXmVttYKdPT1g";
+
+        UTXOService utxoService = UTXOServiceImpl.getInstance();
+        utxoService.getUTXOs(sender,150L);
     }
 }

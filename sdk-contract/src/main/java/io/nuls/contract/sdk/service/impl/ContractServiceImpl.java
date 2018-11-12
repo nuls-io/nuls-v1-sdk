@@ -71,10 +71,6 @@ public class ContractServiceImpl implements ContractService {
                                             byte[] contractCode,
                                             Object[] args,
                                             String remark) throws NulsException, IOException {
-
-        /**
-         * 创建投票时
-         */
         Na value = Na.ZERO;
         long totalNa = LongUtils.mul(gasLimit, price);
 
@@ -98,7 +94,6 @@ public class ContractServiceImpl implements ContractService {
                 createContractData.setArgs(ContractUtil.twoDimensionalArray(args));
             }
         }
-
         /**
          * 组装交易数据
          */

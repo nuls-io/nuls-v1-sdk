@@ -18,6 +18,7 @@ public interface ContractService {
      * @param contractCode
      * @param args
      * @param remark
+     * @param utxos user account unspent transaction output
      * @return
      * @throws NulsException
      * @throws IOException
@@ -27,7 +28,8 @@ public interface ContractService {
                                      Long price,
                                      byte[] contractCode,
                                      Object[] args,
-                                     String remark) throws NulsException, IOException;
+                                     String remark,
+                                     List<Input> utxos) throws NulsException, IOException;
 
     /**
      * call contract's method

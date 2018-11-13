@@ -70,73 +70,52 @@ public class ContractServiceImpl implements ContractService {
                                             Long price,
                                             byte[] contractCode,
                                             Object[] args,
-                                            String remark) throws NulsException, IOException {
+                                            String remark,
+                                            List<Input> utxos) throws NulsException, IOException {
         Na value = Na.ZERO;
-        long totalNa = LongUtils.mul(gasLimit, price);
+        long totalGas = LongUtils.mul(gasLimit, price);
+        Na totalNa = Na.valueOf(totalGas);
 
+        byte[] senderBytes = AddressTool.getAddress(sender);
         // 生成一个地址作为智能合约地址
         Address contractAddress = AccountTool.createContractAddress();
-
         byte[] contractAddressBytes = contractAddress.getAddressBytes();
-        byte[] senderBytes = AddressTool.getAddress(sender);
         // 组装txData
-        CreateContractData createContractData = new CreateContractData();
-        createContractData.setSender(senderBytes);
-        createContractData.setContractAddress(contractAddressBytes);
-        createContractData.setValue(value.getValue());
-        createContractData.setGasLimit(gasLimit);
-        createContractData.setPrice(price);
-        createContractData.setCodeLen(contractCode.length);
-        createContractData.setCode(contractCode);
+        CreateContractData txData = new CreateContractData();
+        txData.setSender(senderBytes);
+        txData.setContractAddress(contractAddressBytes);
+        txData.setValue(value.getValue());
+        txData.setGasLimit(gasLimit);
+        txData.setPrice(price);
+        txData.setCodeLen(contractCode.length);
+        txData.setCode(contractCode);
         if (args != null) {
-            createContractData.setArgsCount((byte) args.length);
+            txData.setArgsCount((byte) args.length);
             if (args.length > 0) {
-                createContractData.setArgs(ContractUtil.twoDimensionalArray(args));
+                txData.setArgs(ContractUtil.twoDimensionalArray(args));
             }
         }
         /**
          * 组装交易数据
          */
         CreateContractTransaction tx = new CreateContractTransaction();
-
         tx.setTime(TimeService.currentTimeMillis());
-        tx.setTxData(createContractData);
+        tx.setTxData(txData);
 
-        //总共交易费用
-        //每次累加一条未花费余额时，需要重新计算手续费
-        //TODO.. i == 127为什么要加127就+1？
-        Na trxFee = TransactionFeeCalculator.getFee(tx.size(), TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES);
-        Long amount = LongUtils.add(totalNa, trxFee.getValue());
-
-        List<Input> inputList = utxoService.getUTXOs(sender, amount);
-
-        Long balance = 0L;
-        List<Coin> inputs = new ArrayList<>();
-        for (Input input : inputList) {
-            Coin coin = new Coin();
-            byte[] txHashBytes = Hex.decode(input.getFromHash());
-            coin.setOwner(Arrays.concatenate(txHashBytes, new VarInt(input.getFromIndex()).encode()));
-            coin.setLockTime(input.getLockTime());
-            coin.setNa(Na.valueOf(input.getValue()));
-            inputs.add(coin);
-            balance = LongUtils.add(balance, input.getValue());
-        }
-
-        Long outputAmount = balance - 1000000L;
-        System.out.printf("outputAmount: " + outputAmount);
-        List<Coin> outputs = new ArrayList<>();
-        //if (value.isGreaterThan(Na.ZERO)) {
-        Coin to = new Coin();
-        to.setLockTime(0);
-        to.setNa(Na.valueOf(outputAmount));
-        to.setOwner(AddressTool.getAddress(sender));
-        outputs.add(to);
-        //}
         CoinData coinData = new CoinData();
-        coinData.setFrom(inputs);
-        coinData.setTo(outputs);
+        List<Coin> coinList = ConvertCoinTool.convertCoinList(utxos);
+        CoinDataResult coinDataResult = TransactionTool.getCoinData(senderBytes, totalNa, tx.size(), TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES, coinList);
 
+        if (!coinDataResult.isEnough()) {
+            return Result.getFailed(TransactionErrorCode.INSUFFICIENT_BALANCE);
+        }
+        coinData.setFrom(coinDataResult.getCoinList());
+        // 找零的UTXO
+        if (coinDataResult.getChange() != null) {
+            coinData.getTo().add(coinDataResult.getChange());
+        }
         tx.setCoinData(coinData);
+
         tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
         if (StringUtils.isNotBlank(remark)) {
             try {
@@ -235,7 +214,7 @@ public class ContractServiceImpl implements ContractService {
 
             // 重置为0，重新计算交易对象的size
             tx.setSize(0);
-            if(tx.getSize() > TransactionFeeCalculator.MAX_TX_SIZE){
+            if (tx.getSize() > TransactionFeeCalculator.MAX_TX_SIZE) {
                 return Result.getFailed(TransactionErrorCode.DATA_SIZE_ERROR);
             }
 

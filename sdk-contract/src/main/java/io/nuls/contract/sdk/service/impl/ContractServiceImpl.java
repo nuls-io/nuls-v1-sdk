@@ -1,29 +1,23 @@
 package io.nuls.contract.sdk.service.impl;
 
 import io.nuls.contract.sdk.ContractUtil;
-import io.nuls.sdk.core.model.CallContractData;
-import io.nuls.sdk.core.model.CreateContractData;
-import io.nuls.sdk.core.model.DeleteContractData;
 import io.nuls.contract.sdk.service.ContractService;
 import io.nuls.contract.sdk.service.UTXOService;
+import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.TransactionCreatedReturnInfo;
+import io.nuls.sdk.accountledger.utils.ConvertCoinTool;
+import io.nuls.sdk.accountledger.utils.LedgerUtil;
+import io.nuls.sdk.core.contast.SDKConstant;
+import io.nuls.sdk.core.contast.TransactionErrorCode;
+import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.model.transaction.CallContractTransaction;
 import io.nuls.sdk.core.model.transaction.CreateContractTransaction;
 import io.nuls.sdk.core.model.transaction.DeleteContractTransaction;
-import io.nuls.sdk.accountledger.model.Input;
-import io.nuls.sdk.accountledger.utils.ConvertCoinTool;
-import io.nuls.sdk.core.contast.SDKConstant;
-import io.nuls.sdk.core.contast.TransactionErrorCode;
-import io.nuls.sdk.core.crypto.Hex;
-import io.nuls.sdk.core.exception.NulsException;
-import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongycastle.util.Arrays;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,8 +55,6 @@ public class ContractServiceImpl implements ContractService {
      * @param args
      * @param remark
      * @return
-     * @throws NulsException
-     * @throws IOException
      */
     @Override
     public Result createContractTransaction(String sender,
@@ -71,63 +63,73 @@ public class ContractServiceImpl implements ContractService {
                                             byte[] contractCode,
                                             Object[] args,
                                             String remark,
-                                            List<Input> utxos) throws NulsException, IOException {
-        Na value = Na.ZERO;
-        long totalGas = LongUtils.mul(gasLimit, price);
-        Na totalNa = Na.valueOf(totalGas);
+                                            List<Input> utxos) {
+        try {
+            Na value = Na.ZERO;
+            long totalGas = LongUtils.mul(gasLimit, price);
+            Na totalNa = Na.valueOf(totalGas);
 
-        byte[] senderBytes = AddressTool.getAddress(sender);
-        // 生成一个地址作为智能合约地址
-        Address contractAddress = AccountTool.createContractAddress();
-        byte[] contractAddressBytes = contractAddress.getAddressBytes();
-        // 组装txData
-        CreateContractData txData = new CreateContractData();
-        txData.setSender(senderBytes);
-        txData.setContractAddress(contractAddressBytes);
-        txData.setValue(value.getValue());
-        txData.setGasLimit(gasLimit);
-        txData.setPrice(price);
-        txData.setCodeLen(contractCode.length);
-        txData.setCode(contractCode);
-        if (args != null) {
-            txData.setArgsCount((byte) args.length);
-            if (args.length > 0) {
-                txData.setArgs(ContractUtil.twoDimensionalArray(args));
+            byte[] senderBytes = AddressTool.getAddress(sender);
+            // 生成一个地址作为智能合约地址
+            Address contractAddress = AccountTool.createContractAddress();
+            byte[] contractAddressBytes = contractAddress.getAddressBytes();
+            // 组装txData
+            CreateContractData txData = new CreateContractData();
+            txData.setSender(senderBytes);
+            txData.setContractAddress(contractAddressBytes);
+            txData.setValue(value.getValue());
+            txData.setGasLimit(gasLimit);
+            txData.setPrice(price);
+            txData.setCodeLen(contractCode.length);
+            txData.setCode(contractCode);
+            if (args != null) {
+                txData.setArgsCount((byte) args.length);
+                if (args.length > 0) {
+                    txData.setArgs(ContractUtil.twoDimensionalArray(args));
+                }
             }
-        }
-        /**
-         * 组装交易数据
-         */
-        CreateContractTransaction tx = new CreateContractTransaction();
-        tx.setTime(TimeService.currentTimeMillis());
-        tx.setTxData(txData);
-
-        CoinData coinData = new CoinData();
-        List<Coin> coinList = ConvertCoinTool.convertCoinList(utxos);
-        CoinDataResult coinDataResult = TransactionTool.getCoinData(senderBytes, totalNa, tx.size(), TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES, coinList);
-
-        if (!coinDataResult.isEnough()) {
-            return Result.getFailed(TransactionErrorCode.INSUFFICIENT_BALANCE);
-        }
-        coinData.setFrom(coinDataResult.getCoinList());
-        // 找零的UTXO
-        if (coinDataResult.getChange() != null) {
-            coinData.getTo().add(coinDataResult.getChange());
-        }
-        tx.setCoinData(coinData);
-
-        tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
-        if (StringUtils.isNotBlank(remark)) {
-            try {
-                tx.setRemark(remark.getBytes(SDKConstant.DEFAULT_ENCODING));
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
+            /**
+             * 组装交易数据
+             */
+            CreateContractTransaction tx = new CreateContractTransaction();
+            if (StringUtils.isNotBlank(remark)) {
+                try {
+                    tx.setRemark(remark.getBytes(SDKConstant.DEFAULT_ENCODING));
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
             }
+            tx.setTime(TimeService.currentTimeMillis());
+            tx.setTxData(txData);
+
+            CoinData coinData = new CoinData();
+            List<Coin> coinList = ConvertCoinTool.convertCoinList(utxos);
+            CoinDataResult coinDataResult = TransactionTool.getCoinData(senderBytes, totalNa, tx.size(), TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES, coinList);
+
+            if (!coinDataResult.isEnough()) {
+                return Result.getFailed(TransactionErrorCode.INSUFFICIENT_BALANCE);
+            }
+            coinData.setFrom(coinDataResult.getCoinList());
+            // 找零的UTXO
+            if (coinDataResult.getChange() != null) {
+                coinData.getTo().add(coinDataResult.getChange());
+            }
+            tx.setCoinData(coinData);
+
+            // 重置为0，重新计算交易对象的size
+            tx.setSize(0);
+            if (tx.getSize() > TransactionFeeCalculator.MAX_TX_SIZE) {
+                return Result.getFailed(TransactionErrorCode.DATA_SIZE_ERROR);
+            }
+
+            TransactionCreatedReturnInfo returnInfo = LedgerUtil.makeReturnInfo(tx);
+            Map<String, TransactionCreatedReturnInfo> map = new HashMap<>();
+            map.put("value", returnInfo);
+            return Result.getSuccess().setData(map);
+        } catch (Exception e) {
+            Log.error(e);
+            return Result.getFailed(e.getMessage());
         }
-        String txHex = Hex.encode(tx.serialize());
-        Map<String, String> map = new HashMap<>();
-        map.put("value", txHex);
-        return Result.getSuccess().setData(map);
     }
 
     /**
@@ -218,9 +220,9 @@ public class ContractServiceImpl implements ContractService {
                 return Result.getFailed(TransactionErrorCode.DATA_SIZE_ERROR);
             }
 
-            String txHex = Hex.encode(tx.serialize());
-            Map<String, String> map = new HashMap<>();
-            map.put("value", txHex);
+            TransactionCreatedReturnInfo returnInfo = LedgerUtil.makeReturnInfo(tx);
+            Map<String, TransactionCreatedReturnInfo> map = new HashMap<>();
+            map.put("value", returnInfo);
             return Result.getSuccess().setData(map);
         } catch (Exception e) {
             Log.error(e);
@@ -243,55 +245,56 @@ public class ContractServiceImpl implements ContractService {
                                             String remark,
                                             List<Input> utxos) {
 
-        DeleteContractTransaction tx = new DeleteContractTransaction();
-        if (StringUtils.isNotBlank(remark)) {
-            tx.setRemark(remark.getBytes());
-        }
-        tx.setTime(TimeService.currentTimeMillis());
-
-        byte[] senderBytes = AddressTool.getAddress(sender);
-        byte[] contractAddressBytes = AddressTool.getAddress(contractAddress);
-
-        // 组装txData
-        DeleteContractData deleteContractData = new DeleteContractData();
-        deleteContractData.setContractAddress(contractAddressBytes);
-        deleteContractData.setSender(senderBytes);
-        tx.setTxData(deleteContractData);
-        /**
-         * calculator transfer fee
-         */
-        List<Coin> coinList = ConvertCoinTool.convertCoinList(utxos);
-
-        CoinDataResult coinDataResult = TransactionTool.getCoinData(senderBytes, Na.ZERO, tx.size(), TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES, coinList);
-        if (!coinDataResult.isEnough()) {
-            return Result.getFailed(TransactionErrorCode.INSUFFICIENT_BALANCE);
-        }
-        /**
-         * build coin data
-         */
-        CoinData coinData = new CoinData();
-        coinData.setFrom(coinDataResult.getCoinList());
-        // 找零的UTXO
-        if (coinDataResult.getChange() != null) {
-            coinData.getTo().add(coinDataResult.getChange());
-        }
-        tx.setCoinData(coinData);
-
-        if (tx.getSize() > TransactionFeeCalculator.MAX_TX_SIZE) {
-            return Result.getFailed(TransactionErrorCode.DATA_SIZE_ERROR);
-        }
-        tx.setCoinData(coinData);
         try {
-            tx.setHash(NulsDigestData.calcDigestData(tx.serializeForHash()));
-        } catch (IOException e) {
-            logger.error("delete contact transaction serialize error", e);
-        }
-        try {
-            String txHex = Hex.encode(tx.serialize());
-            Map<String, String> map = new HashMap<>();
-            map.put("value", txHex);
+            DeleteContractTransaction tx = new DeleteContractTransaction();
+            if (StringUtils.isNotBlank(remark)) {
+                try {
+                    tx.setRemark(remark.getBytes(SDKConstant.DEFAULT_ENCODING));
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            tx.setTime(TimeService.currentTimeMillis());
+
+            byte[] senderBytes = AddressTool.getAddress(sender);
+            byte[] contractAddressBytes = AddressTool.getAddress(contractAddress);
+
+            // 组装txData
+            DeleteContractData deleteContractData = new DeleteContractData();
+            deleteContractData.setContractAddress(contractAddressBytes);
+            deleteContractData.setSender(senderBytes);
+            tx.setTxData(deleteContractData);
+            /**
+             * calculator transfer fee
+             */
+            List<Coin> coinList = ConvertCoinTool.convertCoinList(utxos);
+
+            CoinDataResult coinDataResult = TransactionTool.getCoinData(senderBytes, Na.ZERO, tx.size(), TransactionFeeCalculator.MIN_PRECE_PRE_1024_BYTES, coinList);
+            if (!coinDataResult.isEnough()) {
+                return Result.getFailed(TransactionErrorCode.INSUFFICIENT_BALANCE);
+            }
+            /**
+             * build coin data
+             */
+            CoinData coinData = new CoinData();
+            coinData.setFrom(coinDataResult.getCoinList());
+            // 找零的UTXO
+            if (coinDataResult.getChange() != null) {
+                coinData.getTo().add(coinDataResult.getChange());
+            }
+            tx.setCoinData(coinData);
+
+            // 重置为0，重新计算交易对象的size
+            tx.setSize(0);
+            if (tx.getSize() > TransactionFeeCalculator.MAX_TX_SIZE) {
+                return Result.getFailed(TransactionErrorCode.DATA_SIZE_ERROR);
+            }
+
+            TransactionCreatedReturnInfo returnInfo = LedgerUtil.makeReturnInfo(tx);
+            Map<String, TransactionCreatedReturnInfo> map = new HashMap<>();
+            map.put("value", returnInfo);
             return Result.getSuccess().setData(map);
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.error(e);
             return Result.getFailed(e.getMessage());
         }

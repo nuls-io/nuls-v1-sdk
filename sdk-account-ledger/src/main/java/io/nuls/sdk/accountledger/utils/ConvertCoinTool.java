@@ -24,6 +24,7 @@
 package io.nuls.sdk.accountledger.utils;
 
 import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.model.Coin;
 import io.nuls.sdk.core.model.Na;
@@ -79,5 +80,27 @@ public class ConvertCoinTool {
         input.setFromHash(LedgerUtil.getTxHash(coin.getOwner()));
         input.setFromIndex(LedgerUtil.getIndex(coin.getOwner()));
         return input;
+    }
+
+    public static List<Output> convertOutputList(List<Coin> tos, String txHash) {
+        if(tos == null || tos.size() == 0) {
+            return null;
+        }
+        int size = tos.size();
+        List<Output> outputs = new ArrayList<>(size);
+        for(int i = 0; i < size; i++) {
+            outputs.add(convertOutput(tos.get(i), txHash, i));
+        }
+        return outputs;
+    }
+
+    public static Output convertOutput(Coin coin, String txHash, Integer index) {
+        Output output = new Output();
+        output.setAddress(AddressTool.getStringAddressByBytes(coin.getAddress()));
+        output.setLockTime(coin.getLockTime());
+        output.setValue(coin.getNa().getValue());
+        output.setTxHash(txHash);
+        output.setIndex(index);
+        return output;
     }
 }

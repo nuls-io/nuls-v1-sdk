@@ -24,8 +24,10 @@
 package io.nuls.sdk.accountledger.utils;
 
 import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.accountledger.model.TransactionCreatedReturnInfo;
 import io.nuls.sdk.core.crypto.Hex;
+import io.nuls.sdk.core.model.CoinData;
 import io.nuls.sdk.core.model.NulsDigestData;
 import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.utils.AssertUtil;
@@ -93,8 +95,10 @@ public class LedgerUtil {
     public static TransactionCreatedReturnInfo makeReturnInfo(Transaction tx) throws IOException {
         String hash = NulsDigestData.calcDigestData(tx.serializeForHash()).getDigestHex();
         String txHex = Hex.encode(tx.serialize());
-        List<Input> inputs = ConvertCoinTool.convertInputList(tx.getCoinData().getFrom());
-        TransactionCreatedReturnInfo returnInfo = new TransactionCreatedReturnInfo(hash, txHex, inputs);
+        CoinData coinData = tx.getCoinData();
+        List<Input> inputs = ConvertCoinTool.convertInputList(coinData.getFrom());
+        List<Output> outputs = ConvertCoinTool.convertOutputList(coinData.getTo(), hash);
+        TransactionCreatedReturnInfo returnInfo = new TransactionCreatedReturnInfo(hash, txHex, inputs, outputs);
         return returnInfo;
     }
 }

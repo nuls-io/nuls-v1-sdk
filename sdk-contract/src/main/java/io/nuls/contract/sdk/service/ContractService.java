@@ -20,8 +20,6 @@ public interface ContractService {
      * @param remark
      * @param utxos user account unspent transaction output
      * @return
-     * @throws NulsException
-     * @throws IOException
      */
     Result createContractTransaction(String sender,
                                      long gasLimit,
@@ -29,7 +27,7 @@ public interface ContractService {
                                      byte[] contractCode,
                                      Object[] args,
                                      String remark,
-                                     List<Input> utxos) throws NulsException, IOException;
+                                     List<Input> utxos);
 
     /**
      * call contract's method

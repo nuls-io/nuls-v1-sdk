@@ -32,14 +32,16 @@ public class TransactionCreatedReturnInfo {
     private String hash;
     private String txHex;
     private List<Input> inputs;
+    private List<Output> outputs;
 
     public TransactionCreatedReturnInfo() {
     }
 
-    public TransactionCreatedReturnInfo(String hash, String txHex, List<Input> inputs) {
+    public TransactionCreatedReturnInfo(String hash, String txHex, List<Input> inputs, List<Output> outputs) {
         this.hash = hash;
         this.txHex = txHex;
         this.inputs = inputs;
+        this.outputs = outputs;
     }
 
     public String getHash() {
@@ -64,5 +66,13 @@ public class TransactionCreatedReturnInfo {
 
     public void setInputs(List<Input> inputs) {
         this.inputs = inputs;
+    }
+
+    public List<Output> getOutputs() {
+        return outputs;
+    }
+
+    public void setOutputs(List<Output> outputs) {
+        this.outputs = outputs;
     }
 }

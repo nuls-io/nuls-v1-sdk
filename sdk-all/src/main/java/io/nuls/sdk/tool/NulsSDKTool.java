@@ -206,6 +206,10 @@ public class NulsSDKTool {
         return accountLedgerService.transfer(address, toAddress, amount, remark);
     }
 
+    public static Result transfer(String address, String toAddress, long amount, String remark, List<Input> inputs) {
+        return accountLedgerService.transfer(address, toAddress, amount, remark, inputs);
+    }
+
     public static Result getBalance(String address) {
         return accountLedgerService.getBalance(address);
     }

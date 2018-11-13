@@ -57,25 +57,19 @@ public class CreateContractTest {
         String remark = "";
 
         List<Input> utxos = utxoService.getUTXOs(sender, 150_0000_0000L);
-        try {
-            Result result = contractService.createContractTransaction(sender, gasLimit, price, contractCodeBytes, args, remark, utxos);
-            logger.info("result {}", result);
-            Map<String, Object> map = (Map<String, Object>) result.getData();
-            String txHex = (String) map.get("value");
-            logger.info("txHex {}", txHex);
-            String priKey = "00ef8a6f90d707ab345740f0fab2d9f606165209ce41a71199f679f5dfd20bfd1d";
-            result = NulsSDKTool.signTransaction(txHex, priKey, sender, null);
-            logger.info("signTransaction {}", result);
+        Result result = contractService.createContractTransaction(sender, gasLimit, price, contractCodeBytes, args, remark, utxos);
+        logger.info("result {}", result);
+        Map<String, Object> map = (Map<String, Object>) result.getData();
+        String txHex = (String) map.get("value");
+        logger.info("txHex {}", txHex);
+        String priKey = "00ef8a6f90d707ab345740f0fab2d9f606165209ce41a71199f679f5dfd20bfd1d";
+        result = NulsSDKTool.signTransaction(txHex, priKey, sender, null);
+        logger.info("signTransaction {}", result);
 
-            map = (Map<String, Object>) result.getData();
-            String hex2 = (String) map.get("value");
-            result = NulsSDKTool.broadcastTransaction(hex2);
+        map = (Map<String, Object>) result.getData();
+        String hex2 = (String) map.get("value");
+        result = NulsSDKTool.broadcastTransaction(hex2);
 
-            logger.info("broadcastTransaction {}", result);
-        } catch (NulsException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        logger.info("broadcastTransaction {}", result);
     }
 }

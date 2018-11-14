@@ -1,4 +1,4 @@
-package io.nuls.contract.sdk.annotation;
+package io.nuls.sdk.contract.annotation;
 
 import java.lang.annotation.*;
 

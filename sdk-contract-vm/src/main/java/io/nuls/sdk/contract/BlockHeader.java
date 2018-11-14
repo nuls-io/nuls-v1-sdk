@@ -1,4 +1,4 @@
-package io.nuls.contract.sdk;
+package io.nuls.sdk.contract;
 
 public class BlockHeader {
 

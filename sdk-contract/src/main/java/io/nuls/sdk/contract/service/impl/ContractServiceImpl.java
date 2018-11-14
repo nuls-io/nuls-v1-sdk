@@ -1,8 +1,7 @@
-package io.nuls.contract.sdk.service.impl;
+package io.nuls.sdk.contract.service.impl;
 
-import io.nuls.contract.sdk.ContractUtil;
-import io.nuls.contract.sdk.service.ContractService;
-import io.nuls.contract.sdk.service.UTXOService;
+import io.nuls.sdk.contract.ContractUtil;
+import io.nuls.sdk.contract.service.ContractService;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.TransactionCreatedReturnInfo;
 import io.nuls.sdk.accountledger.utils.ConvertCoinTool;
@@ -30,10 +29,6 @@ public class ContractServiceImpl implements ContractService {
 
     final Logger logger = LoggerFactory.getLogger(ContractServiceImpl.class);
 
-    private RestFulUtils restFulUtils = RestFulUtils.getInstance();
-
-    UTXOService utxoService = UTXOServiceImpl.getInstance();
-
     private static ContractService instance = new ContractServiceImpl();
 
     /**
@@ -57,13 +52,7 @@ public class ContractServiceImpl implements ContractService {
      * @return
      */
     @Override
-    public Result createContractTransaction(String sender,
-                                            long gasLimit,
-                                            Long price,
-                                            byte[] contractCode,
-                                            Object[] args,
-                                            String remark,
-                                            List<Input> utxos) {
+    public Result createContractTransaction(String sender, Long gasLimit, Long price, byte[] contractCode, Object[] args, String remark, List<Input> utxos) {
         try {
             Na value = Na.ZERO;
             long totalGas = LongUtils.mul(gasLimit, price);
@@ -146,22 +135,16 @@ public class ContractServiceImpl implements ContractService {
      * @return
      */
     @Override
-    public Result callContractTransaction(String sender,
-                                          Na value,
-                                          Long gasLimit,
-                                          Long price,
-                                          String contractAddress,
-                                          String methodName,
-                                          String methodDesc,
-                                          Object[] args,
-                                          String remark,
-                                          List<Input> utxos) {
+    public Result callContractTransaction(String sender, Long longValue, Long gasLimit, Long price, String contractAddress, String methodName, String methodDesc, Object[] args, String remark, List<Input> utxos) {
         try {
             byte[] senderBytes = AddressTool.getAddress(sender);
             byte[] contractAddressBytes = AddressTool.getAddress(contractAddress);
 
-            if (value == null) {
+            Na value;
+            if (longValue == null) {
                 value = Na.ZERO;
+            } else {
+                value = Na.valueOf(longValue);
             }
 
             CallContractTransaction tx = new CallContractTransaction();
@@ -240,10 +223,7 @@ public class ContractServiceImpl implements ContractService {
      * @return
      */
     @Override
-    public Result deleteContractTransaction(String sender,
-                                            String contractAddress,
-                                            String remark,
-                                            List<Input> utxos) {
+    public Result deleteContractTransaction(String sender, String contractAddress, String remark, List<Input> utxos) {
 
         try {
             DeleteContractTransaction tx = new DeleteContractTransaction();

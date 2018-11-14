@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.nuls.contract.sdk;
+package io.nuls.sdk.contract;
 
 
 import io.nuls.sdk.core.utils.StringUtils;

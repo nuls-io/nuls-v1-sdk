@@ -1,7 +1,7 @@
 package io.nuls.sdk.contract.test;
 
-import io.nuls.contract.sdk.service.UTXOService;
-import io.nuls.contract.sdk.service.impl.UTXOServiceImpl;
+import io.nuls.sdk.contract.service.UTXOService;
+import io.nuls.sdk.contract.service.impl.UTXOServiceImpl;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.SDKBootstrap;

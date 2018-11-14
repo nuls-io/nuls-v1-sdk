@@ -1,4 +1,4 @@
-package io.nuls.contract.sdk.service;
+package io.nuls.sdk.contract.service;
 
 import io.nuls.sdk.accountledger.model.Input;
 

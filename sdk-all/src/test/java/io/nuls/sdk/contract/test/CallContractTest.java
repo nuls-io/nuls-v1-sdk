@@ -1,9 +1,9 @@
 package io.nuls.sdk.contract.test;
 
-import io.nuls.contract.sdk.service.ContractService;
-import io.nuls.contract.sdk.service.UTXOService;
-import io.nuls.contract.sdk.service.impl.ContractServiceImpl;
-import io.nuls.contract.sdk.service.impl.UTXOServiceImpl;
+import io.nuls.sdk.contract.service.ContractService;
+import io.nuls.sdk.contract.service.UTXOService;
+import io.nuls.sdk.contract.service.impl.ContractServiceImpl;
+import io.nuls.sdk.contract.service.impl.UTXOServiceImpl;
 import io.nuls.sdk.core.SDKBootstrap;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
@@ -35,7 +35,7 @@ public class CallContractTest {
         ContractService contractService = ContractServiceImpl.getInstance();
         UTXOService utxoService = UTXOServiceImpl.getInstance();
 
-        Na value = Na.valueOf(100_0000_0000L);
+        Long value = 100_0000_0000L;
         Long gasLimit = 81325l;
         Long price = 25L;
         String methodName = "create";

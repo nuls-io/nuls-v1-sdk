@@ -1,5 +1,7 @@
 package io.nuls.sdk.tool;
 
+import io.nuls.sdk.contract.service.ContractService;
+import io.nuls.sdk.contract.service.impl.ContractServiceImpl;
 import io.nuls.sdk.account.service.AccountService;
 import io.nuls.sdk.account.service.impl.AccountServiceImpl;
 import io.nuls.sdk.accountledger.model.Input;
@@ -28,6 +30,8 @@ public class NulsSDKTool {
     private static BlockService blockService = BlockServiceImpl.getInstance();
 
     private static ConsensusService consensusService = ConsensusServiceImpl.getInstance();
+
+    private static ContractService contractService = ContractServiceImpl.getInstance();
 
     public static Result createAccount() {
         return accountService.createAccount();
@@ -312,5 +316,17 @@ public class NulsSDKTool {
 
     public static Result createMSAccountCancelDepositTransaction(Output output) {
         return consensusService.createMSAccountCancelDepositTransaction(output);
+    }
+
+    public static Result createContractTransaction(String sender, Long gasLimit, Long price, byte[] contractCode, Object[] args, String remark, List<Input> utxos) {
+        return contractService.createContractTransaction(sender, gasLimit, price, contractCode, args, remark, utxos);
+    }
+
+    public static Result callContractTransaction(String sender, Long value, Long gasLimit, Long price, String contractAddress, String methodName, String methodDesc, Object[] args, String remark, List<Input> utxos) {
+        return contractService.callContractTransaction(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args, remark, utxos);
+    }
+
+    public static Result deleteContractTransaction(String sender, String contractAddress, String remark, List<Input> utxos) {
+        return contractService.deleteContractTransaction(sender, contractAddress, remark, utxos);
     }
 }

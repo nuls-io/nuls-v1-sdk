@@ -7,7 +7,7 @@
     <groupId>io.nuls.sdk</groupId>
     <artifactId>nuls-sdk</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.2</version>
+    <version>1.1.3-BETA</version>
     <modules>
         <module>sdk-core</module>
         <module>sdk-account</module>
@@ -51,9 +51,9 @@
     </scm>
     <developers>
         <developer>
-            <name>ViViZhou</name>
-            <email>vivi@nuls.io</email>
-            <organization>viviZhou</organization>
+            <name>PierreLuo</name>
+            <email>luohao@nuls.io</email>
+            <organization>pierreluo</organization>
         </developer>
     </developers>
     <distributionManagement>
@@ -79,40 +79,103 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.3</version>
-                <configuration>
-                    <aggregate>true</aggregate><!--多模块时配置为true-->
-                    <charset>UTF-8</charset>
-                    <encoding>UTF-8</encoding>
-                    <docencoding>UTF-8</docencoding>
-                </configuration>
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>attach-javadocs</id>-->
-                        <!--<phase>install</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>jar</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            </plugin>
+    <profiles>
+        <profile>
+            <id>disable-javadoc-doclint</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <!-- java8版本导致javadoc打包编译失败时候，添加-->
+            <properties>
+                <javadoc.opts>-Xdoclint:none</javadoc.opts>
+            </properties>
+        </profile>
 
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.8</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.3.2</version>
+                        <configuration>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <useReleaseProfile>false</useReleaseProfile>
+                            <releaseProfiles>release</releaseProfiles>
+                            <goals>deploy</goals>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.0</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>2.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.10.4</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <!-- java8版本导致javadoc打包编译失败时候，添加-->
+                                <configuration>
+                                    <additionalparam>${javadoc.opts}</additionalparam>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+
 </project>

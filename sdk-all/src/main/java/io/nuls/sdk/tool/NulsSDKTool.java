@@ -15,6 +15,7 @@ import io.nuls.sdk.consensus.service.ConsensusService;
 import io.nuls.sdk.consensus.service.impl.ConsensusServiceImpl;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
+import io.nuls.sdk.core.utils.TransactionTool;
 import io.nuls.sdk.protocol.service.BlockService;
 import io.nuls.sdk.protocol.service.impl.BlockServiceImpl;
 
@@ -22,6 +23,10 @@ import java.io.FileReader;
 import java.util.List;
 
 public class NulsSDKTool {
+
+    static {
+        TransactionTool.init();
+    }
 
     private static AccountService accountService = AccountServiceImpl.getInstance();
 
@@ -286,8 +291,8 @@ public class NulsSDKTool {
         return consensusService.getAgentDeposits(agentHash, pageNumber, pageSize);
     }
 
-    public static Result createMultipleInputAddressTransaction(List<Input> inputs, int nInputAccount, List<Output> outputs, String remark){
-        return accountLedgerService.createMultipleInputAddressTransaction(inputs,nInputAccount,outputs,remark);
+    public static Result createMultipleInputAddressTransaction(List<Input> inputs, int nInputAccount, List<Output> outputs, String remark) {
+        return accountLedgerService.createMultipleInputAddressTransaction(inputs, nInputAccount, outputs, remark);
     }
 
     public static Result createMSAccountTransferTransaction(MSAccount account, List<Input> inputs, List<Output> outputs, String remark) {
@@ -299,11 +304,11 @@ public class NulsSDKTool {
     }
 
     public static Result createChangeCoinTransaction(List<Input> inputs, String address) {
-        return accountLedgerService.createChangeCoinTransaction(inputs,address);
+        return accountLedgerService.createChangeCoinTransaction(inputs, address);
     }
 
     public static Result createMSAgentTransaction(AgentInfo agentInfo, List<Input> inputs, Na fee) {
-        return consensusService.createMSAgentTransaction(agentInfo,inputs,fee);
+        return consensusService.createMSAgentTransaction(agentInfo, inputs, fee);
     }
 
     public static Result createStopMSAgentTransaction(Output output) {
@@ -311,7 +316,7 @@ public class NulsSDKTool {
     }
 
     public static Result createMSAccountDepositTransaction(DepositInfo info, List<Input> inputs, Na fee) {
-        return consensusService.createMSAccountDepositTransaction(info,inputs,fee);
+        return consensusService.createMSAccountDepositTransaction(info, inputs, fee);
     }
 
     public static Result createMSAccountCancelDepositTransaction(Output output) {

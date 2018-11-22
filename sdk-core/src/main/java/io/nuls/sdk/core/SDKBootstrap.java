@@ -15,7 +15,6 @@ public class SDKBootstrap {
     }
 
     public static void init(String ip, String port) {
-        TransactionTool.init();
         if (StringUtils.isBlank(ip) || StringUtils.isBlank(port)) {
             RestFulUtils.getInstance().setServerUri("http://" + RpcConstant.DEFAULT_IP + ":" + RpcConstant.DEFAULT_PORT + RpcConstant.PREFIX);
         } else {

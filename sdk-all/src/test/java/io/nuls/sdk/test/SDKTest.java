@@ -436,15 +436,14 @@ public class SDKTest {
         Result result  = NulsSDKTool.getAddressByEncryptedPriKey("0a710f7140e484c7a8e8902156e2b6756966ddc4ede6bdbf2f5e63cbccfcec312dccc24fd641953b5357603584c1c011", "nuls123456");
         System.out.println(result.isSuccess());
     }
-
+ */
 
     @Test
     public void test() {
-        SDKBootstrap.init();
         String txHex = "0200960a7e28660100ffffffff0123002050369418412a6cd19b82cc3a444aff3b818d11aaed1db7fd9a5d6381a2e34a7e0000d0ed902e0000000000000000000217042301d75f7d7fca81a78f850abc5e83e531fc9985241ec00907792e0000000000000000001704230188d02c2ffc2704ac783a29893142c3e2b131423e0084d7170000000000000000000000";
         Result result = NulsSDKTool.signTransaction(txHex,"332060e122203bcf9f0e3385d41b3ef981149a61d7757f8443798200af58a7e7","Nse7N3aVXqaKdECrepueKMYCfcXrwLxE",null);
         System.out.println(result.getData());
     }
- */
+
 
 }

@@ -1,12 +1,12 @@
 package io.nuls.sdk.contract.service.impl;
 
-import io.nuls.sdk.contract.ContractUtil;
-import io.nuls.sdk.contract.model.ContractTransactionCreatedReturnInfo;
-import io.nuls.sdk.contract.service.ContractService;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.TransactionCreatedReturnInfo;
 import io.nuls.sdk.accountledger.utils.ConvertCoinTool;
 import io.nuls.sdk.accountledger.utils.LedgerUtil;
+import io.nuls.sdk.contract.ContractUtil;
+import io.nuls.sdk.contract.model.ContractTransactionCreatedReturnInfo;
+import io.nuls.sdk.contract.service.ContractService;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.contast.TransactionErrorCode;
 import io.nuls.sdk.core.crypto.Hex;
@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -115,7 +115,7 @@ public class ContractServiceImpl implements ContractService {
             }
 
             TransactionCreatedReturnInfo returnInfo = LedgerUtil.makeReturnInfo(tx);
-            Map<String, ContractTransactionCreatedReturnInfo> map = new HashMap<>();
+            Map<String, ContractTransactionCreatedReturnInfo> map = new LinkedHashMap<>();
             map.put("value", new ContractTransactionCreatedReturnInfo(returnInfo, AddressTool.getStringAddressByBytes(contractAddress.getAddressBytes())));
             return Result.getSuccess().setData(map);
         } catch (Exception e) {
@@ -207,7 +207,7 @@ public class ContractServiceImpl implements ContractService {
             }
 
             TransactionCreatedReturnInfo returnInfo = LedgerUtil.makeReturnInfo(tx);
-            Map<String, ContractTransactionCreatedReturnInfo> map = new HashMap<>();
+            Map<String, ContractTransactionCreatedReturnInfo> map = new LinkedHashMap<>();
             map.put("value", new ContractTransactionCreatedReturnInfo(returnInfo, contractAddress));
             return Result.getSuccess().setData(map);
         } catch (Exception e) {
@@ -274,7 +274,7 @@ public class ContractServiceImpl implements ContractService {
             }
 
             TransactionCreatedReturnInfo returnInfo = LedgerUtil.makeReturnInfo(tx);
-            Map<String, ContractTransactionCreatedReturnInfo> map = new HashMap<>();
+            Map<String, ContractTransactionCreatedReturnInfo> map = new LinkedHashMap<>();
             map.put("value", new ContractTransactionCreatedReturnInfo(returnInfo, contractAddress));
             return Result.getSuccess().setData(map);
         } catch (Exception e) {

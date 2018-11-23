@@ -15,13 +15,13 @@ public interface ContractService {
      * @param sender
      * @param gasLimit
      * @param price
-     * @param contractCode
+     * @param contractCodeHex
      * @param args
      * @param remark
      * @param utxos user account unspent transaction output
      * @return
      */
-    Result createContractTransaction(String sender, Long gasLimit, Long price, byte[] contractCode, Object[] args, String remark, List<Input> utxos);
+    Result createContractTransaction(String sender, Long gasLimit, Long price, String contractCodeHex, Object[] args, String remark, List<Input> utxos);
 
     /**
      * call contract's method

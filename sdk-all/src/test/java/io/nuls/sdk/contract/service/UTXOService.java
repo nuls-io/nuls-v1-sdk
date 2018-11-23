@@ -2,7 +2,6 @@ package io.nuls.sdk.contract.service;
 
 import io.nuls.sdk.accountledger.model.Input;
 
-import java.math.BigInteger;
 import java.util.List;
 
 /**

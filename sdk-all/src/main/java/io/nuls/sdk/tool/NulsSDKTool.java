@@ -215,16 +215,16 @@ public class NulsSDKTool {
         return accountLedgerService.transfer(address, toAddress, amount, remark);
     }
 
-    public static Result transfer(String address, String toAddress, long amount, String remark, List<Input> inputs) {
-        return accountLedgerService.transfer(address, toAddress, amount, remark, inputs);
-    }
-
     public static Result getBalance(String address) {
         return accountLedgerService.getBalance(address);
     }
 
     public static Result createTransaction(List<Input> inputs, List<Output> outputs, String remark) {
         return accountLedgerService.createTransaction(inputs, outputs, remark);
+    }
+
+    public static Result createTransaction(String address, String toAddress, long amount, String remark, List<Input> inputs) {
+        return accountLedgerService.createTransaction(address, toAddress, amount, remark, inputs);
     }
 
     public static Result signTransaction(String txHex, String priKey, String address, String password) {
@@ -323,8 +323,8 @@ public class NulsSDKTool {
         return consensusService.createMSAccountCancelDepositTransaction(output);
     }
 
-    public static Result createContractTransaction(String sender, Long gasLimit, Long price, byte[] contractCode, Object[] args, String remark, List<Input> utxos) {
-        return contractService.createContractTransaction(sender, gasLimit, price, contractCode, args, remark, utxos);
+    public static Result createContractTransaction(String sender, Long gasLimit, Long price, String contractCodeHex, Object[] args, String remark, List<Input> utxos) {
+        return contractService.createContractTransaction(sender, gasLimit, price, contractCodeHex, args, remark, utxos);
     }
 
     public static Result callContractTransaction(String sender, Long value, Long gasLimit, Long price, String contractAddress, String methodName, String methodDesc, Object[] args, String remark, List<Input> utxos) {

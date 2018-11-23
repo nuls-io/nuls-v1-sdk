@@ -1,6 +1,7 @@
 package io.nuls.sdk.contract.service.impl;
 
 import io.nuls.sdk.contract.ContractUtil;
+import io.nuls.sdk.contract.model.ContractTransactionCreatedReturnInfo;
 import io.nuls.sdk.contract.service.ContractService;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.TransactionCreatedReturnInfo;
@@ -8,6 +9,7 @@ import io.nuls.sdk.accountledger.utils.ConvertCoinTool;
 import io.nuls.sdk.accountledger.utils.LedgerUtil;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.contast.TransactionErrorCode;
+import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.model.transaction.CallContractTransaction;
 import io.nuls.sdk.core.model.transaction.CreateContractTransaction;
@@ -46,17 +48,18 @@ public class ContractServiceImpl implements ContractService {
      * @param sender
      * @param gasLimit
      * @param price
-     * @param contractCode
+     * @param contractCodeHex
      * @param args
      * @param remark
      * @return
      */
     @Override
-    public Result createContractTransaction(String sender, Long gasLimit, Long price, byte[] contractCode, Object[] args, String remark, List<Input> utxos) {
+    public Result createContractTransaction(String sender, Long gasLimit, Long price, String contractCodeHex, Object[] args, String remark, List<Input> utxos) {
         try {
             Na value = Na.ZERO;
             long totalGas = LongUtils.mul(gasLimit, price);
             Na totalNa = Na.valueOf(totalGas);
+            byte[] contractCode = Hex.decode(contractCodeHex);
 
             byte[] senderBytes = AddressTool.getAddress(sender);
             // 生成一个地址作为智能合约地址
@@ -112,8 +115,8 @@ public class ContractServiceImpl implements ContractService {
             }
 
             TransactionCreatedReturnInfo returnInfo = LedgerUtil.makeReturnInfo(tx);
-            Map<String, TransactionCreatedReturnInfo> map = new HashMap<>();
-            map.put("value", returnInfo);
+            Map<String, ContractTransactionCreatedReturnInfo> map = new HashMap<>();
+            map.put("value", new ContractTransactionCreatedReturnInfo(returnInfo, AddressTool.getStringAddressByBytes(contractAddress.getAddressBytes())));
             return Result.getSuccess().setData(map);
         } catch (Exception e) {
             Log.error(e);
@@ -204,8 +207,8 @@ public class ContractServiceImpl implements ContractService {
             }
 
             TransactionCreatedReturnInfo returnInfo = LedgerUtil.makeReturnInfo(tx);
-            Map<String, TransactionCreatedReturnInfo> map = new HashMap<>();
-            map.put("value", returnInfo);
+            Map<String, ContractTransactionCreatedReturnInfo> map = new HashMap<>();
+            map.put("value", new ContractTransactionCreatedReturnInfo(returnInfo, contractAddress));
             return Result.getSuccess().setData(map);
         } catch (Exception e) {
             Log.error(e);
@@ -271,8 +274,8 @@ public class ContractServiceImpl implements ContractService {
             }
 
             TransactionCreatedReturnInfo returnInfo = LedgerUtil.makeReturnInfo(tx);
-            Map<String, TransactionCreatedReturnInfo> map = new HashMap<>();
-            map.put("value", returnInfo);
+            Map<String, ContractTransactionCreatedReturnInfo> map = new HashMap<>();
+            map.put("value", new ContractTransactionCreatedReturnInfo(returnInfo, contractAddress));
             return Result.getSuccess().setData(map);
         } catch (Exception e) {
             Log.error(e);

@@ -48,19 +48,6 @@ public interface AccountLedgerService {
     Result transfer(String address, String toAddress, long amount, String remark);
 
     /**
-     * Transfer
-     *
-     * @param address   Remittance account address
-     * @param toAddress Beneficiary account Address
-     * @param amount    Transfer amount
-     * @param remark    remark
-     * @param utxos    list of available utxo owned by the remittance account
-     * @return If the operation is successful, 'success' is true
-     * If the operation fails, "success" is false and the result has error information
-     */
-    Result transfer(String address, String toAddress, long amount, String remark, List<Input> utxos);
-
-    /**
      * Get account balance
      *
      * @param address address
@@ -79,6 +66,20 @@ public interface AccountLedgerService {
      * @return Result
      */
     Result createTransaction(List<Input> inputs, List<Output> outputs, String remark);
+
+    /**
+     * 创建交易
+     * Create Transaction
+     *
+     * @param address   Remittance account address
+     * @param toAddress Beneficiary account Address
+     * @param amount    Transfer amount
+     * @param remark    remark
+     * @param utxos    list of available utxo owned by the remittance account
+     * @return If the operation is successful, 'success' is true
+     * If the operation fails, "success" is false and the result has error information
+     */
+    Result createTransaction(String address, String toAddress, long amount, String remark, List<Input> utxos);
 
     /**
      * 创建多地址转账交易

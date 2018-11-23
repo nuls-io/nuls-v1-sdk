@@ -100,8 +100,61 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         return transfer(address, toAddress, null, amount, remark);
     }
 
+    private boolean validTxRemark(String remark) {
+        if (StringUtils.isBlank(remark)) {
+            return true;
+        }
+        try {
+            byte[] bytes = remark.getBytes(SDKConstant.DEFAULT_ENCODING);
+            if (bytes.length > 100) {
+                return false;
+            }
+            return true;
+        } catch (UnsupportedEncodingException e) {
+            return false;
+        }
+    }
+
     @Override
-    public Result transfer(String address, String toAddress, long amount, String remark, List<Input> utxos) {
+    public Result getBalance(String address) {
+        if (!AddressTool.validAddress(address)) {
+            return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
+        }
+        Result result = restFul.get("/accountledger/balance/" + address, null);
+        if (result.isFailed()) {
+            return result;
+        }
+        Map<String, Object> map = (Map) result.getData();
+        map.put("balance", ((Map) map.get("balance")).get("value"));
+        map.put("usable", ((Map) map.get("usable")).get("value"));
+        map.put("locked", ((Map) map.get("locked")).get("value"));
+        BalanceInfo balanceDto = new BalanceInfo(map);
+        return result.setData(balanceDto);
+    }
+
+    @Override
+    public Result broadcastTransaction(String txHex) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("txHex", txHex);
+        Result result = restFul.post("/accountledger/transaction/broadcast", map);
+        return result;
+    }
+
+    @Override
+    public Result validateTransaction(String txHex) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("txHex", txHex);
+        Result result = restFul.post("/accountledger/transaction/valiTransaction", map);
+        return result;
+    }
+
+    @Override
+    public Result createTransaction(List<Input> inputs, List<Output> outputs, String remark) {
+        return createMultipleInputAddressTransaction(inputs, 1, outputs, remark);
+    }
+
+    @Override
+    public Result createTransaction(String address, String toAddress, long amount, String remark, List<Input> utxos) {
         try {
             if (!AddressTool.validAddress(address) || !AddressTool.validAddress(toAddress)) {
                 return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
@@ -163,59 +216,6 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             Log.error(e);
             return Result.getFailed(e.getMessage());
         }
-    }
-
-    private boolean validTxRemark(String remark) {
-        if (StringUtils.isBlank(remark)) {
-            return true;
-        }
-        try {
-            byte[] bytes = remark.getBytes(SDKConstant.DEFAULT_ENCODING);
-            if (bytes.length > 100) {
-                return false;
-            }
-            return true;
-        } catch (UnsupportedEncodingException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public Result getBalance(String address) {
-        if (!AddressTool.validAddress(address)) {
-            return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
-        }
-        Result result = restFul.get("/accountledger/balance/" + address, null);
-        if (result.isFailed()) {
-            return result;
-        }
-        Map<String, Object> map = (Map) result.getData();
-        map.put("balance", ((Map) map.get("balance")).get("value"));
-        map.put("usable", ((Map) map.get("usable")).get("value"));
-        map.put("locked", ((Map) map.get("locked")).get("value"));
-        BalanceInfo balanceDto = new BalanceInfo(map);
-        return result.setData(balanceDto);
-    }
-
-    @Override
-    public Result broadcastTransaction(String txHex) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("txHex", txHex);
-        Result result = restFul.post("/accountledger/transaction/broadcast", map);
-        return result;
-    }
-
-    @Override
-    public Result validateTransaction(String txHex) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("txHex", txHex);
-        Result result = restFul.post("/accountledger/transaction/valiTransaction", map);
-        return result;
-    }
-
-    @Override
-    public Result createTransaction(List<Input> inputs, List<Output> outputs, String remark) {
-        return createMultipleInputAddressTransaction(inputs, 1, outputs, remark);
     }
 
     @Override

@@ -50,12 +50,11 @@ public class CreateContractTest {
             e.printStackTrace();
         }
         String contractCode = stringBuilder.toString();
-        byte[] contractCodeBytes = Hex.decode(contractCode);
         Object[] args = {100_0000_0000L};
         String remark = "";
 
         List<Input> utxos = utxoService.getUTXOs(sender, 150_0000_0000L);
-        Result result = contractService.createContractTransaction(sender, gasLimit, price, contractCodeBytes, args, remark, utxos);
+        Result result = contractService.createContractTransaction(sender, gasLimit, price, contractCode, args, remark, utxos);
         logger.info("result {}", result);
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");

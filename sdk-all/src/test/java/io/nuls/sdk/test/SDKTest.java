@@ -3,22 +3,22 @@ package io.nuls.sdk.test;
 import com.sun.org.apache.regexp.internal.RE;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
+import io.nuls.sdk.accountledger.model.TransferFrom;
+import io.nuls.sdk.accountledger.model.TransferTo;
 import io.nuls.sdk.core.SDKBootstrap;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.tool.NulsSDKTool;
 import org.junit.Test;
+import org.spongycastle.pqc.math.linearalgebra.ByteUtils;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 public class SDKTest {
 
 
     /*
-
-
-
-
         private static String address = null;
         private static String addressPwd = null;
 
@@ -366,6 +366,30 @@ public class SDKTest {
             result = NulsSDKTool.broadcastTransaction(sign);
             System.out.println(result.isSuccess());
         }
+ */
+    @Test
+    public void test1() {
+        SDKBootstrap.init("127.0.0.1", "6001");
+
+        List<TransferFrom> inputs = new ArrayList<>();
+        TransferFrom from1 = new TransferFrom("Nse5oPtPjgbyHujSxXu2YbWRmmf3ksCo","abcd1234");
+        inputs.add(from1);
+
+        TransferFrom from2 = new TransferFrom("Nsdz9go1hcQrrssG2Kqu57h6v9rH8puC","abcd5678");
+        inputs.add(from2);
+
+        List<TransferTo> outputs = new ArrayList<>();
+        TransferTo to1 = new TransferTo("Nse7N3aVXqaKdECrepueKMYCfcXrwLxE",10000000000L);
+        outputs.add(to1);
+
+        TransferTo to2 = new TransferTo("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM",10000000000L);
+        outputs.add(to2);
+
+        String remark = "test multipleAddressTransfer";
+
+        Result result = NulsSDKTool.multipleAddressTransfer(inputs, outputs, remark);
+
+    }
 
     @Test
     public void testTransaction() {
@@ -374,76 +398,59 @@ public class SDKTest {
 
         List<Input> inputs = new ArrayList<>();
         Input input = new Input();
-        input.setFromHash("00206b103150c5b663dc098d90c660d2aaa74bf3ac0fa6e1316b17ffb00f3f2f7265");
-        input.setFromIndex(2);
-        input.setAddress("6HgW3txcKTbW137S7f91wDFuYYqGvA4K");
-        input.setValue(199999590000000L);
+        input.setFromHash("002058e49a9a865910dba8783da174d841c4345af8bd56edbb1fa8c6dc85e5dff9d2");
+        input.setFromIndex(1);
+        input.setAddress("Nse5oPtPjgbyHujSxXu2YbWRmmf3ksCo");
+        input.setValue(176248794886L);
 
         inputs.add(input);
 
         List<Output> outputs = new ArrayList<>();
         Output output = new Output();
-        output.setAddress("6HgchngqddreG6NihqxeoLrL3D5qWrpT");
+        output.setAddress("Nsdz9go1hcQrrssG2Kqu57h6v9rH8puC");
         output.setIndex(0);
         output.setLockTime(0);
-        output.setValue(200000000L);
+        output.setValue(10000000L);
         outputs.add(output);
 
-        Output output2 = new Output();
-        output2.setAddress("6HgeDmjUNg43SCdpQU1iggogCeMM2xhb");
-        output2.setIndex(0);
-        output2.setLockTime(0);
-        output2.setValue(200000000L);
-        outputs.add(output2);
-
         output = new Output();
-        output.setAddress("6HgW3txcKTbW137S7f91wDFuYYqGvA4K");
-        output.setIndex(0);
+        output.setAddress("Nse5oPtPjgbyHujSxXu2YbWRmmf3ksCo");
+        output.setIndex(1);
         output.setLockTime(0);
-        output.setValue(199999590000000L - 400000000L - 10000000L);
+        output.setValue(176248794886L - 10000000L - 10000000L);
         outputs.add(output);
 
         Result result = NulsSDKTool.createTransaction(inputs, outputs, "abcd");
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
 
-        String priKey = "00c8c29edb48947934c947b884ee3ce7d41a435a2216c92bdd93c35cb7d2720a31";
-        String address = "6HgW3txcKTbW137S7f91wDFuYYqGvA4K";
+        String priKey = "08f3102c7f9738ac30258c1378d35ef4d65694";
+        String address = "Nse5oPtPjgbyHujSxXu2YbWRmmf3ksCo";
 
         result = NulsSDKTool.signTransaction(txHex, priKey, address, null);
         map = (Map<String, Object>) result.getData();
-        String sign = (String) map.get("value");
-
-        result = NulsSDKTool.broadcastTransaction(sign);
+        String signTxHex = (String) map.get("value");
+        result = NulsSDKTool.validateTransaction(signTxHex);
+        //  result = NulsSDKTool.broadcastTransaction(signTxHex);
         System.out.println(result.isSuccess());
     }
-
 
 
     @Test
-    public void testTransaction() {
-//        SDKBootstrap.init("192.168.1.103", "6001");
-//        String txHex = "0200364da8ef640100ffffffff012300203cda865218542acbe2471e3c3e3cf8e3e81f659e849479207ea74fc9d0eea5ff0000cdb08902000000000000000000021701000106526667b83a4b58c26b0861c9c29968b0889fdd00e40b54020000000000000000001701000144fdd048f38e1b0c0a54124b6d626fe1791c592f6062a335000000000000000000006b21037281566ae1be0f64a3241faaa32093a105cb1ecd470cc6d8d20b5856142f346800473045022100d649a15f2c399a7f754c348fb619b42bc8c72873dbd9318e25f377df83160a0b0220765ae57aedf561618b40cc83a19a8a7ba78bf369e6601d6199b9a07ce29c050d";
-//        String priKey = "0a710f7140e484c7a8e8902156e2b6756966ddc4ede6bdbf2f5e63cbccfcec312dccc24fd641953b5357603584c1c011";
-//        String address = "Nsdx8A7vi24zMGtnonJ3pGPFDxWwkaBn";
-//        String password = "nuls123456";
-//
-//
-//        Result result = NulsSDKTool.signTransaction(txHex, priKey, address, password);
-//        Map<String, Object> map = (Map<String, Object>) result.getData();
-//        String sign = (String) map.get("value");
-
-        Result result  = NulsSDKTool.getAddressByEncryptedPriKey("0a710f7140e484c7a8e8902156e2b6756966ddc4ede6bdbf2f5e63cbccfcec312dccc24fd641953b5357603584c1c011", "nuls123456");
+    public void testSignTransaction() {
+        Result result = NulsSDKTool.getAddressByEncryptedPriKey("0a710f7140e484c7a8e8902156e2b6756966ddc4ede6bdbf2f5e63cbccfcec312dccc24fd641953b5357603584c1c011", "nuls123456");
         System.out.println(result.isSuccess());
     }
- */
+
 
     @Test
     public void test() {
         String txHex = "0200960a7e28660100ffffffff0123002050369418412a6cd19b82cc3a444aff3b818d11aaed1db7fd9a5d6381a2e34a7e0000d0ed902e0000000000000000000217042301d75f7d7fca81a78f850abc5e83e531fc9985241ec00907792e0000000000000000001704230188d02c2ffc2704ac783a29893142c3e2b131423e0084d7170000000000000000000000";
-        Result result = NulsSDKTool.signTransaction(txHex,"332060e122203bcf9f0e3385d41b3ef981149a61d7757f8443798200af58a7e7","Nse7N3aVXqaKdECrepueKMYCfcXrwLxE",null);
+        Result result = NulsSDKTool.signTransaction(txHex, "332060e122203bcf9f0e3385d41b3ef981149a61d7757f8443798200af58a7e7", "Nse7N3aVXqaKdECrepueKMYCfcXrwLxE", null);
         System.out.println(result.getData());
     }
+
+
 
 
 }

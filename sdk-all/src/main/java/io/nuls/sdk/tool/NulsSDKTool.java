@@ -1,12 +1,10 @@
 package io.nuls.sdk.tool;
 
+import io.nuls.sdk.accountledger.model.*;
 import io.nuls.sdk.contract.service.ContractService;
 import io.nuls.sdk.contract.service.impl.ContractServiceImpl;
 import io.nuls.sdk.account.service.AccountService;
 import io.nuls.sdk.account.service.impl.AccountServiceImpl;
-import io.nuls.sdk.accountledger.model.Input;
-import io.nuls.sdk.accountledger.model.MSAccount;
-import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.accountledger.service.AccountLedgerService;
 import io.nuls.sdk.accountledger.service.impl.AccountLedgerServiceImpl;
 import io.nuls.sdk.consensus.model.AgentInfo;
@@ -213,6 +211,18 @@ public class NulsSDKTool {
 
     public static Result transfer(String address, String toAddress, long amount, String remark) {
         return accountLedgerService.transfer(address, toAddress, amount, remark);
+    }
+
+    public static Result sendToAddress(String address, String toAddress, String password, long amount, String remark) {
+        return accountLedgerService.sendToAddress(address, toAddress, password, amount, remark);
+    }
+
+    public static Result sendToAddress(String address, String toAddress, long amount, String remark) {
+        return accountLedgerService.sendToAddress(address, toAddress, amount, remark);
+    }
+
+    public static Result multipleAddressTransfer(List<TransferFrom> inputs, List<TransferTo> outputs, String remark) {
+        return accountLedgerService.multipleAddressTransfer(inputs, outputs, remark);
     }
 
     public static Result getBalance(String address) {

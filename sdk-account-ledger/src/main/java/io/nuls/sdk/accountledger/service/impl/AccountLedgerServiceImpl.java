@@ -100,6 +100,42 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         return transfer(address, toAddress, null, amount, remark);
     }
 
+    @Override
+    public Result sendToAddress(String address, String toAddress, String password, long amount, String remark) {
+        if (!AddressTool.validAddress(address) || !AddressTool.validAddress(toAddress)) {
+            return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);
+        }
+        if (StringUtils.isNotBlank(password) && !StringUtils.validPassword(password)) {
+            return Result.getFailed(AccountErrorCode.PASSWORD_IS_WRONG);
+        }
+        if (!validTxRemark(remark)) {
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
+        }
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("address", address);
+        parameters.put("toAddress", toAddress);
+        parameters.put("password", password);
+        parameters.put("amount", amount);
+        parameters.put("remark", remark);
+        Result result = restFul.post("/accountledger/sendToAddress", parameters);
+        return result;
+    }
+
+    @Override
+    public Result sendToAddress(String address, String toAddress, long amount, String remark) {
+        return sendToAddress(address, toAddress, null, amount, remark);
+    }
+
+    @Override
+    public Result multipleAddressTransfer(List<TransferFrom> froms, List<TransferTo> tos, String remark) {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("inputs", froms);
+        parameters.put("outputs", tos);
+        parameters.put("remark", remark);
+        Result result = restFul.post("/accountledger/multipleAddressTransfer", parameters);
+        return result;
+    }
+
     private boolean validTxRemark(String remark) {
         if (StringUtils.isBlank(remark)) {
             return true;

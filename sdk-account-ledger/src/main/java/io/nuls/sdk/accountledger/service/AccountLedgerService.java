@@ -1,9 +1,6 @@
 package io.nuls.sdk.accountledger.service;
 
-import io.nuls.sdk.accountledger.model.Input;
-import io.nuls.sdk.accountledger.model.MSAccount;
-import io.nuls.sdk.accountledger.model.Output;
-import io.nuls.sdk.accountledger.model.TransactionCreatedReturnInfo;
+import io.nuls.sdk.accountledger.model.*;
 import io.nuls.sdk.core.model.Result;
 
 import java.util.List;
@@ -48,6 +45,39 @@ public interface AccountLedgerService {
     Result transfer(String address, String toAddress, long amount, String remark);
 
     /**
+     * sendToAddress
+     *
+     * @param address   Remittance account address
+     * @param toAddress Beneficiary account Address
+     * @param password  Remittance account password
+     * @param amount    Transfer amount include fee
+     * @param remark    remark
+     * @return If the operation is successful, 'success' is true
+     * If the operation fails, "success" is false and the result has error information
+     */
+    Result sendToAddress(String address, String toAddress, String password, long amount, String remark);
+
+    /**
+     * sendToAddress
+     *
+     * @param address   Remittance account address
+     * @param toAddress Beneficiary account Address
+     * @param amount    Transfer amount include fee
+     * @param remark    remark
+     * @return If the operation is successful, 'success' is true
+     * If the operation fails, "success" is false and the result has error information
+     */
+    Result sendToAddress(String address, String toAddress, long amount, String remark);
+
+    /***
+     * multipleAddressTransfer
+     * @param froms address and password for each address
+     * @param tos tos toAddress and amount for each toAddress
+     * @return
+     */
+    Result multipleAddressTransfer(List<TransferFrom> froms, List<TransferTo> tos, String remark);
+
+    /**
      * Get account balance
      *
      * @param address address
@@ -75,7 +105,7 @@ public interface AccountLedgerService {
      * @param toAddress Beneficiary account Address
      * @param amount    Transfer amount
      * @param remark    remark
-     * @param utxos    list of available utxo owned by the remittance account
+     * @param utxos     list of available utxo owned by the remittance account
      * @return If the operation is successful, 'success' is true
      * If the operation fails, "success" is false and the result has error information
      */
@@ -125,8 +155,8 @@ public interface AccountLedgerService {
     /**
      * 签名 input 为多个地址的转账交易
      *
-     * @param txHex    txHex
-     * @param privKeys privKeys
+     * @param txHex     txHex
+     * @param privKeys  privKeys
      * @param passwords passwords
      * @return
      */

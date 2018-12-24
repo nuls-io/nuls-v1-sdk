@@ -1,4 +1,4 @@
-package io.nuls.sdk.contract;
+package io.nuls.contract.sdk;
 
 import java.math.BigInteger;
 

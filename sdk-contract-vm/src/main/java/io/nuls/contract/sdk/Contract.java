@@ -1,4 +1,4 @@
-package io.nuls.sdk.contract;
+package io.nuls.contract.sdk;
 
 /**
  * 合约接口，合约类实现这个接口

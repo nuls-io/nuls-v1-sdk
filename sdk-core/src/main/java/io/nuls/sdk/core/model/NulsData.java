@@ -26,6 +26,7 @@
 package io.nuls.sdk.core.model;
 
 import io.nuls.sdk.core.exception.NulsException;
+import io.nuls.sdk.core.utils.NulsByteBuffer;
 
 import java.io.IOException;
 
@@ -39,4 +40,8 @@ public interface NulsData {
     byte[] serialize() throws IOException;
 
     void parse(byte[] bytes,int cursor) throws NulsException;
+
+    default void parseWithVersion(NulsByteBuffer byteBuffer, int version) throws NulsException{
+
+    }
 }

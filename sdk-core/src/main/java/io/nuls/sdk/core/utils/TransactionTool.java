@@ -25,7 +25,7 @@ public class TransactionTool {
     private static RestFulUtils restFul = RestFulUtils.getInstance();
 
     public static void init() {
-//        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_COINBASE, TransferTransaction.class);
+        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_COINBASE, TransferTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_TRANSFER, TransferTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_REGISTER_AGENT, CreateAgentTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_JOIN_CONSENSUS, DepositTransaction.class);
@@ -132,6 +132,35 @@ public class TransactionTool {
             throw new NulsRuntimeException(KernelErrorCode.FAILED, "transaction type not exist!");
         }
         Transaction tx = byteBuffer.readNulsData(txClass.newInstance());
+        return tx;
+    }
+
+
+    public static List<Transaction> getInstances(NulsByteBuffer byteBuffer, long txCount) throws Exception {
+        List<Transaction> list = new ArrayList<>();
+        for (int i = 0; i < txCount; i++) {
+            list.add(getInstance(byteBuffer));
+        }
+        return list;
+    }
+
+    public static List<Transaction> getInstancesWithVersion(NulsByteBuffer byteBuffer, long txCount, int version) throws Exception {
+        List<Transaction> list = new ArrayList<>();
+        for (int i = 0; i < txCount; i++) {
+            list.add(getInstancesWithVersion(byteBuffer, version));
+        }
+        return list;
+    }
+
+
+    public static Transaction getInstancesWithVersion(NulsByteBuffer byteBuffer, int version) throws Exception {
+        int txType = byteBuffer.readUint16();
+        byteBuffer.setCursor(byteBuffer.getCursor() - SerializeUtils.sizeOfUint16());
+        Class<? extends Transaction> txClass = TYPE_TX_MAP.get(txType);
+        if (null == txClass) {
+            throw new NulsRuntimeException(KernelErrorCode.FAILED, "transaction type not exist!");
+        }
+        Transaction tx = byteBuffer.readNulsDataWithVersion(txClass.newInstance(), version);
         return tx;
     }
 

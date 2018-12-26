@@ -277,6 +277,10 @@ public class NulsSDKTool {
         return blockService.getBlock(hash);
     }
 
+    public static Result getBlockWithBytes(String hash) {
+        return blockService.getBlockWithBytes(hash);
+    }
+
     public static Result createAgentTransaction(AgentInfo agentInfo, List<Input> inputs, Na fee) {
         return consensusService.createAgentTransaction(agentInfo, inputs, fee);
     }

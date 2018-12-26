@@ -69,4 +69,12 @@ public interface BlockService {
      * If the operation fails, "success" is false and the result has error information
      */
     Result getBlock(String hash);
+
+    /**
+     * get the block with bytes of Nuls's block
+     * @param hash The block hash
+     * @return Nuls's block
+     */
+    Result getBlockWithBytes(String hash);
+
 }

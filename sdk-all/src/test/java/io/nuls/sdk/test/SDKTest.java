@@ -8,6 +8,7 @@ import io.nuls.sdk.accountledger.model.TransferTo;
 import io.nuls.sdk.core.SDKBootstrap;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.tool.NulsSDKTool;
+import org.checkerframework.dataflow.qual.TerminatesExecution;
 import org.junit.Test;
 import org.spongycastle.pqc.math.linearalgebra.ByteUtils;
 
@@ -372,17 +373,17 @@ public class SDKTest {
         SDKBootstrap.init("127.0.0.1", "6001");
 
         List<TransferFrom> inputs = new ArrayList<>();
-        TransferFrom from1 = new TransferFrom("Nse5oPtPjgbyHujSxXu2YbWRmmf3ksCo","abcd1234");
+        TransferFrom from1 = new TransferFrom("Nse5oPtPjgbyHujSxXu2YbWRmmf3ksCo", "abcd1234");
         inputs.add(from1);
 
-        TransferFrom from2 = new TransferFrom("Nsdz9go1hcQrrssG2Kqu57h6v9rH8puC","abcd5678");
+        TransferFrom from2 = new TransferFrom("Nsdz9go1hcQrrssG2Kqu57h6v9rH8puC", "abcd5678");
         inputs.add(from2);
 
         List<TransferTo> outputs = new ArrayList<>();
-        TransferTo to1 = new TransferTo("Nse7N3aVXqaKdECrepueKMYCfcXrwLxE",10000000000L);
+        TransferTo to1 = new TransferTo("Nse7N3aVXqaKdECrepueKMYCfcXrwLxE", 10000000000L);
         outputs.add(to1);
 
-        TransferTo to2 = new TransferTo("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM",10000000000L);
+        TransferTo to2 = new TransferTo("NsduyVrtxo4G2UrBHGMsVj8vTtRtdfRM", 10000000000L);
         outputs.add(to2);
 
         String remark = "test multipleAddressTransfer";
@@ -450,7 +451,12 @@ public class SDKTest {
         System.out.println(result.getData());
     }
 
-
+    @Test
+    public void testSyncBlock() {
+        SDKBootstrap.init("127.0.0.1", "6001");
+        Result result = NulsSDKTool.getBlockWithBytes("002030e2e9e832a825efcb107e6f0e5b030324ea5178396a80c0dde2da5ce34d6ad8");
+        System.out.println(result.isSuccess());
+    }
 
 
 }

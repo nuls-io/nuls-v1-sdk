@@ -98,7 +98,23 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
         }
         transactionSignature = byteBuffer.readByLengthByte();
     }
-//
+
+    @Override
+    public void parseWithVersion(NulsByteBuffer byteBuffer, int version) throws NulsException {
+        type = byteBuffer.readUint16();
+        time = byteBuffer.readUint48();
+        this.remark = byteBuffer.readByLengthByte();
+        txData = this.parseTxData(byteBuffer);
+        this.coinData = byteBuffer.readNulsData(new CoinData());
+        try {
+            hash = NulsDigestData.calcDigestData(this.serializeForHash());
+        } catch (IOException e) {
+            Log.error(e);
+        }
+        transactionSignature = byteBuffer.readByLengthByte();
+    }
+
+    //
 //    /**
 //     * 是否是系统产生的交易（打包节点产生，用于出块奖励结算、红黄牌惩罚），该种类型的交易在验证块大小时不计算在内，该类型交易不需要手续费
 //     * Is a system to produce trading (packaged node generation, for the piece reward settlement, CARDS punishment),
@@ -107,7 +123,8 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
     public boolean isSystemTx() {
         return false;
     }
-//
+
+    //
 //    /**
 //     * 是否是解锁交易，该类型交易会把锁定时间为-1的UTXO花费掉，生成新的UTXO
 //     * If it's an unlocking transaction, this type of transaction costs the UTXO with a lock time of -1 and generates a new UTXO
@@ -116,7 +133,7 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
         return false;
     }
 
-//    /**
+    //    /**
 //     * 该交易是否需要在账本中验证签名，所有系统产生的交易和一些特殊交易，不需要安装普通交易的方式验证签名，会提供额外的逻辑进行验证。
 //     * If the deal need to verify the signature in the book, all transactions system and some special deal,
 //     * no need to install the ordinary transaction way to verify the signature, will provide additional validation logic.
@@ -305,10 +322,11 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
     public byte[] serializeForHash() throws IOException {
         ByteArrayOutputStream bos = null;
         try {
-          //  int main_version = TransactionTool.getMainVersion();
+            //  int main_version = TransactionTool.getMainVersion();
             int size = size() - SerializeUtils.sizeOfBytes(transactionSignature);
             bos = new UnsafeByteArrayOutputStream(size);
             NulsOutputStreamBuffer buffer = new NulsOutputStreamBuffer(bos);
+
             if (size == 0) {
                 bos.write(SDKConstant.PLACE_HOLDER);
             } else {
@@ -329,6 +347,48 @@ public abstract class Transaction<T extends TransactionLogicData> extends BaseNu
             }
         }
     }
+
+    public byte[] serializeWithVersion(int version) throws IOException {
+        ByteArrayOutputStream bos = null;
+        try {
+            //  int main_version = TransactionTool.getMainVersion();
+            int size = size() - SerializeUtils.sizeOfBytes(transactionSignature);
+            bos = new UnsafeByteArrayOutputStream(size);
+            NulsOutputStreamBuffer buffer = new NulsOutputStreamBuffer(bos);
+
+            do {
+                if (size == 0) {
+                    bos.write(SDKConstant.PLACE_HOLDER);
+                    break;
+                } else if (version < 2) {
+                    buffer.writeVarInt(type);
+                    buffer.writeVarInt(time);
+                    break;
+                } else {
+                    buffer.writeUint16(type);
+                    buffer.writeUint48(time);
+                    break;
+                }
+            } while (false);
+
+            if (size > 0) {
+                buffer.writeBytesWithLength(remark);
+                buffer.writeNulsData(txData);
+                buffer.writeNulsData(coinData);
+            }
+
+            return bos.toByteArray();
+        } finally {
+            if (bos != null) {
+                try {
+                    bos.close();
+                } catch (IOException e) {
+                    throw e;
+                }
+            }
+        }
+    }
+
 
     public abstract String getInfo(byte[] address);
 }

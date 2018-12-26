@@ -228,6 +228,26 @@ public class NulsByteBuffer {
         return nulsData;
     }
 
+    public <T extends BaseNulsData> T readNulsDataWithVersion(T nulsData, int version) throws NulsException {
+        if (payload == null) {
+            return null;
+        }
+        int length = payload.length - cursor;
+        if (length <= 0) {
+            return null;
+        }
+        if (length >= 4) {
+            byte[] byte4 = new byte[4];
+            System.arraycopy(payload, cursor, byte4, 0, 4);
+            if (Arrays.equals(SDKConstant.PLACE_HOLDER, byte4)) {
+                cursor += 4;
+                return null;
+            }
+        }
+        nulsData.parseWithVersion(this, version);
+        return nulsData;
+    }
+
     public NulsSignData readSign() throws NulsException {
         return this.readNulsData(new NulsSignData());
     }

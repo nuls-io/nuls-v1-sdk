@@ -4,15 +4,16 @@ import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.accountledger.model.Transaction;
 import io.nuls.sdk.core.contast.KernelErrorCode;
+import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Result;
+import io.nuls.sdk.core.utils.Log;
+import io.nuls.sdk.core.utils.NulsByteBuffer;
 import io.nuls.sdk.core.utils.RestFulUtils;
 import io.nuls.sdk.core.utils.StringUtils;
 import io.nuls.sdk.protocol.model.*;
 import io.nuls.sdk.protocol.service.BlockService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: Charlie
@@ -114,6 +115,29 @@ public class BlockServiceImpl implements BlockService {
         return result.setData(assembleBlockDto(map));
     }
 
+    @Override
+    public Result getBlockWithBytes(String hash) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("hash", hash);
+        Result result = restFul.get("/block/bytes", param);
+        if (result.isFailed()) {
+            return result;
+        }
+        Map<String, Object> resultMap = (Map<String, Object>) result.getData();
+        String blockHex = (String) resultMap.get("value");
+        byte[] data = Base64.getDecoder().decode(blockHex);
+        io.nuls.sdk.core.model.Block block = new io.nuls.sdk.core.model.Block();
+        try {
+            block.parseWithVersion(new NulsByteBuffer(data));
+            result.setData(block);
+        } catch (NulsException e) {
+            Log.error(e);
+            result = new Result(false, e.getErrorCode());
+        }
+        return result;
+    }
+
+
     private Block assembleBlockDto(Map<String, Object> map) {
         List<Map<String, Object>> txMapList = (List<Map<String, Object>>) map.get("txList");
         List<Transaction> txList = new ArrayList<>();
@@ -144,5 +168,6 @@ public class BlockServiceImpl implements BlockService {
         map.put("txList", txList);
         return new Block(map);
     }
+
 
 }

@@ -75,6 +75,32 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     }
 
     @Override
+    public Result getTxWithBytesByHash(String hash) {
+        if (StringUtils.isBlank(hash)) {
+            return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
+        }
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("hash", hash);
+        Result result = restFul.get("/tx/bytes/", parameters);
+        if (result.isFailed()) {
+            return result;
+        }
+        Map<String, String> resultMap = (Map<String, String>) result.getData();
+
+        byte[] datas = Base64.getDecoder().decode(resultMap.get("value"));
+        long height = Long.parseLong(resultMap.get("height"));
+        try {
+            io.nuls.sdk.core.model.transaction.Transaction tx = TransactionTool.getInstance(new NulsByteBuffer(datas));
+            tx.setHash(NulsDigestData.fromDigestHex(hash));
+            tx.setBlockHeight(height);
+            result.setData(tx);
+        } catch (Exception e) {
+            return Result.getFailed(AccountErrorCode.DATA_PARSE_ERROR);
+        }
+        return result;
+    }
+
+    @Override
     public Result transfer(String address, String toAddress, String password, long amount, String remark) {
         if (!AddressTool.validAddress(address) || !AddressTool.validAddress(toAddress)) {
             return Result.getFailed(AccountErrorCode.ADDRESS_ERROR);

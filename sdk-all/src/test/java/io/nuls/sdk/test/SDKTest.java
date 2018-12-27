@@ -457,6 +457,14 @@ public class SDKTest {
         Result result = NulsSDKTool.getBlockWithBytes("002030e2e9e832a825efcb107e6f0e5b030324ea5178396a80c0dde2da5ce34d6ad8");
         System.out.println(result.isSuccess());
     }
+
  */
 
+    @Test
+    public void test() {
+        SDKBootstrap.init("127.0.0.1", "6001");
+        Result result = NulsSDKTool.getTxWithBytes("0020dd8f88a46ebd9f2c5493285622e9d3392c101789ee8c1438e6e7de988fbac46c");
+        System.out.println(result.isFailed());
+
+    }
 }

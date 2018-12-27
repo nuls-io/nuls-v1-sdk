@@ -348,4 +348,8 @@ public class NulsSDKTool {
     public static Result deleteContractTransaction(String sender, String contractAddress, String remark, List<Input> utxos) {
         return contractService.deleteContractTransaction(sender, contractAddress, remark, utxos);
     }
+
+    public static Result getTxWithBytes(String hash) {
+        return accountLedgerService.getTxWithBytesByHash(hash);
+    }
 }

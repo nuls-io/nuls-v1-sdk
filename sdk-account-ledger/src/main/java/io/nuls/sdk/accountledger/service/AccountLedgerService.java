@@ -18,6 +18,14 @@ public interface AccountLedgerService {
      * If the operation fails, "success" is false and the result has error information
      */
     Result getTxByHash(String hash);
+    /**
+     * Get transaction details based on transaction hash
+     *
+     * @param hash Transaction hash
+     * @return If the operation is successful, 'success' is true, and data is Transaction;
+     * If the operation fails, "success" is false and the result has error information
+     */
+    Result getTxWithBytesByHash(String hash);
 
     /**
      * Transfer

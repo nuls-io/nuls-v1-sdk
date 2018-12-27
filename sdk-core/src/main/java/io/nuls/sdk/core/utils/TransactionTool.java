@@ -25,7 +25,7 @@ public class TransactionTool {
     private static RestFulUtils restFul = RestFulUtils.getInstance();
 
     public static void init() {
-        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_COINBASE, TransferTransaction.class);
+        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_COINBASE, CoinBaseTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_TRANSFER, TransferTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_REGISTER_AGENT, CreateAgentTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_JOIN_CONSENSUS, DepositTransaction.class);
@@ -34,6 +34,7 @@ public class TransactionTool {
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CALL_CONTRACT, CallContractTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CREATE_CONTRACT, CreateContractTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_DELETE_CONTRACT, DeleteContractTransaction.class);
+        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CONTRACT_TRANSFER, DeleteContractTransaction.class);
     }
 
     public static Transaction createTransferTx(List<Coin> inputs, List<Coin> outputs, byte[] remark) {
@@ -244,4 +245,6 @@ public class TransactionTool {
         }
         return coinDataResult;
     }
+
+
 }

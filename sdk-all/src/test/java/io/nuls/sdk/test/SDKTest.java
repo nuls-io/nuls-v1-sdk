@@ -450,15 +450,14 @@ public class SDKTest {
         Result result = NulsSDKTool.signTransaction(txHex, "332060e122203bcf9f0e3385d41b3ef981149a61d7757f8443798200af58a7e7", "Nse7N3aVXqaKdECrepueKMYCfcXrwLxE", null);
         System.out.println(result.getData());
     }
-
+ */
     @Test
     public void testSyncBlock() {
         SDKBootstrap.init("127.0.0.1", "6001");
-        Result result = NulsSDKTool.getBlockWithBytes("002030e2e9e832a825efcb107e6f0e5b030324ea5178396a80c0dde2da5ce34d6ad8");
+        Result result = NulsSDKTool.getBlockWithBytes(0);
         System.out.println(result.isSuccess());
     }
 
- */
 
     @Test
     public void test() {

@@ -13,7 +13,9 @@ import io.nuls.sdk.core.utils.StringUtils;
 import io.nuls.sdk.protocol.model.*;
 import io.nuls.sdk.protocol.service.BlockService;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author: Charlie
@@ -123,12 +125,37 @@ public class BlockServiceImpl implements BlockService {
         if (result.isFailed()) {
             return result;
         }
-        Map<String, Object> resultMap = (Map<String, Object>) result.getData();
-        String blockHex = (String) resultMap.get("value");
+        Map<String, String> resultMap = (Map<String, String>) result.getData();
+        String blockHex = resultMap.get("value");
+        byte[] data = Base64.getDecoder().decode(blockHex);
+
+        io.nuls.sdk.core.model.Block block = new io.nuls.sdk.core.model.Block();
+        try {
+            block.parseWithVersion(new NulsByteBuffer(data));
+            block.getHeader().setSize(block.size());
+            result.setData(block);
+        } catch (NulsException e) {
+            Log.error(e);
+            result = new Result(false, e.getErrorCode());
+        }
+        return result;
+    }
+
+    @Override
+    public Result getBlockWithBytes(long height) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("height", height);
+        Result result = restFul.get("/block/bytes/height", param);
+        if (result.isFailed()) {
+            return result;
+        }
+        Map<String, String> resultMap = (Map<String, String>) result.getData();
+        String blockHex = resultMap.get("value");
         byte[] data = Base64.getDecoder().decode(blockHex);
         io.nuls.sdk.core.model.Block block = new io.nuls.sdk.core.model.Block();
         try {
             block.parseWithVersion(new NulsByteBuffer(data));
+            block.getHeader().setSize(block.size());
             result.setData(block);
         } catch (NulsException e) {
             Log.error(e);

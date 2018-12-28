@@ -77,4 +77,11 @@ public interface BlockService {
      */
     Result getBlockWithBytes(String hash);
 
+
+    /**
+     * get the block with bytes of Nuls's block
+     * @param height The block height
+     * @return Nuls's block
+     */
+    Result getBlockWithBytes(long height);
 }

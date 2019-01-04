@@ -7,6 +7,7 @@ import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.SDKBootstrap;
 import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.crypto.Hex;
+import io.nuls.sdk.core.model.Account;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.core.utils.RestFulUtils;
 import io.nuls.sdk.tool.NulsSDKTool;
@@ -123,4 +124,18 @@ public class AppTest {
 //        UTXOService utxoService = UTXOServiceImpl.getInstance();
 //        utxoService.getUTXOs(sender, 150L);
 //    }
+
+    @Test
+    public void testexport() {
+        SDKBootstrap.init("127.0.0.1", "6001");
+        Result result = NulsSDKTool.backupAccount("Nse5oPtPjgbyHujSxXu2YbWRmmf3ksCo", "E:/");
+        System.out.println(result.isSuccess());
+    }
+
+    @Test
+    public void testChainID() {
+        SDKBootstrap.init("127.0.0.1", "6001", 8964);
+        Result result = NulsSDKTool.createOfflineAccount();
+        System.out.println(result.isSuccess());
+    }
 }

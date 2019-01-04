@@ -68,12 +68,12 @@ public class NulsSDKTool {
         return accountService.createOfflineAccount(count, password);
     }
 
-    public static Result backupAccount(String address, String path, String password) {
-        return accountService.backupAccount(address, path, password);
-    }
+//    public static Result backupAccount(String address, String password) {
+//        return accountService.backupAccount(address, "", password);
+//    }
 
-    public static Result backupAccount(String address, String path) {
-        return accountService.backupAccount(address, path);
+    public static Result backupAccount(String address, String password) {
+        return accountService.backupAccount(address,"", password);
     }
 
     public static Result getAliasFee(String address, String alias) {

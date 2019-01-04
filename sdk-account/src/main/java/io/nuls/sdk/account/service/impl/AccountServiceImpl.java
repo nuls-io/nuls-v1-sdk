@@ -130,11 +130,16 @@ public class AccountServiceImpl implements AccountService {
         if (result.isFailed()) {
             return result;
         }
-        AccountKeyStore accountKeyStoreDto = new AccountKeyStore((Map<String, Object>) result.getData());
-        if (StringUtils.isBlank(path)) {
-            path = System.getProperty("user.dir");
-        }
-        return backUpFile(path, accountKeyStoreDto);
+
+//        Map<String, String> map = new HashMap<>();
+//        map.put("value", path + File.separator + fileName);
+//        return Result.getSuccess().setData(map);
+//        AccountKeyStore accountKeyStoreDto = new AccountKeyStore((Map<String, Object>) result.getData());
+//        if (StringUtils.isBlank(path)) {
+//            path = System.getProperty("user.dir");
+//        }
+//        return backUpFile(path, accountKeyStoreDto);
+        return result;
     }
 
     @Override

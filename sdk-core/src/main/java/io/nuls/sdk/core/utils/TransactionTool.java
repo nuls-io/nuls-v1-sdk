@@ -27,10 +27,13 @@ public class TransactionTool {
     public static void init() {
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_COINBASE, CoinBaseTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_TRANSFER, TransferTransaction.class);
+        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_ALIAS, TransferTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_REGISTER_AGENT, CreateAgentTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_JOIN_CONSENSUS, DepositTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CANCEL_DEPOSIT, CancelDepositTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_STOP_AGENT, StopAgentTransaction.class);
+        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_YELLOW_PUNISH, StopAgentTransaction.class);
+        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_RED_PUNISH, StopAgentTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CALL_CONTRACT, CallContractTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CREATE_CONTRACT, CreateContractTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_DELETE_CONTRACT, DeleteContractTransaction.class);

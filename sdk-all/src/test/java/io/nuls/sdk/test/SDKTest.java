@@ -461,8 +461,10 @@ public class SDKTest {
 
     @Test
     public void test() {
-        SDKBootstrap.init("127.0.0.1", "6001");
-        Result result = NulsSDKTool.getTxWithBytes("0020dd8f88a46ebd9f2c5493285622e9d3392c101789ee8c1438e6e7de988fbac46c");
+        SDKBootstrap.init("127.0.0.1", "6001", 261);
+        String key = "abacb54e596ae22ccde6bbf1bd2eb968dca0a6aa98ded7e383ffed4cd9d7d7db";
+
+        Result result = NulsSDKTool.getPrikeyOffline(key,":8!3#15TXUQVRSZ");
         System.out.println(result.isFailed());
 
     }

@@ -73,7 +73,7 @@ public class NulsSDKTool {
 //    }
 
     public static Result backupAccount(String address, String password) {
-        return accountService.backupAccount(address,"", password);
+        return accountService.backupAccount(address, "", password);
     }
 
     public static Result getAliasFee(String address, String alias) {
@@ -102,6 +102,10 @@ public class NulsSDKTool {
 
     public static Result getPrikey(String address) {
         return accountService.getPrikey(address);
+    }
+
+    public static Result getPrikeyOffline(String encryptedPriKey, String password) {
+        return accountService.getPrikeyOffline(encryptedPriKey, password);
     }
 
     public static Result getWalletTotalBalance() {

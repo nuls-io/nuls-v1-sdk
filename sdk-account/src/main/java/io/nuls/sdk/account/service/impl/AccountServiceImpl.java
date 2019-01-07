@@ -23,10 +23,7 @@ import io.nuls.sdk.core.utils.*;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author: Charlie
@@ -283,6 +280,21 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Result getPrikey(String address) {
         return getPrikey(address, null);
+    }
+
+    @Override
+    public Result getPrikeyOffline(String encryptedPriKey, String password) {
+        byte[] unencryptedPrivateKey;
+        byte[] encryptedPriKeyBytes = Hex.decode(encryptedPriKey);
+        try {
+            unencryptedPrivateKey = AESEncrypt.decrypt(encryptedPriKeyBytes, password);
+        } catch (CryptoException e) {
+            return Result.getFailed(AccountErrorCode.PASSWORD_IS_WRONG);
+        }
+        String prikey = Hex.encode(unencryptedPrivateKey);
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("value", prikey);
+        return Result.getSuccess().setData(resultMap);
     }
 
     @Override

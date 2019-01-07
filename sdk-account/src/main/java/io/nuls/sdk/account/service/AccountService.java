@@ -206,6 +206,14 @@ public interface AccountService {
     Result getPrikey(String address);
 
     /**
+     *  get the private key
+     * @param encryptedPriKey the encrypted prikey
+     * @param password password of account
+     * @return If the operation is successful, success is true and data is private key;
+     */
+    Result getPrikeyOffline(String encryptedPriKey, String password);
+
+    /**
      * Get the total balance of all accounts in the wallet
      *
      * @return If the operation is successful, success is true and data is BalanceInfo;
@@ -442,4 +450,6 @@ public interface AccountService {
      * @return The multiple signature store at 'address' field when success
      */
     Result createMSAccount(List<String> pubKeys, int threshold);
+
+
 }

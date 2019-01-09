@@ -6,7 +6,10 @@ import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.accountledger.model.TransferFrom;
 import io.nuls.sdk.accountledger.model.TransferTo;
 import io.nuls.sdk.core.SDKBootstrap;
+import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
+import io.nuls.sdk.core.utils.JSONUtils;
+import io.nuls.sdk.core.utils.TransactionFeeCalculator;
 import io.nuls.sdk.tool.NulsSDKTool;
 import org.checkerframework.dataflow.qual.TerminatesExecution;
 import org.junit.Test;
@@ -464,8 +467,60 @@ public class SDKTest {
         SDKBootstrap.init("127.0.0.1", "6001", 261);
         String key = "abacb54e596ae22ccde6bbf1bd2eb968dca0a6aa98ded7e383ffed4cd9d7d7db";
 
-        Result result = NulsSDKTool.getPrikeyOffline(key,":8!3#15TXUQVRSZ");
+        Result result = NulsSDKTool.getPrikeyOffline(key, ":8!3#15TXUQVRSZ");
         System.out.println(result.isFailed());
 
+    }
+
+    @Test
+    public void testTransaction() throws Exception {
+        SDKBootstrap.init("127.0.0.1", "8001", 261);
+        List<Input> inputs = new ArrayList<>();
+
+        Input input = new Input();
+        input.setFromHash("002036e015d316d56cacc821c95f02d8ba0bfdd23480fd170e84615acc9b35b95da4");
+        //为什么是1
+        input.setFromIndex(0);
+        input.setAddress("TTatEiRFHJPdwNNoLhMraez4yoXrSQab");
+        input.setValue(1000000000L);
+        inputs.add(input);
+
+        List<Output> outputs = new ArrayList<>();
+        Output output = new Output();
+        output.setAddress("TTavdER27gqugcDbMseekdesdf6Qd9cB");
+        output.setIndex(0);
+        output.setLockTime(0);
+        output.setValue(1000000L);
+        outputs.add(output);
+
+        output = new Output();
+        outputs.add(output);
+        output.setAddress("TTatEiRFHJPdwNNoLhMraez4yoXrSQab");
+        output.setIndex(1);
+        output.setLockTime(0);
+        String remark = "转账1nuls";
+        /***计算手续费*/
+        int size = 124 + 50 * inputs.size() + 38 * outputs.size() + remark.getBytes().length;
+        Na fee = TransactionFeeCalculator.getTransferFee(size, 1);
+        /**来源账户的剩余金额**/
+        output.setValue(1000000000L - 1000000L - fee.getValue());
+        /**3.0创建交易**/
+        Result result = NulsSDKTool.createTransaction(inputs, outputs, remark);
+        System.out.println(JSONUtils.obj2json(result));
+        Map<String, Object> map = (Map<String, Object>) result.getData();
+        String txHex = (String) map.get("value");
+
+        /**私钥明文**/
+        String priKey = "abacb54e596ae22ccde6bbf1bd2eb968dca0a6aa98ded7e383ffed4cd9d7d7db";
+        /**来源账户地址**/
+        String address = "TTatEiRFHJPdwNNoLhMraez4yoXrSQab";
+        /**4.0用来源账户密码签名交易**/
+        result = NulsSDKTool.signTransaction(txHex, priKey, address, ":8!3#15TXUQVRSZ");
+        System.out.println(JSONUtils.obj2json(result));
+        map = (Map<String, Object>) result.getData();
+        String signTxHex = (String) map.get("value");
+        /**5.0验证交易**/
+        result = NulsSDKTool.validateTransaction(signTxHex);
+        System.out.println(JSONUtils.obj2json(result));
     }
 }

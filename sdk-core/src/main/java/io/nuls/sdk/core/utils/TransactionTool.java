@@ -37,7 +37,7 @@ public class TransactionTool {
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CALL_CONTRACT, CallContractTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CREATE_CONTRACT, CreateContractTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_DELETE_CONTRACT, DeleteContractTransaction.class);
-        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CONTRACT_TRANSFER, DeleteContractTransaction.class);
+        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CONTRACT_TRANSFER, ContractTransferTransaction.class);
     }
 
     public static Transaction createTransferTx(List<Coin> inputs, List<Coin> outputs, byte[] remark) {

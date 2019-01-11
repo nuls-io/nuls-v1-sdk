@@ -457,9 +457,9 @@ public class SDKTest {
  */
     @Test
     public void testSyncBlock() {
-        SDKBootstrap.init("127.0.0.1", "6001");
-        Result result = NulsSDKTool.getBlockWithBytes(0);
-        System.out.println(result.isSuccess());
+        SDKBootstrap.init("127.0.0.1", "8001", 261);
+//        Result result = NulsSDKTool.getBlockWithBytes(0);
+//        System.out.println(result.isSuccess());
     }
 
 

@@ -11,6 +11,7 @@ public interface TransactionConstant {
     int TX_TYPE_YELLOW_PUNISH = 7;
     int TX_TYPE_RED_PUNISH = 8;
     int TX_TYPE_STOP_AGENT = 9;
+    int TX_TYPE_DATA = 10;
 
     /**
      * CONTRACT

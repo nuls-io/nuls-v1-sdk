@@ -34,6 +34,7 @@ public class TransactionTool {
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_STOP_AGENT, StopAgentTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_YELLOW_PUNISH, YellowPunishTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_RED_PUNISH, RedPunishTransaction.class);
+        TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_DATA, DataTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CALL_CONTRACT, CallContractTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_CREATE_CONTRACT, CreateContractTransaction.class);
         TYPE_TX_MAP.put(TransactionConstant.TX_TYPE_DELETE_CONTRACT, DeleteContractTransaction.class);

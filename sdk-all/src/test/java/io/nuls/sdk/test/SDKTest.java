@@ -1,14 +1,15 @@
 package io.nuls.sdk.test;
 
 import com.sun.org.apache.regexp.internal.RE;
-import io.nuls.sdk.accountledger.model.Input;
-import io.nuls.sdk.accountledger.model.Output;
-import io.nuls.sdk.accountledger.model.TransferFrom;
-import io.nuls.sdk.accountledger.model.TransferTo;
+import io.nuls.sdk.accountledger.model.*;
 import io.nuls.sdk.core.SDKBootstrap;
+import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
+import io.nuls.sdk.core.model.transaction.Transaction;
+import io.nuls.sdk.core.model.transaction.TransferTransaction;
 import io.nuls.sdk.core.utils.JSONUtils;
+import io.nuls.sdk.core.utils.NulsByteBuffer;
 import io.nuls.sdk.core.utils.TransactionFeeCalculator;
 import io.nuls.sdk.tool.NulsSDKTool;
 import org.checkerframework.dataflow.qual.TerminatesExecution;
@@ -506,9 +507,15 @@ public class SDKTest {
         output.setValue(1000000000L - 1000000L - fee.getValue());
         /**3.0创建交易**/
         Result result = NulsSDKTool.createTransaction(inputs, outputs, remark);
-        System.out.println(JSONUtils.obj2json(result));
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
+
+        byte[] txBytes = Hex.decode(txHex);
+        Transaction tx = new TransferTransaction();
+        tx.parse(new NulsByteBuffer(txBytes));
+        System.out.println(tx.getHash().getDigestHex());
+
+
 
         /**私钥明文**/
         String priKey = "abacb54e596ae22ccde6bbf1bd2eb968dca0a6aa98ded7e383ffed4cd9d7d7db";
@@ -516,9 +523,15 @@ public class SDKTest {
         String address = "TTatEiRFHJPdwNNoLhMraez4yoXrSQab";
         /**4.0用来源账户密码签名交易**/
         result = NulsSDKTool.signTransaction(txHex, priKey, address, ":8!3#15TXUQVRSZ");
-        System.out.println(JSONUtils.obj2json(result));
         map = (Map<String, Object>) result.getData();
         String signTxHex = (String) map.get("value");
+
+        byte[] txBytes1 = Hex.decode(txHex);
+        Transaction tx1 = new TransferTransaction();
+        tx1.parse(new NulsByteBuffer(txBytes1));
+        System.out.println(tx1.getHash().getDigestHex());
+
+
         /**5.0验证交易**/
         result = NulsSDKTool.validateTransaction(signTxHex);
         System.out.println(JSONUtils.obj2json(result));

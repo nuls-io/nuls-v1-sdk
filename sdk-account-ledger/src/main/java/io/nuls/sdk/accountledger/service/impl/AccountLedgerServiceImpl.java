@@ -47,7 +47,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
             return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);
         }
 
-        Result result = restFul.get("/accountledger/v1/" + hash, null);
+        Result result = restFul.get("/accountledger/tx/" + hash, null);
         if (result.isFailed()) {
             return result;
         }

@@ -312,6 +312,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public Result getAccountBalance(String address) {
+        Result result = restFul.get("/utxoAccounts/balance/" + address, null);
+        return result;
+    }
+
+    @Override
     public Result isAliasUsable(String alias) {
         if (!StringUtils.validAlias(alias)) {
             return Result.getFailed(AccountErrorCode.PARAMETER_ERROR);

@@ -10,6 +10,7 @@ import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.model.transaction.TransferTransaction;
 import io.nuls.sdk.core.utils.JSONUtils;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
+import io.nuls.sdk.core.utils.TimeService;
 import io.nuls.sdk.core.utils.TransactionFeeCalculator;
 import io.nuls.sdk.tool.NulsSDKTool;
 import org.checkerframework.dataflow.qual.TerminatesExecution;
@@ -535,5 +536,19 @@ public class SDKTest {
         /**5.0验证交易**/
         result = NulsSDKTool.validateTransaction(signTxHex);
         System.out.println(JSONUtils.obj2json(result));
+    }
+
+    @Test
+    public void timeServerTest() {
+        TimeService.getInstance().start();
+
+        System.out.println("-------");
+    }
+
+    @Test
+    public void balanceTest() {
+        SDKBootstrap.init("127.0.0.1", "8001", 261);
+        Result result = NulsSDKTool.getAccountBalance("TTaqFxuD1xc6gpixUiMVQsjMZ5fdYJ2o");
+        System.out.println(result.isSuccess());
     }
 }

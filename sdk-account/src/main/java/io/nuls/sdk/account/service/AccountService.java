@@ -222,6 +222,14 @@ public interface AccountService {
     Result getWalletTotalBalance();
 
     /**
+     *  get the nuls balance
+     * @param address address of account
+     * @return If the operation is successful, success is true and data is BalanceInfo;
+     * If the operation fails, success is false and the result has error information
+     */
+    Result getAccountBalance(String address);
+
+    /**
      * Verify that the alias is usable
      *
      * @param alias alias

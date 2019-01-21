@@ -54,6 +54,12 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>3.6</version>
+        </dependency>
         <!-- Cryptography -->
         <dependency>
             <groupId>com.madgag.spongycastle</groupId>

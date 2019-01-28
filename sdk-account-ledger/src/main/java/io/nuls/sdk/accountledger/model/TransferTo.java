@@ -34,7 +34,7 @@ public class TransferTo {
     /**
      * 接收地址
      */
-    private String toDddress;
+    private String toAddress;
 
     private long amount;
 
@@ -42,17 +42,9 @@ public class TransferTo {
 
     }
 
-    public TransferTo(String toDddress, long amount) {
-        this.toDddress = toDddress;
+    public TransferTo(String toAddress, long amount) {
+        this.toAddress = toAddress;
         this.amount = amount;
-    }
-
-    public String getToDddress() {
-        return toDddress;
-    }
-
-    public void setToDddress(String toDddress) {
-        this.toDddress = toDddress;
     }
 
     public long getAmount() {
@@ -61,5 +53,13 @@ public class TransferTo {
 
     public void setAmount(long amount) {
         this.amount = amount;
+    }
+
+    public String getToAddress() {
+        return toAddress;
+    }
+
+    public void setToAddress(String toAddress) {
+        this.toAddress = toAddress;
     }
 }

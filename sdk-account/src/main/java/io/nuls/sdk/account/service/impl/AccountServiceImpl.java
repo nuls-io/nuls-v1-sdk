@@ -16,6 +16,7 @@ import io.nuls.sdk.core.model.Account;
 import io.nuls.sdk.core.model.Address;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
+import io.nuls.sdk.core.model.dto.AccountBalanceInfo;
 import io.nuls.sdk.core.model.dto.BalanceInfo;
 import io.nuls.sdk.core.script.Script;
 import io.nuls.sdk.core.script.ScriptBuilder;
@@ -314,6 +315,16 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Result getAccountBalance(String address) {
         Result result = restFul.get("/utxoAccounts/balance/" + address, null);
+        if (result.isSuccess()) {
+            Map map = (Map) result.getData();
+            AccountBalanceInfo balanceInfo = new AccountBalanceInfo();
+            balanceInfo.setAddress((String) map.get("address"));
+            balanceInfo.setLocked(Long.parseLong((String) map.get("locked")));
+            balanceInfo.setNetBlockHeight(Long.parseLong((String) map.get("netBlockHeight")));
+            balanceInfo.setSynBlockHeight(Long.parseLong((String) map.get("synBlockHeight")));
+            balanceInfo.setNuls(Long.parseLong((String) map.get("nuls")));
+            result.setData(balanceInfo);
+        }
         return result;
     }
 

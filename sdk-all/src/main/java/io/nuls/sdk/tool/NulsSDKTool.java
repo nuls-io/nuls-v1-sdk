@@ -112,10 +112,6 @@ public class NulsSDKTool {
         return accountService.getWalletTotalBalance();
     }
 
-    public static Result getAccountBalance(String address) {
-        return accountService.getAccountBalance(address);
-    }
-
     public static Result isAliasUsable(String alias) {
         return accountService.isAliasUsable(alias);
     }
@@ -235,6 +231,10 @@ public class NulsSDKTool {
 
     public static Result getBalance(String address) {
         return accountLedgerService.getBalance(address);
+    }
+
+    public static Result getAccountBalance(String address) {
+        return accountService.getAccountBalance(address);
     }
 
     public static Result createTransaction(List<Input> inputs, List<Output> outputs, String remark) {

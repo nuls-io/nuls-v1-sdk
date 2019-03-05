@@ -58,7 +58,8 @@ public class ContractTokenTransferTest {
 
         logger.info("callContractTransaction {}", result);
         Map<String, Object> map = (Map<String, Object>) result.getData();
-        String txHex = (String) map.get("value");
+        Map<String, Object> valueMap = (Map<String, Object>) map.get("value");
+        String txHex = (String) valueMap.get("txHex");
         logger.info("txHex {}", txHex);
         //TODO sender地址的私钥
         String priKey = "00ef8a6f90d707abxxxxxxxxxxxxxxxxxxxa71199f679f5dfd20bfd1d";

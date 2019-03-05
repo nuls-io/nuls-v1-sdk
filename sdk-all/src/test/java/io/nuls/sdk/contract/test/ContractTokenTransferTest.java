@@ -1,5 +1,6 @@
 package io.nuls.sdk.contract.test;
 
+import io.nuls.sdk.contract.model.ContractTransactionCreatedReturnInfo;
 import io.nuls.sdk.contract.service.ContractService;
 import io.nuls.sdk.contract.service.UTXOService;
 import io.nuls.sdk.contract.service.impl.ContractServiceImpl;
@@ -58,8 +59,8 @@ public class ContractTokenTransferTest {
 
         logger.info("callContractTransaction {}", result);
         Map<String, Object> map = (Map<String, Object>) result.getData();
-        Map<String, Object> valueMap = (Map<String, Object>) map.get("value");
-        String txHex = (String) valueMap.get("txHex");
+        ContractTransactionCreatedReturnInfo info = (ContractTransactionCreatedReturnInfo) map.get("value");
+        String txHex = info.getTxHex();
         logger.info("txHex {}", txHex);
         //TODO sender地址的私钥
         String priKey = "00ef8a6f90d707abxxxxxxxxxxxxxxxxxxxa71199f679f5dfd20bfd1d";

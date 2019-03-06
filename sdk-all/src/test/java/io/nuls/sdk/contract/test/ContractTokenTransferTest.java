@@ -38,7 +38,35 @@ public class ContractTokenTransferTest {
         UTXOService utxoService = UTXOServiceImpl.getInstance();
 
         Long value = 0L;
+        //TODO gasLimit需要调用预估gas的api，调用预估gas的api之前，需要先调用验证api，验证成功后再调用预估gas的api
         //TODO gasLimit需要调用预估gas的api，这里暂时写固定值
+        /**
+         *  验证api: /api/contract/validate/call
+         *      {
+         *        "sender": "string",
+         *        "value": 0,
+         *        "gasLimit": 0,
+         *        "price": 0,
+         *        "contractAddress": "string",
+         *        "methodName": "string",
+         *        "methodDesc": "string",
+         *        "args": [
+         *          {}
+         *        ]
+         *      }
+         *  预估gas的api: /api/contract/imputedgas/call
+         *      {
+         *        "sender": "string",
+         *        "contractAddress": "string",
+         *        "value": 0,
+         *        "methodName": "string",
+         *        "methodDesc": "string",
+         *        "price": 0,
+         *        "args": [
+         *          {}
+         *        ]
+         *      }
+         */
         Long gasLimit = 20000L;
         Long price = 25L;
         String methodName = "transfer";

@@ -1,30 +1,21 @@
 package io.nuls.sdk.accountledger.service.impl;
 
+import io.nuls.sdk.accountledger.model.Input;
+import io.nuls.sdk.accountledger.model.TransactionCreatedReturnInfo;
 import io.nuls.sdk.contract.service.UTXOService;
 import io.nuls.sdk.contract.service.impl.UTXOServiceImpl;
-import io.nuls.sdk.accountledger.model.Input;
-import io.nuls.sdk.accountledger.model.MSAccount;
-import io.nuls.sdk.accountledger.model.Output;
-import io.nuls.sdk.accountledger.model.TransactionCreatedReturnInfo;
-import io.nuls.sdk.consensus.model.AgentInfo;
-import io.nuls.sdk.consensus.model.DepositInfo;
-import io.nuls.sdk.core.SDKBootstrap;
-import io.nuls.sdk.core.model.Na;
+import io.nuls.sdk.core.model.JsonRPCResult;
 import io.nuls.sdk.core.model.Result;
-import io.nuls.sdk.core.utils.JSONUtils;
 import io.nuls.sdk.tool.NulsSDKTool;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
+/**
+ *  Updated by pierreluo on 2019/03/08
+ */
 public class AccountLedgerServiceImplTest {
 
     //@Before
@@ -325,30 +316,40 @@ public class AccountLedgerServiceImplTest {
     //    }
     //}
     //
-//    @Test
-//    public void transfer() {
-//        String from;
-//        String to;
-//        long amount;
-//        String fromKey;
-//        from = "Nse8gVoWwrWfC3GrV5zg5qQ9SX97iCgQ";
-//        fromKey = "638521c05400808106e3eec5b5fd58782e0b9ad79f7b6d5a4630a6a5e7f54281";
-//        to = "Nse3Uaj7Lesh6VNBVJ62bZRRZRpZ4DAG";
-//        amount = 20100000000L;
-//
-//        UTXOService utxoService = UTXOServiceImpl.getInstance();
-//        Result transfer = NulsSDKTool.createTransaction(from, to, amount, "sdk-test1", utxoService.getUTXOs(from, 150000_00000000L));
-//        Object data = transfer.getData();
-//        Map<String, Object> map = (Map<String, Object>) data;
-//        TransactionCreatedReturnInfo info = (TransactionCreatedReturnInfo) map.get("value");
-//        String txHex = info.getTxHex();
-//
-//        Result result = NulsSDKTool.signTransaction(txHex, fromKey, from, null);
-//        Map<String, Object> map1 = (Map<String, Object>) result.getData();
-//        String txHexSign = (String) map1.get("value");
-//
-//        Result result1 = NulsSDKTool.broadcastTransaction(txHexSign);
-//        System.out.println("broadcastTransaction: " + result1);
-//
-//    }
+    /**
+     *  离线转账，不计算手续费方式
+     */
+    @Test
+    public void transferWithNoCalcFee() {
+        String from;
+        String to;
+        long amount;
+        String fromKey;
+        from = "Nse8gVoWwrWfC3GrV5zg5qQ9SX97iCgQ";
+        fromKey = "638521c05400808106e3eec5b5fd58782e0b9ad79f7b6d5a4630a6a5e7f54281";
+        to = "Nse3Uaj7Lesh6VNBVJ62bZRRZRpZ4DAG";
+        amount = 20100000000L;
+
+        JsonRPCResult utxoResult = NulsSDKTool.getUtxo(from, 150000_00000000L);
+        List<Input> inputs = null;
+        if (utxoResult.getResult() != null) {
+            inputs = (List<Input>) utxoResult.getResult();
+        }
+        Assert.assertTrue("get utxo error.", inputs != null);
+
+        UTXOService utxoService = UTXOServiceImpl.getInstance();
+        Result transfer = NulsSDKTool.createTransaction(from, to, amount, "sdk-test1", inputs);
+        Object data = transfer.getData();
+        Map<String, Object> map = (Map<String, Object>) data;
+        TransactionCreatedReturnInfo info = (TransactionCreatedReturnInfo) map.get("value");
+        String txHex = info.getTxHex();
+
+        Result result = NulsSDKTool.signTransaction(txHex, fromKey, from, null);
+        Map<String, Object> map1 = (Map<String, Object>) result.getData();
+        String txHexSign = (String) map1.get("value");
+
+        Result result1 = NulsSDKTool.broadcastTransaction(txHexSign);
+        System.out.println("broadcastTransaction: " + result1);
+
+    }
 }

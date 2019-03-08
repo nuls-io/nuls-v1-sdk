@@ -1,18 +1,22 @@
 package io.nuls.sdk.contract.test;
 
+import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.contract.model.ContractTransactionCreatedReturnInfo;
 import io.nuls.sdk.contract.service.ContractService;
 import io.nuls.sdk.contract.service.UTXOService;
 import io.nuls.sdk.contract.service.impl.ContractServiceImpl;
 import io.nuls.sdk.contract.service.impl.UTXOServiceImpl;
 import io.nuls.sdk.core.SDKBootstrap;
+import io.nuls.sdk.core.model.JsonRPCResult;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.tool.NulsSDKTool;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,12 +34,21 @@ public class ContractTokenTransferTest {
         SDKBootstrap.init("192.168.1.xxx", "6001");
     }
 
+    /**
+     *  离线token转账，不计算手续费方式
+     */
     @Test
     public void tokenTransferTest() {
         String sender = "Nse2khNBUr56AeWRrkcWDAia9vm72xJv";
         String contractAddress = "NseNjY5E5rLS6qqrNrLCCn4VRjRwdKhX";
         ContractService contractService = ContractServiceImpl.getInstance();
         UTXOService utxoService = UTXOServiceImpl.getInstance();
+        JsonRPCResult utxoResult = NulsSDKTool.getUtxo(sender, 1_0000_0000L);
+        List<Input> inputs = null;
+        if (utxoResult.getResult() != null) {
+            inputs = (List<Input>) utxoResult.getResult();
+        }
+        Assert.assertTrue("get utxo error.", inputs != null);
 
         Long value = 0L;
         //TODO gasLimit需要调用预估gas的api，调用预估gas的api之前，需要先调用验证api，验证成功后再调用预估gas的api
@@ -82,8 +95,7 @@ public class ContractTokenTransferTest {
                 contractAddress,
                 methodName, methodDesc, args,
                 remark,
-                //TODO UTXO需要你们传进来，传入sender地址的UTXOs, 这里的方式仅限于调用使用，正式环境不可取
-                utxoService.getUTXOs(sender, 1_0000_0000L));
+                inputs);
 
         logger.info("callContractTransaction {}", result);
         Map<String, Object> map = (Map<String, Object>) result.getData();

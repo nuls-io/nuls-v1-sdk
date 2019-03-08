@@ -24,10 +24,10 @@
 package io.nuls.sdk.core.model.transaction;
 
 import io.nuls.sdk.core.contast.ContractConstant;
-import io.nuls.sdk.core.model.ContractTransfer;
-import io.nuls.sdk.core.model.ContractTransferData;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.Coin;
+import io.nuls.sdk.core.model.ContractTransfer;
+import io.nuls.sdk.core.model.ContractTransferData;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
 

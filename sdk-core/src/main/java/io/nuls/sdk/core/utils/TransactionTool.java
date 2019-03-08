@@ -5,7 +5,6 @@ import io.nuls.sdk.core.contast.KernelErrorCode;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.contast.TransactionConstant;
 import io.nuls.sdk.core.crypto.ECKey;
-import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.exception.NulsRuntimeException;
 import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.model.transaction.*;

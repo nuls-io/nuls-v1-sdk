@@ -26,7 +26,6 @@ package io.nuls.sdk.core.validate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.nuls.sdk.core.contast.ErrorCode;
-import io.nuls.sdk.core.contast.KernelErrorCode;
 import io.nuls.sdk.core.contast.SeverityLevelEnum;
 
 /**

@@ -24,9 +24,6 @@
 package io.nuls.sdk.core.model;
 
 
-import io.nuls.sdk.core.model.Na;
-import io.nuls.sdk.core.model.NulsDigestData;
-
 /**
  * @author: PierreLuo
  */

@@ -10,12 +10,11 @@ import io.nuls.sdk.core.utils.Log;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
 import io.nuls.sdk.core.utils.RestFulUtils;
 import io.nuls.sdk.core.utils.StringUtils;
-import io.nuls.sdk.protocol.model.*;
+import io.nuls.sdk.protocol.model.Block;
+import io.nuls.sdk.protocol.model.BlockHeader;
 import io.nuls.sdk.protocol.service.BlockService;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 /**
  * @author: Charlie

@@ -25,10 +25,6 @@
 
 package io.nuls.sdk.accountledger.model;
 
-import io.nuls.sdk.core.utils.StringUtils;
-
-import java.util.Map;
-
 /**
  * @author :vivizhou
  */

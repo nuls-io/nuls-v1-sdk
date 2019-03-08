@@ -23,11 +23,7 @@
  */
 package io.nuls.sdk.contract.model;
 
-import io.nuls.sdk.accountledger.model.Input;
-import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.accountledger.model.TransactionCreatedReturnInfo;
-
-import java.util.List;
 
 /**
  * @author: PierreLuo

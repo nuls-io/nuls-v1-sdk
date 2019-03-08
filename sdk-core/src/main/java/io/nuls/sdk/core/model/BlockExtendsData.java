@@ -26,7 +26,6 @@
 package io.nuls.sdk.core.model;
 
 import io.nuls.sdk.core.exception.NulsException;
-import io.nuls.sdk.core.utils.Log;
 import io.nuls.sdk.core.utils.NulsByteBuffer;
 import io.nuls.sdk.core.utils.NulsOutputStreamBuffer;
 import io.nuls.sdk.core.utils.SerializeUtils;

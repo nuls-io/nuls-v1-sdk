@@ -3,15 +3,14 @@ package io.nuls.sdk.test;
 import com.sun.org.apache.regexp.internal.RE;
 import io.nuls.sdk.accountledger.model.*;
 import io.nuls.sdk.core.SDKBootstrap;
+import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.Hex;
+import io.nuls.sdk.core.model.JsonRPCResult;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
 import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.model.transaction.TransferTransaction;
-import io.nuls.sdk.core.utils.JSONUtils;
-import io.nuls.sdk.core.utils.NulsByteBuffer;
-import io.nuls.sdk.core.utils.TimeService;
-import io.nuls.sdk.core.utils.TransactionFeeCalculator;
+import io.nuls.sdk.core.utils.*;
 import io.nuls.sdk.tool.NulsSDKTool;
 import org.checkerframework.dataflow.qual.TerminatesExecution;
 import org.junit.Test;
@@ -517,7 +516,6 @@ public class SDKTest {
         System.out.println(tx.getHash().getDigestHex());
 
 
-
         /**私钥明文**/
         String priKey = "abacb54e596ae22ccde6bbf1bd2eb968dca0a6aa98ded7e383ffed4cd9d7d7db";
         /**来源账户地址**/
@@ -551,4 +549,17 @@ public class SDKTest {
         Result result = NulsSDKTool.getAccountBalance("TTaqFxuD1xc6gpixUiMVQsjMZ5fdYJ2o");
         System.out.println(result.isSuccess());
     }
+
+    @Test
+    public void testUTXO() {
+        SDKConstant.DEFAULT_CHAIN_ID = (short) 8964;
+        JsonRPCResult result = NulsSDKTool.getUtxo("NsdykbfjmZVHYNaVrKVF89UzUgPKaRa9", 10000000);
+        if (result.getResult() != null) {
+            List<Input> inputs = (List<Input>) result.getResult();
+            for (Input input : inputs) {
+                System.out.println(input.getFromHash());
+            }
+        }
+    }
+
 }

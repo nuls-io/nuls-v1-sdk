@@ -1,6 +1,7 @@
 package io.nuls.sdk.accountledger.service;
 
 import io.nuls.sdk.accountledger.model.*;
+import io.nuls.sdk.core.model.JsonRPCResult;
 import io.nuls.sdk.core.model.Result;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public interface AccountLedgerService {
      * If the operation fails, "success" is false and the result has error information
      */
     Result getTxByHash(String hash);
+
     /**
      * Get transaction details based on transaction hash
      *
@@ -93,6 +95,16 @@ public interface AccountLedgerService {
      * If the operation fails, "success" is false and the result has error information
      */
     Result getBalance(String address);
+
+    /**
+     * Get account utxo
+     *
+     * @param address address
+     * @param amount  amount
+     * @return If the operation is successful, 'success' is true, and data is utxoList
+     * If the operation fails, "success" is false and the result has error information
+     */
+    JsonRPCResult getUTXO(String address, long amount);
 
     /**
      * 创建交易

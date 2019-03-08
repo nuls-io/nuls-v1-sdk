@@ -22,12 +22,13 @@
 |  v0.9.15  | 2018-07-07 |                  新增4个共识接口，4.1——4.4                   |
 |  v0.9.16  | 2018-07-11 |                         新增接口4.5                          |
 |  v1.0.1   | 2018-07-13 |                          新增错误码                          |
-| v1.1.4.1  | 2018-11-22 | 新增协议,新增转账接口（不用计算手续费），新增智能合约创建、调用、删除接口            |
+| v1.1.4.1  | 2018-11-22 | 新增协议,新增转账接口（不用计算手续费），新增智能合约创建、调用、删除接口 |
 | v1.1.4.2  | 2018-11-29 |        新增协议（多账户转账接口、sendToAddress接口）         |
 | v1.1.4.3  |  2019-1-7  |               新增正式环境和测试环境的参数配置               |
 | v1.1.4.4  | 2019-1-13  | 新增获取交易序列化信息接口，新增根据高度获取区块序列化信息接口 |
 | v1.1.4.5  | 2019-1-17  |                   修改TimeService启动方式                    |
 | v1.1.4.6  | 2019-1-22  |                     新增查询账户余额接口                     |
+|  v1.2.0   |  2019-3-8  |                     新增查询账户UTXO接口                     |
 
 
 
@@ -2025,6 +2026,71 @@ Result result = NulsSDKTool.createTransaction(from, to, amount, remark, utxos);
         <td align="center">String</td>
         <td align="center">必填</td>
         <td align="center">十六进制交易序列化数据</td>
+    </tr>
+    </table>
+
+返回结果  
+
+- 返回结果为`Result`对象，格式如下：
+
+```json
+{
+    "success": true,
+    "data": {
+    	"value": "002023c66d10cf9047dbcca12aee2235ff9dfe0f13db3c921a2ec22e0dd63331cb85"
+    }
+}
+
+```
+
+*e.g 示例代码*
+
+```java
+String txHex = "1f9d3ad044e0e1201e117b041f3d2ceedacb44688e57969620f3ad7a4d6e9d241f9d3ad044e0e1201e117b041f3d2ceedacb44688e57969620f3ad7a4d6e9d24";
+Result result = service.broadcastTransaction(txHex);
+if(result.isSuccess()) {
+   String txHash = (String)result.getData();
+}
+```
+
+------
+
+
+
+#### 2.13 查询账户UTXO
+
+接口
+
+**`JsonRPCResult getUtxo(String address, long amount);`**
+
+说明
+
+> 此交易可以根据账户地址，查询已上链的所有账户的UTXO，专门用于离线账户组装交易时，需要账户的UTXO生成交易的inputs数据。
+>
+> amount参数为交易业务需要的金额，返回的utxo里，会包含amount金额和业务所需最大值手续费，若账户金额不足，则返回当前账户所有utxo；若utxo过多，一次性会最多返回6000条utxo
+>
+> 建议此接口和2.11接口接合使用
+>
+> Result.data String 返回交易hash
+
+<table>
+    <tr>
+        <th align="center">参数</th>
+        <th align="center">类型</th>
+        <th align="center">是否必填</th>
+        <th align="center">说明</th>
+    </tr>
+    <tr>
+        <td align="center">address</td>
+        <td align="center">String</td>
+        <td align="center">必填</td>
+        <td align="center">账户地址</td>
+    </tr>
+    <tr>
+        <td align="center">amount</td>
+        <td align="center">long</td>
+        <td align="center">必填</td>
+        <td align="center">代币数量</td>
     </tr>
     </table>
 

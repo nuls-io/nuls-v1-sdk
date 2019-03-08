@@ -1,5 +1,6 @@
 package io.nuls.sdk.accountledger.service.impl;
 
+import com.sun.deploy.net.HttpUtils;
 import io.nuls.sdk.accountledger.model.*;
 import io.nuls.sdk.accountledger.service.AccountLedgerService;
 import io.nuls.sdk.accountledger.utils.ConvertCoinTool;
@@ -18,9 +19,11 @@ import io.nuls.sdk.core.script.*;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.util.Arrays;
 
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -192,6 +195,43 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         map.put("locked", ((Map) map.get("locked")).get("value"));
         BalanceInfo balanceDto = new BalanceInfo(map);
         return result.setData(balanceDto);
+    }
+
+    @Override
+    public JsonRPCResult getUTXO(String address, long amount) {
+        if (!AddressTool.validAddress(address)) {
+            return JsonRPCResult.getFailed(AccountErrorCode.ADDRESS_ERROR);
+        }
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("jsonrpc", "2.0");
+        paramMap.put("method", "getUTXO");
+        Object[] objects = {address, amount};
+        paramMap.put("params", objects);
+        paramMap.put("id", 1);
+        try {
+            String json = JSONUtils.obj2json(paramMap);
+            String result = HttpClientUtil.fetchStringByPost("https://api.nuls.io", json);
+            JsonRPCResult rpcResult = JSONUtils.json2pojo(result, JsonRPCResult.class);
+            if (rpcResult.getError() != null) {
+                return rpcResult;
+            }
+            List<Input> inputs = new ArrayList<>();
+            List<Map> mapList = (List<Map>) rpcResult.getResult();
+            if (mapList != null) {
+                for (Map map : mapList) {
+                    Input input = new Input();
+                    input.setFromHash((String) map.get("fromHash"));
+                    input.setFromIndex((Integer) map.get("fromIndex"));
+                    input.setLockTime(Long.parseLong(map.get("lockTime").toString()));
+                    input.setValue(Long.parseLong(map.get("value").toString()));
+                    inputs.add(input);
+                }
+            }
+            rpcResult.setResult(inputs);
+            return rpcResult;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

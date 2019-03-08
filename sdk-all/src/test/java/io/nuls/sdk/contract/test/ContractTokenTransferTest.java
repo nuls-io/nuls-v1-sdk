@@ -42,7 +42,6 @@ public class ContractTokenTransferTest {
         String sender = "Nse2khNBUr56AeWRrkcWDAia9vm72xJv";
         String contractAddress = "NseNjY5E5rLS6qqrNrLCCn4VRjRwdKhX";
         ContractService contractService = ContractServiceImpl.getInstance();
-        UTXOService utxoService = UTXOServiceImpl.getInstance();
         JsonRPCResult utxoResult = NulsSDKTool.getUtxo(sender, 1_0000_0000L);
         List<Input> inputs = null;
         if (utxoResult.getResult() != null) {

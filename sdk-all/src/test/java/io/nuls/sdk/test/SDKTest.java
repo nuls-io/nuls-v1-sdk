@@ -448,13 +448,16 @@ public class SDKTest {
     }
 
 
+ */
+
     @Test
-    public void test() {
-        String txHex = "0200960a7e28660100ffffffff0123002050369418412a6cd19b82cc3a444aff3b818d11aaed1db7fd9a5d6381a2e34a7e0000d0ed902e0000000000000000000217042301d75f7d7fca81a78f850abc5e83e531fc9985241ec00907792e0000000000000000001704230188d02c2ffc2704ac783a29893142c3e2b131423e0084d7170000000000000000000000";
-        Result result = NulsSDKTool.signTransaction(txHex, "332060e122203bcf9f0e3385d41b3ef981149a61d7757f8443798200af58a7e7", "Nse7N3aVXqaKdECrepueKMYCfcXrwLxE", null);
+    public void testvaliDate() {
+        SDKBootstrap.init("192.168.1.127", "8001", 261);
+        String txHex = "0200639e127a69010d74657374207472616e73666572ffffffff01230020a123d3c1b4b381ece6d2ec926aee5d4fd387deff638433da865c141ba1186ffe01516b320000000000000000000000011705010121c43883f9b14ee84b469a8cb9d056f94e2deae300b4c404000000000000000000006a21032dd7aaff8d2c3ae6597877b67f87702f44f5998b3da4459ddeb6eec8d39171c900463044022058f0710594f1d8abc7da65495d3c164d8e5df446d00ccd9b6e38e95a9c069735022012db02b1d125e838adfc6822e6d35626c2fea1c9a5eecae040ba962ad1b403b7";
+        Result result = NulsSDKTool.validateTransaction(txHex);
         System.out.println(result.getData());
     }
- */
+
     @Test
     public void testSyncBlock() {
         SDKBootstrap.init("127.0.0.1", "8001", 261);
@@ -476,8 +479,8 @@ public class SDKTest {
     @Test
     public void testTransaction() throws Exception {
         SDKBootstrap.init("127.0.0.1", "8001", 261);
-        List<Input> inputs = new ArrayList<>();
 
+        List<Input> inputs = new ArrayList<>();
         Input input = new Input();
         input.setFromHash("002036e015d316d56cacc821c95f02d8ba0bfdd23480fd170e84615acc9b35b95da4");
         //为什么是1
@@ -499,6 +502,7 @@ public class SDKTest {
         output.setAddress("TTatEiRFHJPdwNNoLhMraez4yoXrSQab");
         output.setIndex(1);
         output.setLockTime(0);
+
         String remark = "转账1nuls";
         /***计算手续费*/
         int size = 124 + 50 * inputs.size() + 38 * outputs.size() + remark.getBytes().length;
@@ -552,7 +556,7 @@ public class SDKTest {
 
     @Test
     public void testUTXO() {
-        SDKConstant.DEFAULT_CHAIN_ID = (short) 8964;
+        SDKBootstrap.init("127.0.0.1", "8001", 8964);
         JsonRPCResult result = NulsSDKTool.getUtxo("NsdykbfjmZVHYNaVrKVF89UzUgPKaRa9", 10000000);
         if (result.getResult() != null) {
             List<Input> inputs = (List<Input>) result.getResult();

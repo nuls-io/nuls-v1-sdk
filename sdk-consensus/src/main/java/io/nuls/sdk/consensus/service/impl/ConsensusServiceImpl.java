@@ -15,7 +15,6 @@ import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.script.*;
 import io.nuls.sdk.core.utils.*;
 import org.spongycastle.util.Arrays;
-import sun.management.resources.agent;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -27,14 +27,11 @@ package io.nuls.sdk.core.model;
 
 import io.nuls.sdk.core.contast.KernelErrorCode;
 import io.nuls.sdk.core.contast.SDKConstant;
-import io.nuls.sdk.core.crypto.Base58;
 import io.nuls.sdk.core.exception.NulsRuntimeException;
 import io.nuls.sdk.core.utils.AddressTool;
 import io.nuls.sdk.core.utils.ArraysTool;
 import io.nuls.sdk.core.utils.Log;
 import io.nuls.sdk.core.utils.SerializeUtils;
-
-import java.util.Arrays;
 
 ///**
 // * @author: Chralie

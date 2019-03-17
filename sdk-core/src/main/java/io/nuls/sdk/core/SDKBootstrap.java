@@ -4,7 +4,6 @@ import io.nuls.sdk.core.contast.RpcConstant;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.utils.RestFulUtils;
 import io.nuls.sdk.core.utils.StringUtils;
-import io.nuls.sdk.core.utils.TransactionTool;
 
 /**
  * @author: Charlie

@@ -24,8 +24,6 @@
  */
 package io.nuls.sdk.core.model.transaction;
 
-import io.nuls.sdk.core.contast.AccountErrorCode;
-import io.nuls.sdk.core.contast.ErrorCode;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.UnsafeByteArrayOutputStream;
 import io.nuls.sdk.core.exception.NulsException;

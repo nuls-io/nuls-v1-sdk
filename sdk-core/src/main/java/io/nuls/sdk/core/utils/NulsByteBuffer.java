@@ -31,7 +31,6 @@ import io.nuls.sdk.core.exception.NulsRuntimeException;
 import io.nuls.sdk.core.model.BaseNulsData;
 import io.nuls.sdk.core.model.NulsDigestData;
 import io.nuls.sdk.core.model.NulsSignData;
-import io.nuls.sdk.core.model.transaction.Transaction;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;

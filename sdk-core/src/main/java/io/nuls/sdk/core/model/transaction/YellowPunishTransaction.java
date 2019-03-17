@@ -25,7 +25,6 @@
 package io.nuls.sdk.core.model.transaction;
 
 
-import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.contast.TransactionConstant;
 import io.nuls.sdk.core.exception.NulsException;
 import io.nuls.sdk.core.model.YellowPunishData;

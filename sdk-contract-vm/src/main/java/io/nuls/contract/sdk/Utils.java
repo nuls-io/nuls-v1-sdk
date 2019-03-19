@@ -94,7 +94,7 @@ public class Utils {
     public static native String sha3(byte[] bytes);
 
     /**
-     * [Testnet]verify signature data(ECDSA)
+     * verify signature data(ECDSA)
      *
      * @param data(hex encoding string)
      * @param signature(hex encoding string)
@@ -104,7 +104,7 @@ public class Utils {
     public static native boolean verifySignatureData(String data, String signature, String pubkey);
 
     /**
-     * [Testnet]根据截止高度和原始种子数量，用特定的算法生成一个随机种子
+     * 根据截止高度和原始种子数量，用特定的算法生成一个随机种子
      *
      * @param endHeight 截止高度
      * @param seedCount 原始种子数量
@@ -114,7 +114,7 @@ public class Utils {
     public static native BigInteger getRandomSeed(long endHeight, int seedCount, String algorithm);
 
     /**
-     * [Testnet]根据截止高度和原始种子数量，用`SHA3-256`hash算法生成一个随机种子
+     * 根据截止高度和原始种子数量，用`SHA3-256`hash算法生成一个随机种子
      *
      * @param endHeight 截止高度
      * @param seedCount 原始种子数量
@@ -125,7 +125,7 @@ public class Utils {
     }
 
     /**
-     * [Testnet]根据高度范围，用特定的算法生成一个随机种子
+     * 根据高度范围，用特定的算法生成一个随机种子
      *
      * @param startHeight 起始高度
      * @param endHeight   截止高度
@@ -135,7 +135,7 @@ public class Utils {
     public static native BigInteger getRandomSeed(long startHeight, long endHeight, String algorithm);
 
     /**
-     * [Testnet]根据高度范围，用`SHA3-256`hash算法生成一个随机种子
+     * 根据高度范围，用`SHA3-256`hash算法生成一个随机种子
      *
      * @param startHeight 起始高度
      * @param endHeight   截止高度
@@ -146,7 +146,7 @@ public class Utils {
     }
 
     /**
-     * [Testnet]根据截止高度和原始种子数量，获取原始种子的集合
+     * 根据截止高度和原始种子数量，获取原始种子的集合
      *
      * @param endHeight 截止高度
      * @param seedCount 原始种子数量
@@ -155,7 +155,7 @@ public class Utils {
     public static native List<BigInteger> getRandomSeedList(long endHeight, int seedCount);
 
     /**
-     * [Testnet]根据高度范围，获取原始种子的集合
+     * 根据高度范围，获取原始种子的集合
      *
      * @param startHeight 起始高度
      * @param endHeight   截止高度

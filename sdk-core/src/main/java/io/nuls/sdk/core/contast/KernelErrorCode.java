@@ -27,6 +27,7 @@ package io.nuls.sdk.core.contast;
 
 /**
  * 内核模块的所有错误码常量定义
+ *
  * @author: Niels Wang
  */
 public interface KernelErrorCode {
@@ -65,5 +66,6 @@ public interface KernelErrorCode {
     ErrorCode BLOCK_IS_NULL = ErrorCode.init("10031");
     ErrorCode VERSION_TOO_LOW = ErrorCode.init("10032");
     ErrorCode PUBKEY_REPEAT = ErrorCode.init("10033");
+    ErrorCode CONNECTION_ERROR = ErrorCode.init("10034");
 
 }

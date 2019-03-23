@@ -557,14 +557,11 @@ public class SDKTest {
 
     @Test
     public void testUTXO() {
-        SDKBootstrap.init("127.0.0.1", "8001", 8964);
-        JsonRPCResult result = NulsSDKTool.getUtxo("NsdykbfjmZVHYNaVrKVF89UzUgPKaRa9", 10000000);
+        SDKBootstrap.init("127.0.0.1", "8001", 261, "http://116.62.135.185:8081");
+        JsonRPCResult result = NulsSDKTool.getUtxo("TTaysJKDhLkPvhT1G6xfe5VFTzQRNULS", 10000000);
         if (result.getResult() != null) {
             List<Input> inputs = (List<Input>) result.getResult();
-            for (Input input : inputs) {
-                System.out.println(input.getFromHash());
-            }
         }
+        System.out.println(1);
     }
-
 }

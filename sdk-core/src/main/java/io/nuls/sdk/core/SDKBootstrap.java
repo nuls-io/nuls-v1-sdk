@@ -27,4 +27,9 @@ public class SDKBootstrap {
         SDKConstant.DEFAULT_CHAIN_ID = (short) chainId;
     }
 
+    public static void init(String ip, String port, int chainId, String nulscanUrl) {
+        init(ip, port);
+        SDKConstant.DEFAULT_CHAIN_ID = (short) chainId;
+        SDKConstant.NULSCAN_URL = nulscanUrl;
+    }
 }

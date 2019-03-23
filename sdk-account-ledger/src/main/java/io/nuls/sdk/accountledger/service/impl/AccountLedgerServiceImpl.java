@@ -4,9 +4,7 @@ import io.nuls.sdk.accountledger.model.*;
 import io.nuls.sdk.accountledger.service.AccountLedgerService;
 import io.nuls.sdk.accountledger.utils.ConvertCoinTool;
 import io.nuls.sdk.accountledger.utils.LedgerUtil;
-import io.nuls.sdk.core.contast.AccountErrorCode;
-import io.nuls.sdk.core.contast.SDKConstant;
-import io.nuls.sdk.core.contast.TransactionErrorCode;
+import io.nuls.sdk.core.contast.*;
 import io.nuls.sdk.core.crypto.AESEncrypt;
 import io.nuls.sdk.core.crypto.ECKey;
 import io.nuls.sdk.core.crypto.Hex;
@@ -207,7 +205,10 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
         paramMap.put("id", 1);
         try {
             String json = JSONUtils.obj2json(paramMap);
-            String result = HttpClientUtil.fetchStringByPost("https://api.nuls.io", json);
+            String result = HttpClientUtil.fetchStringByPost(SDKConstant.NULSCAN_URL, json);
+            if (result == null) {
+                return JsonRPCResult.getFailed(KernelErrorCode.CONNECTION_ERROR);
+            }
             JsonRPCResult rpcResult = JSONUtils.json2pojo(result, JsonRPCResult.class);
             if (rpcResult.getError() != null) {
                 return rpcResult;
@@ -219,6 +220,7 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
                     Input input = new Input();
                     input.setFromHash((String) map.get("fromHash"));
                     input.setFromIndex((Integer) map.get("fromIndex"));
+                    input.setAddress(address);
                     input.setLockTime(Long.parseLong(map.get("lockTime").toString()));
                     input.setValue(Long.parseLong(map.get("value").toString()));
                     inputs.add(input);

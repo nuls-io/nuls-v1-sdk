@@ -15,6 +15,9 @@ public class SDKConstant {
      * and the current address begins with "Ns".16402.
      */
     public static short DEFAULT_CHAIN_ID = 8964;
+
+
+    public static String NULSCAN_URL = "https://api.nuls.io";
     /**
      * 默认的地址类型，一条链可以包含几种地址类型，地址类型包含在地址中
      * The default address type, a chain can contain several address types, and the address type is contained in the address.

@@ -28,6 +28,7 @@ public class DeleteContractTest {
 
     @Before
     public void init() {
+        //TODO 本地节点的ip以及port
         SDKBootstrap.init("192.168.1.133", "8001");
     }
 
@@ -46,7 +47,6 @@ public class DeleteContractTest {
         Assert.assertTrue("get utxo error.", inputs != null);
 
         ContractService contractService = ContractServiceImpl.getInstance();
-        UTXOService utxoService = UTXOServiceImpl.getInstance();
         Result result = contractService.deleteContractTransaction(sender,
                 contractAddress,
                 "delete contract test.",
@@ -57,6 +57,7 @@ public class DeleteContractTest {
         ContractTransactionCreatedReturnInfo info = (ContractTransactionCreatedReturnInfo) map.get("value");
         String txHex = info.getTxHex();
         logger.info("txHex {}", txHex);
+        //TODO sender地址的私钥
         String priKey = "00ef8a6f90d707ab345740f0fab2d9f606165209ce41a71199f679f5dfd20bfd1d";
         result = NulsSDKTool.signTransaction(txHex, priKey, sender, null);
         logger.info("signature result {}", result);

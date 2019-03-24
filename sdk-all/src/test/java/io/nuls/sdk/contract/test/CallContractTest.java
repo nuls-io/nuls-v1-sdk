@@ -28,6 +28,7 @@ public class CallContractTest {
 
     @Before
     public void init() {
+        //TODO 本地节点的ip以及port
         SDKBootstrap.init("192.168.1.133", "8001");
     }
 
@@ -47,8 +48,38 @@ public class CallContractTest {
         Assert.assertTrue("get utxo error.", inputs != null);
 
         Long value = 100_0000_0000L;
+        //TODO gasLimit需要调用预估gas的api，调用预估gas的api之前，需要先调用验证api，验证成功后再调用预估gas的api
+        //TODO gasLimit需要调用预估gas的api，这里暂时写固定值
+        /**
+         *  验证api: /api/contract/validate/call
+         *      {
+         *        "sender": "string",
+         *        "value": 0,
+         *        "gasLimit": 1000000,
+         *        "price": 25,
+         *        "contractAddress": "string",
+         *        "methodName": "string",
+         *        "methodDesc": "string",
+         *        "args": [
+         *          {}
+         *        ]
+         *      }
+         *  预估gas的api: /api/contract/imputedgas/call
+         *      {
+         *        "sender": "string",
+         *        "contractAddress": "string",
+         *        "value": 0,
+         *        "methodName": "string",
+         *        "methodDesc": "string",
+         *        "price": 25,
+         *        "args": [
+         *          {}
+         *        ]
+         *      }
+         */
         Long gasLimit = 81325l;
         Long price = 25L;
+        // 调用名为`create`的合约方法
         String methodName = "create";
         String methodDesc = "";
         Object[] args = {"test", "test desc", Arrays.asList("1", "2", "3"), "1542042000000", "1542646800000", "false", "1", "1", "false"};
@@ -65,6 +96,7 @@ public class CallContractTest {
         ContractTransactionCreatedReturnInfo info = (ContractTransactionCreatedReturnInfo) map.get("value");
         String txHex = info.getTxHex();
         logger.info("txHex {}", txHex);
+        //TODO sender地址的私钥
         String priKey = "00ef8a6f90d707ab345740f0fab2d9f606165209ce41a71199f679f5dfd20bfd1d";
         result = NulsSDKTool.signTransaction(txHex, priKey, sender, null);
         logger.info("signature result {}", result);

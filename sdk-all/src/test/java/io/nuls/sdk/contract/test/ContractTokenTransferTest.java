@@ -57,8 +57,8 @@ public class ContractTokenTransferTest {
          *      {
          *        "sender": "string",
          *        "value": 0,
-         *        "gasLimit": 0,
-         *        "price": 0,
+         *        "gasLimit": 1000000,
+         *        "price": 25,
          *        "contractAddress": "string",
          *        "methodName": "string",
          *        "methodDesc": "string",
@@ -73,7 +73,7 @@ public class ContractTokenTransferTest {
          *        "value": 0,
          *        "methodName": "string",
          *        "methodDesc": "string",
-         *        "price": 0,
+         *        "price": 25,
          *        "args": [
          *          {}
          *        ]

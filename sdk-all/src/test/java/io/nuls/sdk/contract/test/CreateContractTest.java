@@ -31,6 +31,7 @@ public class CreateContractTest {
 
     @Before
     public void init() {
+        //TODO 本地节点的ip以及port
         SDKBootstrap.init("192.168.1.133", "8001");
     }
 
@@ -40,13 +41,36 @@ public class CreateContractTest {
     @Test
     public void createContractTransaction() {
         ContractService contractService = ContractServiceImpl.getInstance();
-        UTXOService utxoService = UTXOServiceImpl.getInstance();
         String sender = "Nsdv1Hbu4TokdgbXreypXmVttYKdPT1g";
+        //TODO gasLimit需要调用预估gas的api，调用预估gas的api之前，需要先调用验证api，验证成功后再调用预估gas的api
+        //TODO gasLimit需要调用预估gas的api，这里暂时写固定值
+        /**
+         *  验证api: /api/contract/validate/create
+         *      {
+         *        "gasLimit": 1000000,
+         *        "price": 25,
+         *        "contractCode": "string",
+         *        "args": [
+         *          {}
+         *        ]
+         *      }
+         *
+         *  预估gas的api: /api/contract/imputedgas/create
+         *      {
+         *        "sender": "string",
+         *        "price": 25,
+         *        "contractCode": "string",
+         *        "args": [
+         *          {}
+         *        ]
+         *      }
+         *
+         */
         long gasLimit = 27043L;
         Long price = 25L;
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("vote-contract-hex.txt")));//构造一个BufferedReader类来读取文件
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream("vote-contract-hex.txt")));
             String buf = null;
             while ((buf = bufferedReader.readLine()) != null) {
                 stringBuilder.append(buf);
@@ -71,6 +95,7 @@ public class CreateContractTest {
         ContractTransactionCreatedReturnInfo info = (ContractTransactionCreatedReturnInfo) map.get("value");
         String txHex = info.getTxHex();
         logger.info("txHex {}", txHex);
+        //TODO sender地址的私钥
         String priKey = "00ef8a6f90d707ab345740f0fab2d9f606165209ce41a71199f679f5dfd20bfd1d";
         result = NulsSDKTool.signTransaction(txHex, priKey, sender, null);
         logger.info("signTransaction {}", result);

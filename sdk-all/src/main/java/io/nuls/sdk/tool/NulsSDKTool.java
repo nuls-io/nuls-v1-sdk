@@ -254,6 +254,10 @@ public class NulsSDKTool {
         return accountLedgerService.signTransaction(txHex, priKey, address, password);
     }
 
+    public static Result signTransaction(String txHex, String priKey) {
+        return accountLedgerService.signHash(txHex, priKey);
+    }
+
     public static Result broadcastTransaction(String txHex) {
         return accountLedgerService.broadcastTransaction(txHex);
     }

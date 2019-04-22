@@ -3403,7 +3403,41 @@ Result result = NulsSDKTool.createTransaction(from, to, amount, remark, inputs);
 ```
 ---
 
+#### 交易类型
+
+```
+    //共识奖励
+    int TX_TYPE_COINBASE = 1;
+    //转账交易
+    int TX_TYPE_TRANSFER = 2;
+    //设置别名
+    int TX_TYPE_ALIAS = 3;
+    //注册共识节点
+    int TX_TYPE_REGISTER_AGENT = 4;
+    //加入共识
+    int TX_TYPE_JOIN_CONSENSUS = 5;
+    //退出共识
+    int TX_TYPE_CANCEL_DEPOSIT = 6;
+    //黄牌惩罚
+    int TX_TYPE_YELLOW_PUNISH = 7;
+    //红牌惩罚
+    int TX_TYPE_RED_PUNISH = 8;
+    //注销共识节点
+    int TX_TYPE_STOP_AGENT = 9;
+    //创建智能合约
+    int TX_TYPE_CREATE_CONTRACT = 100;
+    //调用智能合约
+    int TX_TYPE_CALL_CONTRACT = 101;
+    //删除智能合约
+    int TX_TYPE_DELETE_CONTRACT = 102;
+    //智能合约内部转账
+    int TX_TYPE_CONTRACT_TRANSFER = 103;
+```
+
+
+
 #### 错误码
+
 ```java
 10000=成功
 10001=失败

@@ -155,6 +155,7 @@ public interface AccountLedgerService {
      */
     Result signTransaction(String txHex, String priKey, String address, String password);
 
+    Result signHash(String hash, String priKey);
     /**
      * 广播交易
      * Broadcast Transaction

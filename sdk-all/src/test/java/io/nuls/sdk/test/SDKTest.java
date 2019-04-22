@@ -1,10 +1,12 @@
 package io.nuls.sdk.test;
 
+import io.nuls.sdk.account.model.AccountInfo;
 import io.nuls.sdk.accountledger.model.Input;
 import io.nuls.sdk.accountledger.model.Output;
 import io.nuls.sdk.core.SDKBootstrap;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.Hex;
+import io.nuls.sdk.core.model.Account;
 import io.nuls.sdk.core.model.JsonRPCResult;
 import io.nuls.sdk.core.model.Na;
 import io.nuls.sdk.core.model.Result;
@@ -468,49 +470,70 @@ public class SDKTest {
 
 
     @Test
-    public void test() {
-        SDKBootstrap.init("127.0.0.1", "6001", 261);
-        String key = "abacb54e596ae22ccde6bbf1bd2eb968dca0a6aa98ded7e383ffed4cd9d7d7db";
+    public void testCreateAccountAndCheckPassword() {
+        SDKBootstrap.init("127.0.0.1", "8001", 261);
+        String password = "abcd1234";
+        Result result = NulsSDKTool.createOfflineAccount(1, password);
+        Map map = (Map) result.getData();
+        List<AccountInfo> accountInfos = (List<AccountInfo>) map.get("list");
+        AccountInfo accountInfo = accountInfos.get(0);
 
-        Result result = NulsSDKTool.getPrikeyOffline(key, ":8!3#15TXUQVRSZ");
-        System.out.println(result.isFailed());
+        String address = accountInfo.getAddress();
+        String encryptedPriKey = accountInfo.getEncryptedPriKey();
 
+//         address : TTasM8iokK7PQDCMJMBmXrmtkJ1CFiRa
+//         encryptedPriKey: 1a182885deca70dcf893dffc1a70b71ca3c390b347c53e70e41ee4f95fb7250fc1a671cc94aec4bfe34fc69ec22b53ce
+
+
+        result = NulsSDKTool.getPrikeyOffline(encryptedPriKey, password);
+        map = (Map) result.getData();
+        String priKey = (String) map.get("value");
+        System.out.println(priKey);
     }
 
     @Test
     public void testTransaction() throws Exception {
-        SDKBootstrap.init("127.0.0.1", "8001", 261);
+        SDKBootstrap.init("127.0.0.1", "8001", 261, "http://116.62.135.185:8081");
 
-        List<Input> inputs = new ArrayList<>();
-        Input input = new Input();
-        input.setFromHash("002036e015d316d56cacc821c95f02d8ba0bfdd23480fd170e84615acc9b35b95da4");
-        //为什么是1
-        input.setFromIndex(0);
-        input.setAddress("TTatEiRFHJPdwNNoLhMraez4yoXrSQab");
-        input.setValue(1000000000L);
-        inputs.add(input);
+        String fromAddress = "TTatEiRFHJPdwNNoLhMraez4yoXrSQab";
+        String toAddress = "TTavdER27gqugcDbMseekdesdf6Qd9cB";
+        long transferAmount = 10000000L;
+        String remark = "transfer 1 nuls";
 
+        //find fromAddress's utxo
+        List<Input> inputs = null;
+        JsonRPCResult jsonRPCResult = NulsSDKTool.getUtxo(fromAddress, transferAmount);
+        if (jsonRPCResult.getResult() != null) {
+            inputs = (List<Input>) jsonRPCResult.getResult();
+        }
+
+        // totalFromNuls always >= transferAmount;
+        long totalFromNuls = 0;
+        for (Input input : inputs) {
+            totalFromNuls += input.getValue();
+        }
+
+        //create output
         List<Output> outputs = new ArrayList<>();
         Output output = new Output();
-        output.setAddress("TTavdER27gqugcDbMseekdesdf6Qd9cB");
+        output.setAddress(toAddress);
         output.setIndex(0);
         output.setLockTime(0);
-        output.setValue(1000000L);
+        output.setValue(transferAmount);
         outputs.add(output);
 
-        output = new Output();
-        outputs.add(output);
-        output.setAddress("TTatEiRFHJPdwNNoLhMraez4yoXrSQab");
-        output.setIndex(1);
-        output.setLockTime(0);
-
-        String remark = "转账1nuls";
-        /***计算手续费*/
+        /***Calculation fee*/
         int size = 124 + 50 * inputs.size() + 38 * outputs.size() + remark.getBytes().length;
         Na fee = TransactionFeeCalculator.getTransferFee(size, 1);
-        /**来源账户的剩余金额**/
-        output.setValue(1000000000L - 1000000L - fee.getValue());
-        /**3.0创建交易**/
+        //create change
+        output = new Output();
+        outputs.add(output);
+        output.setAddress(fromAddress);
+        output.setIndex(1);
+        output.setLockTime(0);
+        output.setValue(totalFromNuls - transferAmount - fee.getValue());
+
+        /**create transferTx**/
         Result result = NulsSDKTool.createTransaction(inputs, outputs, remark);
         Map<String, Object> map = (Map<String, Object>) result.getData();
         String txHex = (String) map.get("value");
@@ -521,12 +544,10 @@ public class SDKTest {
         System.out.println(tx.getHash().getDigestHex());
 
 
-        /**私钥明文**/
+        /**prikey of fromAddress*/
         String priKey = "abacb54e596ae22ccde6bbf1bd2eb968dca0a6aa98ded7e383ffed4cd9d7d7db";
-        /**来源账户地址**/
-        String address = "TTatEiRFHJPdwNNoLhMraez4yoXrSQab";
-        /**4.0用来源账户密码签名交易**/
-        result = NulsSDKTool.signTransaction(txHex, priKey, address, ":8!3#15TXUQVRSZ");
+        /**sign tx**/
+        result = NulsSDKTool.signTransaction(txHex, priKey, fromAddress, ":8!3#15TXUQVRSZ");
         map = (Map<String, Object>) result.getData();
         String signTxHex = (String) map.get("value");
 
@@ -535,10 +556,18 @@ public class SDKTest {
         tx1.parse(new NulsByteBuffer(txBytes1));
         System.out.println(tx1.getHash().getDigestHex());
 
-
-        /**5.0验证交易**/
+        /** validate**/
         result = NulsSDKTool.validateTransaction(signTxHex);
         System.out.println(JSONUtils.obj2json(result));
+    }
+
+
+    @Test
+    public void testValidateTx() {
+        SDKBootstrap.init("127.0.0.1", "6001", 8964);
+        String txHex = "0200f09e52c4690100ffffffff01230020391106f46213f3b4385a1b68d46e060bde943c1c560108c2a2d344be3884b3240151a8fdfd3a60000000000000000004170423012e8f805b2c4c7eaf985faf2195ead51f44a3e48cc047d5a90a000000000000000000170423012e8f805b2c4c7eaf985faf2195ead51f44a3e48cc04fa3e304000000000000000000170423012e8f805b2c4c7eaf985faf2195ead51f44a3e48cc05e116a10000000000000000000170423017ee35f71f596572bb804902d690cb6c2fd370426712b72061b6000000000000000006b21028baee0195105f1046c7acbc9bd38d7bd587584d761b9fd1eb602fb903a1b667f004730450221009f746e15607291bbe8dc46793384631ff43dd426d0d5cde174ff0c54184bed540220319ac8166e70edbac783d4fce0dac9f85a612c01b16a59fc450a39e887621123";
+        Result result = NulsSDKTool.validateTransaction(txHex);
+        System.out.println(result.getData());
     }
 
     @Test
@@ -557,11 +586,38 @@ public class SDKTest {
 
     @Test
     public void testUTXO() {
-        SDKBootstrap.init("127.0.0.1", "8001", 261, "http://116.62.135.185:8081");
-        JsonRPCResult result = NulsSDKTool.getUtxo("TTaysJKDhLkPvhT1G6xfe5VFTzQRNULS", 10000000);
+        SDKBootstrap.init("127.0.0.1", "8001", 8964);
+        JsonRPCResult result = NulsSDKTool.getUtxo("Nse3KFUNQhCjadUeSE7VKMhJYdWqju9n", 1);
         if (result.getResult() != null) {
             List<Input> inputs = (List<Input>) result.getResult();
+            System.out.println(inputs.size());
         }
         System.out.println(1);
+    }
+
+    @Test
+    public void signTx() {
+//        SDKConstant.DEFAULT_CHAIN_ID = (short) 261;
+//        SDKConstant.NULSCAN_URL ="http://116.62.135.185:8081";
+        String txHex = "6500586e8bff690100042301a0595e655ab120e0a60700183bdae56d6a3e7ab10423024b19f2f9975afdedda0396e854355c227a8359fa0000000000000000593e0000000000001900000000000000087472616e73666572000201204e73653757326476564b46543255596f617655347656466553594739726a62310103353030012300203103de09bf86168f0a0e71d05688d543d0e710ae4481abd95cdb163914a3a2490166a1600b000000000000000000000117042301a0595e655ab120e0a60700183bdae56d6a3e7ab11504590b0000000000000000000000";
+        String priKey = "00d08673753875de9460a2d77282e17888ba49c2e45a5c3c6cf594f2d7eb2f4f6a";
+        String address = "TTe3yoTsQ9C4WMHGCrk3QJM9hnfNVgFh";
+
+        Result result = NulsSDKTool.signTransaction(txHex, priKey, address, null);
+        Map map = (Map) result.getData();
+        String signTxHex = (String) map.get("value");
+        System.out.println(signTxHex);
+    }
+
+    @Test
+    public void signHash() {
+//        SDKConstant.DEFAULT_CHAIN_ID = (short) 261;
+        String txHash = "0020d87cc1cc001a90d12f527243f665872527d07a1e94d5cf38158558d57292cc00";
+        String priKey = "00d08673753875de9460a2d77282e17888ba49c2e45a5c3c6cf594f2d7eb2f4f6a";
+
+        Result result = NulsSDKTool.signTransaction(txHash, priKey);
+        Map map = (Map) result.getData();
+        String signTxHex = (String) map.get("value");
+        System.out.println(signTxHex);
     }
 }

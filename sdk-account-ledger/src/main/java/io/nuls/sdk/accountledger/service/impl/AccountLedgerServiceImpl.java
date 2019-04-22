@@ -464,6 +464,21 @@ public class AccountLedgerServiceImpl implements AccountLedgerService {
     }
 
     @Override
+    public Result signHash(String hash, String priKey) {
+        try {
+            ECKey key = ECKey.fromPrivate(new BigInteger(Hex.decode(priKey)));
+            byte[] bytes = TransactionTool.signHash(hash, key);
+            String sign = Hex.encode(bytes);
+            Map map = new HashMap();
+            map.put("value", sign);
+            return Result.getSuccess().setData(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public Result signMultipleAddressTransaction(String txHex, List<String> privKeys, List<String> passwords) {
         if (StringUtils.isBlank(txHex)) {
             return Result.getFailed(AccountErrorCode.PARAMETER_ERROR, "txHex error");

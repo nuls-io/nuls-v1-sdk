@@ -103,6 +103,12 @@ public class TransactionTool {
         return tx;
     }
 
+    public static byte[] signHash(String txHash, ECKey ecKey) throws IOException {
+        P2PHKSignature sign = SignatureUtil.createSignatureByEckey(txHash, ecKey);
+        return sign.serialize();
+    }
+
+
     public static NulsSignData signDigest(byte[] digest, ECKey ecKey) {
         byte[] signbytes = ecKey.sign(digest);
         NulsSignData nulsSignData = new NulsSignData();

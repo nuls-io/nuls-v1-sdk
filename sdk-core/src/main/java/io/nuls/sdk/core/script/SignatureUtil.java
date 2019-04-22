@@ -3,12 +3,12 @@ package io.nuls.sdk.core.script;
 import io.nuls.sdk.core.contast.KernelErrorCode;
 import io.nuls.sdk.core.contast.SDKConstant;
 import io.nuls.sdk.core.crypto.ECKey;
+import io.nuls.sdk.core.crypto.Hex;
 import io.nuls.sdk.core.exception.NulsException;
-import io.nuls.sdk.core.model.Address;
-import io.nuls.sdk.core.model.Coin;
-import io.nuls.sdk.core.model.CoinData;
+import io.nuls.sdk.core.model.*;
 import io.nuls.sdk.core.model.transaction.Transaction;
 import io.nuls.sdk.core.utils.AddressTool;
+import io.nuls.sdk.core.utils.NulsByteBuffer;
 import io.nuls.sdk.core.utils.SerializeUtils;
 import io.nuls.sdk.core.utils.TransactionTool;
 import org.slf4j.Logger;
@@ -211,6 +211,24 @@ public class SignatureUtil {
         p2PHKSignature.setPublicKey(ecKey.getPubKey());
         //用当前交易的hash和账户的私钥账户
         p2PHKSignature.setSignData(TransactionTool.signDigest(tx.getHash().getDigestBytes(), ecKey));
+        return p2PHKSignature;
+    }
+
+
+    public static P2PHKSignature createSignatureByEckey(String txHash, ECKey ecKey) {
+        byte[] bytes = Hex.decode(txHash);
+        NulsDigestData digestData = new NulsDigestData();
+        try {
+            digestData.parse(new NulsByteBuffer(bytes));
+        } catch (NulsException e) {
+            e.printStackTrace();
+        }
+
+        P2PHKSignature p2PHKSignature = new P2PHKSignature();
+        p2PHKSignature.setPublicKey(ecKey.getPubKey());
+        //用当前交易的hash和账户的私钥账户
+
+        p2PHKSignature.setSignData(TransactionTool.signDigest(digestData.getDigestBytes(), ecKey));
         return p2PHKSignature;
     }
 

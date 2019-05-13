@@ -162,4 +162,13 @@ public class Utils {
      * @return 返回原始种子的集合，元素是字节数组转化的BigInteger(new BigInteger(byte[] bytes))
      */
     public static native List<BigInteger> getRandomSeedList(long startHeight, long endHeight);
+
+    /**
+     * 调用链上其他模块的命令
+     *
+     * @param cmdName 命令名称
+     * @param args 命令参数
+     * @return 命令返回值(根据注册命令的返回类型可返回字符串,字符串数组,字符串二维数组)
+     */
+    public static native Object invokeExternalCmd(String cmdName, String[] args);
 }

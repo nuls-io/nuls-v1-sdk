@@ -21,6 +21,14 @@ public class Msg {
     public static native Address sender();
 
     /**
+     * 合约发送者地址公钥
+     * sender public key of the contract
+     *
+     * @return 消息发送者地址公钥
+     */
+    public static native String senderPublicKey();
+
+    /**
      * 合约发送者转入合约地址的Nuls数量，单位是Na，1Nuls=1亿Na
      * The number of Nuls transferred by the contract sender to the contract address, the unit is Na, 1Nuls = 1 billion Na
      *

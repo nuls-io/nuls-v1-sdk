@@ -53,6 +53,12 @@ public class Address {
      */
     private native void valid(String address);
 
+    /**
+     * 验证地址是否是合约地址
+     *
+     */
+    public native boolean isContract();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

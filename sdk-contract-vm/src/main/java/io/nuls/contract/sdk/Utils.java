@@ -98,10 +98,28 @@ public class Utils {
      *
      * @param data(hex encoding string)
      * @param signature(hex encoding string)
-     * @param pubkey(hex encoding string)
+     * @param pubkey(compressed public key hex string)
      * @return verify result
      */
     public static native boolean verifySignatureData(String data, String signature, String pubkey);
+
+    /**
+     * encrypt data(ECIES) by public key
+     *
+     * @param rawData(raw data)
+     * @param pubkey(compressed public key hex string)
+     * @return encrypted data
+     */
+    public static native String encryptData(String rawData, String pubkey);
+
+    /**
+     * decrypt data(ECIES) by public key
+     *
+     * @param encryptedData(encrypted data string)
+     * @param pubkey(compressed public key hex string)
+     * @return decrypted data / null when decryption fails
+     */
+    public static native String decryptData(String encryptedData, String pubkey);
 
     /**
      * 根据截止高度和原始种子数量，用特定的算法生成一个随机种子

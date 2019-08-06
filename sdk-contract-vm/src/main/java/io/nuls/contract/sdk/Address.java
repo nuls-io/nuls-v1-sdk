@@ -12,11 +12,18 @@ public class Address {
     }
 
     /**
-     * 获取该地址的余额（只能获取合约地址余额）
+     * 获取该地址的可用余额
      *
      * @return BigInteger
      */
     public native BigInteger balance();
+
+    /**
+     * 获取该地址的总余额
+     *
+     * @return BigInteger
+     */
+    public native BigInteger totalBalance();
 
     /**
      * 合约向该地址转账

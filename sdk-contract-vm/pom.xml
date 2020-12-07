@@ -11,14 +11,21 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.nuls.sdk</groupId>
     <artifactId>sdk-contract-vm</artifactId>
-    <version>2.1.0.RELEASE</version>
+    <version>2.1.0.BETA</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <!--
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
-
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -26,7 +33,7 @@
         </license>
     </licenses>
     <scm>
-        <tag>2.0.0.RELEASE</tag>
+        <tag>2.1.0.RELEASE</tag>
         <url>https://github.com/nuls-io/nuls-sdk</url>
         <connection>https://github.com/nuls-io/nuls-sdk.git</connection>
         <developerConnection>https://nuls.io</developerConnection>
@@ -40,28 +47,20 @@
     </developers>
     <distributionManagement>
         <snapshotRepository>
-            <!-- 这个id需要在setting.xml中设置  -->
+            &lt;!&ndash; 这个id需要在setting.xml中设置  &ndash;&gt;
             <id>ossrh</id>
             <name>OSS Snapshots Repository</name>
-            <!-- 这里的url就是Issue中回复的snapshots 的repo地址-->
+            &lt;!&ndash; 这里的url就是Issue中回复的snapshots 的repo地址&ndash;&gt;
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>ossrh</id>
             <name>OSS Staging Repository</name>
-            <!-- 这里的url就是Issue中回复的staging 的repo地址-->
+            &lt;!&ndash; 这里的url就是Issue中回复的staging 的repo地址&ndash;&gt;
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
-
-    <!--<profiles>
+    <profiles>
         <profile>
             <id>disable-javadoc-doclint</id>
             <activation>
@@ -158,6 +157,4 @@
             </build>
         </profile>
     </profiles>-->
-
-
 </project>

@@ -6,10 +6,17 @@ package io.nuls.contract.sdk;
 public interface Contract {
 
     /**
-     * 直接向合约转账，会触发这个方法，默认不做任何操作，可以重载这个方法。
-     * 前提: 需重载这个方法，并且标记`@Payable`注解
+     * 直接向合约转账NULS，会触发这个方法，默认不做任何操作
+     * 前提: 若合约地址支持直接转账NULS，需重载这个方法，并且标记`@Payable`注解
      */
     default void _payable() {
+    }
+
+    /**
+     * 直接向合约转账其他资产，会触发这个方法，默认不做任何操作
+     * 前提: 若合约地址支持直接转账其他资产，需重载这个方法，并且标记`@PayableMultyAsset`注解
+     */
+    default void _payableMultyAsset() {
     }
 
     /**

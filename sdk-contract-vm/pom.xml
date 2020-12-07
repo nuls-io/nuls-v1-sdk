@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.nuls.sdk</groupId>
     <artifactId>sdk-contract-vm</artifactId>
-    <version>2.0.0.RELEASE</version>
+    <version>2.1.0.RELEASE</version>
 
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -61,13 +61,13 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
-    <profiles>
+    <!--<profiles>
         <profile>
             <id>disable-javadoc-doclint</id>
             <activation>
                 <jdk>[1.8,)</jdk>
             </activation>
-            <!-- java8版本导致javadoc打包编译失败时候，添加-->
+            &lt;!&ndash; java8版本导致javadoc打包编译失败时候，添加&ndash;&gt;
             <properties>
                 <javadoc.opts>-Xdoclint:none</javadoc.opts>
             </properties>
@@ -147,7 +147,7 @@
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
-                                <!-- java8版本导致javadoc打包编译失败时候，添加-->
+                                &lt;!&ndash; java8版本导致javadoc打包编译失败时候，添加&ndash;&gt;
                                 <configuration>
                                     <additionalparam>${javadoc.opts}</additionalparam>
                                 </configuration>
@@ -157,7 +157,7 @@
                 </plugins>
             </build>
         </profile>
-    </profiles>
+    </profiles>-->
 
 
 </project>

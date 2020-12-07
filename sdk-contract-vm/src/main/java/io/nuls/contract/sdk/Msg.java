@@ -29,12 +29,18 @@ public class Msg {
     public static native String senderPublicKey();
 
     /**
-     * 合约发送者转入合约地址的Nuls数量，单位是Na，1Nuls=1亿Na
-     * The number of Nuls transferred by the contract sender to the contract address, the unit is Na, 1Nuls = 1 billion Na
+     * 合约发送者转入合约地址的NULS资产数量，单位是Na，1Nuls=1亿Na，等等……
+     * The amount of assets transferred to the contract address by the contract sender, supports multi-asset transfer, such as NULS, the unit is Na, 1Nuls=1 billion Na, etc...
      *
      * @return
      */
     public static native BigInteger value();
+
+    /**
+     * 合约发送者转入合约地址的其他资产列表
+     *
+     */
+    public static native MultyAssetValue[] multyAssetValues();
 
     /**
      * Gas价格

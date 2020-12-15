@@ -29,7 +29,7 @@ public class Address {
      * 合约向该地址转账(NULS, 可锁定)
      *
      * @param value         转账金额（多少Na）
-     * @param lockedTime    锁定时间
+     * @param lockedTime    锁定时间（单位秒，若锁定1分钟，则填入60）
      */
     public native void transferLocked(BigInteger value, long lockedTime);
 
@@ -49,7 +49,7 @@ public class Address {
      * @param value          转账金额
      * @param assetChainId   资产链ID
      * @param assetId        资产ID
-     * @param lockedTime     锁定时间
+     * @param lockedTime     锁定时间（单位秒，若锁定1分钟，则填入60）
      */
     public native void transferLocked(BigInteger value, int assetChainId, int assetId, long lockedTime);
 
@@ -106,12 +106,11 @@ public class Address {
     /**
      * 调用该地址的合约方法并带有返回值(String)
      *
-     * @param methodName    方法名
-     * @param methodDesc    方法签名
-     * @param args          参数
-     * @param value         转入资产数量
-     * @param assetChainId  转入资产链ID
-     * @param assetId       转入资产ID
+     * @param methodName        方法名
+     * @param methodDesc        方法签名
+     * @param args              参数
+     * @param value             转入资产数量
+     * @param multyAssetValues  转入的其他资产
      * @return 调用合约后的返回值
      */
     public native String callWithReturnValue(String methodName, String methodDesc, String[][] args, BigInteger value, MultyAssetValue[] multyAssetValues);

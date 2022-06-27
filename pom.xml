@@ -17,10 +17,10 @@
         <module>sdk-all</module>
         <module>sdk-consensus</module>
         <module>sdk-contract</module>
-        <module>sdk-contract-vm</module>
+<!--        <module>sdk-contract-vm</module>-->
     </modules>
 
-    <parent>
+    <!--<parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
@@ -58,16 +58,16 @@
     </developers>
     <distributionManagement>
         <snapshotRepository>
-            <!-- 这个id需要在setting.xml中设置  -->
+            &lt;!&ndash; 这个id需要在setting.xml中设置  &ndash;&gt;
             <id>ossrh</id>
             <name>OSS Snapshots Repository</name>
-            <!-- 这里的url就是Issue中回复的snapshots 的repo地址-->
+            &lt;!&ndash; 这里的url就是Issue中回复的snapshots 的repo地址&ndash;&gt;
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>ossrh</id>
             <name>OSS Staging Repository</name>
-            <!-- 这里的url就是Issue中回复的staging 的repo地址-->
+            &lt;!&ndash; 这里的url就是Issue中回复的staging 的repo地址&ndash;&gt;
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
@@ -85,7 +85,7 @@
             <activation>
                 <jdk>[1.8,)</jdk>
             </activation>
-            <!-- java8版本导致javadoc打包编译失败时候，添加-->
+            &lt;!&ndash; java8版本导致javadoc打包编译失败时候，添加&ndash;&gt;
             <properties>
                 <javadoc.opts>-Xdoclint:none</javadoc.opts>
             </properties>
@@ -165,7 +165,7 @@
                                 <goals>
                                     <goal>jar</goal>
                                 </goals>
-                                <!-- java8版本导致javadoc打包编译失败时候，添加-->
+                                &lt;!&ndash; java8版本导致javadoc打包编译失败时候，添加&ndash;&gt;
                                 <configuration>
                                     <additionalparam>${javadoc.opts}</additionalparam>
                                 </configuration>
@@ -175,7 +175,7 @@
                 </plugins>
             </build>
         </profile>
-    </profiles>
+    </profiles>-->
 
 
 </project>

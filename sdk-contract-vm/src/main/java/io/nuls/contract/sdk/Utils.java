@@ -184,7 +184,7 @@ public class Utils {
 
     /**
      * 内部创建合约
-     * @param salt
+     * @param salt 参与新生成的合约地址计算的因素
      * @param codeCopy 指定合约模板
      * @param args 部署的参数
      * @return 部署的合约地址
@@ -214,8 +214,8 @@ public class Utils {
 
     /**
      * 计算合约地址
-     * @param salt
-     * @param codeHash 合约代码hash值
+     * @param salt 参与新生成的合约地址计算的因素
+     * @param codeHash 合约代码的hash值
      * @param sender 合约部署者
      * @return 合约地址
      */
@@ -224,6 +224,10 @@ public class Utils {
         return (String) Utils.invokeExternalCmd("computeAddress", new String[]{finalSalt, codeHash, sender.toString()});
     }
 
+    /**
+     * @param codeAddress 合约地址
+     * @return 合约代码的hash值
+     */
     public static String getCodeHash(Address codeAddress) {
         require(codeAddress.isContract(), "not contract address");
         return (String) Utils.invokeExternalCmd("getCodeHash", new String[]{codeAddress.toString()});

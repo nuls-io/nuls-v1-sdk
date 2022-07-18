@@ -196,7 +196,7 @@ public class Utils {
         if (args != null) {
             argsLength = args.length;
         }
-        String[] arr = new String[args.length + 2];
+        String[] arr = new String[argsLength + 2];
         arr[0] = codeCopy.toString();
         arr[1] = finalSalt;
         for (int i = 0; i < argsLength; i++) {
@@ -231,5 +231,22 @@ public class Utils {
     public static String getCodeHash(Address codeAddress) {
         require(codeAddress.isContract(), "not contract address");
         return (String) Utils.invokeExternalCmd("getCodeHash", new String[]{codeAddress.toString()});
+    }
+
+    /**
+     * 资产decimals
+     * @param assetChainId 资产链ID
+     * @param assetId 资产ID
+     * @return 资产decimals
+     */
+    public static int assetDecimals(int assetChainId, int assetId) {
+        return Integer.parseInt((String) Utils.invokeExternalCmd("assetDecimals", new String[]{assetChainId + "", assetId + ""}));
+    }
+
+    /**
+     * @return 当前链ID
+     */
+    public static int chainId() {
+        return Integer.parseInt((String) Utils.invokeExternalCmd("currentChainId", new String[0]));
     }
 }

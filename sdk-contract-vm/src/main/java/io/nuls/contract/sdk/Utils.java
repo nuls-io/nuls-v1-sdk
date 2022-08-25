@@ -249,4 +249,12 @@ public class Utils {
     public static int chainId() {
         return Integer.parseInt((String) Utils.invokeExternalCmd("currentChainId", new String[0]));
     }
+
+    /**
+     * @param pubkey 账户压缩公钥
+     * @return 账户地址
+     */
+    public static String getAddressByPublicKey(String pubkey) {
+        return (String) Utils.invokeExternalCmd("getAddressByPublicKey", new String[]{pubkey});
+    }
 }
